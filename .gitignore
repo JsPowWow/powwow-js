@@ -1,0 +1,6 @@
+.idea
+.tmp
+tmp
+**/coverage
+node_modules
+**/dist

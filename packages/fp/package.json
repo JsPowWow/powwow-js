@@ -1,0 +1,56 @@
+{
+  "name": "@powwow-js/fp",
+  "version": "0.0.1",
+  "description": "TypeScript FP utilities",
+  "keywords": [
+    "powwow",
+    "fp",
+    "monad",
+    "maybe"
+  ],
+  "author": "Oleksandr Radvanskyi",
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JsPowWow/powwow-js.git",
+    "directory": "packages/fp"
+  },
+  "bugs": {
+    "url": "https://github.com/JsPowWow/powwow-js/issues"
+  },
+  "homepage": "https://github.com/JsPowWow/powwow-js#readme",
+  "main": "index.js",
+  "exports": {
+    "./*": {
+      "types": "./_types/*.d.ts",
+      "require": "./_cjs/*.js",
+      "import": "./_esm/*.js",
+      "default": "./_esm/*.js"
+    }
+  },
+  "types": "./index.d.ts",
+  "typesVersions": {
+    ">=4.2": {
+      "*": [
+        "_types/*"
+      ]
+    }
+  },
+  "scripts": {
+    "clean": "rimraf -rf dist coverage",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:types && cp package.json dist/package.json",
+    "prepare": "npm run build",
+    "test": "jest",
+    "publish:dry-run": "cd dist && npm publish --dry-run",
+    "publish": "cd dist && npm publish",
+    "lint": "npx eslint ./src",
+    "format": "npx eslint ./src --fix",
+    "build:cjs": "tsc -p tsconfig.json && cp ../../configs/package.cjs.json dist/_cjs/package.json",
+    "build:esm": "tsc -p tsconfig.esm.json && cp ../../configs/package.esm.json dist/_esm/package.json",
+    "build:types": "tsc -p tsconfig.types.json"
+  }
+}

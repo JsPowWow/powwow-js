@@ -1,0 +1,11 @@
+{
+  "extends": "../../configs/tsconfig.types.base.json",
+  "compilerOptions": {
+    "outDir": "./dist/_types"
+  },
+  "exclude": [
+    "node_modules",
+    "./**/*.spec.ts",
+    "./**/*.test.ts"
+  ]
+}
