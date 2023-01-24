@@ -1,7 +1,7 @@
 {
   "name": "@powwow-js/fp",
   "version": "0.0.1",
-  "description": "TypeScript FP utilities",
+  "description": "A few TypeScript FP utilities & primitives",
   "keywords": [
     "powwow",
     "fp",

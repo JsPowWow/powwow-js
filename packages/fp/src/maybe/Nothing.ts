@@ -10,8 +10,17 @@ class Nothing implements Maybe.Nothing {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  chain<U>(_: (v: never) => Maybe.Of<U>): Maybe.Of<U> {
+  map<U>(_: (v: never) => U): Maybe.Of<U> {
     return NOTHING;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fMap<U>(_: (v: never) => Maybe.Of<U>): Maybe.Of<U> {
+    return NOTHING;
+  }
+
+  match<U>(options: { just: (_: never) => never; nothing: () => U }): U {
+    return options.nothing();
   }
 }
 

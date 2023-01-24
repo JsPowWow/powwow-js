@@ -1,16 +1,13 @@
-import { Maybe } from './index';
+import { Maybe } from './';
+import { Nothing } from './maybe/Nothing';
 
-describe('"IMaybe" tests', () => {
-  it('should export IMaybe utils shortcut', () => {
+describe('"Maybe" tests', () => {
+  it('should export Maybe utils shortcut', () => {
     expect(Maybe).toStrictEqual({
+      hasSome: expect.any(Function),
+      hasNothing: expect.any(Function),
       of: expect.any(Function),
-    });
-  });
-
-  describe('"IMaybe.of(...)" tests', () => {
-    it('nullish values tests', () => {
-      const maybeNull = Maybe.of(null);
-      expect(maybeNull).toBeDefined();
+      nothing: Nothing,
     });
   });
 });

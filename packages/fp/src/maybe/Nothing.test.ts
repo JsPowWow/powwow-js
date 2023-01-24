@@ -1,36 +1,15 @@
-import { Maybe } from './index';
+import { Nothing } from './Nothing';
+import { identity } from '../fn';
 
 describe('Nothing tests', () => {
-  const Nothing = Maybe.nothing();
-  const none = Maybe.of(null);
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const IVoid = Maybe.of(); // TODO
-  const withNone = () => none;
-  const just = Maybe.of(Object.freeze({ just: 'value' }));
-  const withJust = () => just;
+  const withNothing = () => Nothing;
+  const addTen = (v: number) => v + 10;
 
   it('inspect available functionality', () => {
-    expect(none.isJust()).toBe(false);
-    expect(none.isNothing()).toBe(true);
-    expect(none.chain(withJust)).toBe(none);
-    expect(just.chain(withNone)).toBe(none);
-  });
-
-  it('as a smart nullish value constant tests', () => {
-    expect(Maybe.of(null) === Maybe.of(undefined)).toBe(true);
-    expect(Maybe.of(null)).toStrictEqual(Nothing);
-    expect(Maybe.of(undefined)).toStrictEqual(Nothing);
-
-    expect(none.chain(withNone)).toStrictEqual(Nothing);
-    expect(Nothing.chain(withNone)).toStrictEqual(none);
-
-    expect(none.chain(withJust)).toStrictEqual(Nothing);
-    expect(Nothing.chain(withJust)).toStrictEqual(none);
-  });
-
-  it('chain(() => Maybe).chain(() => Maybe)... tests', () => {
-    expect(just.chain(withNone).chain(withJust)).toStrictEqual(Nothing);
-    expect(Nothing.chain(withJust).chain(withNone)).toStrictEqual(none);
+    expect(Nothing.isJust()).toBe(false);
+    expect(Nothing.isNothing()).toBe(true);
+    expect(Nothing.map(addTen)).toBe(Nothing);
+    expect(Nothing.fMap(withNothing)).toBe(Nothing);
+    expect(Nothing.fMap(withNothing).match({ just: identity, nothing: () => 'nil' })).toBe('nil');
   });
 });
