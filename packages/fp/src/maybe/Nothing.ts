@@ -24,6 +24,6 @@ class Nothing implements Maybe.Nothing {
   }
 }
 
-const NOTHING = Object.freeze(new Nothing());
+const NOTHING: Maybe.Nothing = Object.freeze(new Nothing());
 
 export { NOTHING as Nothing };

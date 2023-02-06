@@ -1,13 +1,14 @@
 import { Maybe } from './';
 
 class Just<T> implements Maybe.Just<T> {
-  public static of = <T>(value: NonNullable<T>) => new Just(value);
+  public static of = <T>(value: NonNullable<T>): Maybe.Just<T> => new Just(value);
+
   private readonly value: NonNullable<T>;
 
   constructor(value: NonNullable<T>) {
     this.value = value;
-    if (value === null || value === undefined) {
-      throw new Error(`Expect to have non-nullable value, but got "${value}".`);
+    if (!Maybe.hasSome(value)) {
+      throw new Error(`Expect to have non-nullable value provided, but got "${value}".`);
     }
   }
 
