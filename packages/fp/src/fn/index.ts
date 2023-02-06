@@ -10,7 +10,7 @@ export const call = <T>(fn: (...fnArgs: unknown[]) => T, ...args: unknown[]): T 
  * @returns {void}
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const noop = (..._: unknown[]) => {
+export const noop = (..._: unknown[]): void => {
   // This is intentional
 };
 

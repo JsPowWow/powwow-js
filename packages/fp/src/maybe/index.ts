@@ -1,13 +1,18 @@
 import { Nothing } from './Nothing';
 import { Just } from './Just';
+import { Nullable } from '../nullable';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 namespace Maybe {
+  export type Of<T> = Maybe.Just<T> | Maybe.Nothing;
+
+  export type PickFrom<T> = T extends Nullable.Nil ? Maybe.Nothing : Maybe.Just<T>;
+
   interface Maybe<T> {
     /**
      * @description Indicates that this {@link Of|Maybe} is "Just"
      */
-    isJust(): this is Just<T>;
+    isJust(): this is Maybe.Just<T>;
 
     /**
      * @description Indicates that this {@link Of|Maybe} is "nothing"
@@ -41,22 +46,18 @@ namespace Maybe {
     isNothing(): true;
   }
 
-  export type Of<T> = Just<T> | Nothing;
+  export const hasSome = <T>(value: unknown): value is NonNullable<T> => Nullable.isSome(value);
 
-  export type Infer<T> = T extends null | undefined ? Maybe.Nothing : Maybe.Just<T>;
-
-  export const hasSome = <T>(value: unknown): value is NonNullable<T> => value !== null && value !== undefined;
-
-  export const hasNothing = (value: unknown): value is null | undefined => value === null || value === undefined;
+  export const hasNothing = (value: unknown): value is Nullable.Nil => Nullable.isNil(value);
 
   /**
    * @description Factory function for {@link Of|Maybe's}. Depends on the "value" argument will return a Just<T> or Nothing
    */
-  export function of<T>(value: T): Infer<T> {
+  export function of<T>(value: T): Maybe.PickFrom<T> {
     if (hasSome(value)) {
-      return <Infer<T>>Just.of(value);
+      return <PickFrom<T>>Just.of(value);
     }
-    return <Infer<never>>Nothing;
+    return <PickFrom<never>>Nothing;
   }
 
   export const nothing: Nothing = Nothing;
