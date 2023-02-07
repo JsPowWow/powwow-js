@@ -1,12 +1,13 @@
 import { Nothing } from './Nothing';
 import { Just } from './Just';
-import { Nullable } from '../nullable';
+import { Nullable } from '@powwow-js/core';
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 namespace Maybe {
   export type Of<T> = Maybe.Just<T> | Maybe.Nothing;
 
-  export type PickFrom<T> = T extends Nullable.Nil ? Maybe.Nothing : Maybe.Just<T>;
+  export type PickFrom<T> = T extends Nullable.Nil
+    ? Maybe.Nothing
+    : Maybe.Just<T>;
 
   interface Maybe<T> {
     /**
@@ -33,7 +34,10 @@ namespace Maybe {
      * @description Match the {@link Of|Maybe} stored value by executing a specific provided functions;
      * Will call "just" if it holds a value and "nothing" function if not
      */
-    match<U>(options: { just: (v: NonNullable<T>) => NonNullable<U>; nothing: () => U }): U;
+    match<U>(options: {
+      just: (v: NonNullable<T>) => NonNullable<U>;
+      nothing: () => U;
+    }): U;
   }
 
   export interface Just<T> extends Maybe<T> {
@@ -46,9 +50,11 @@ namespace Maybe {
     isNothing(): true;
   }
 
-  export const hasSome = <T>(value: unknown): value is NonNullable<T> => Nullable.isSome(value);
+  export const hasSome = <T>(value: unknown): value is NonNullable<T> =>
+    Nullable.isSome(value);
 
-  export const hasNothing = (value: unknown): value is Nullable.Nil => Nullable.isNil(value);
+  export const hasNothing = (value: unknown): value is Nullable.Nil =>
+    Nullable.isNil(value);
 
   /**
    * @description Factory function for {@link Of|Maybe's}. Depends on the "value" argument will return a Just<T> or Nothing

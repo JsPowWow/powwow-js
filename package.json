@@ -1,44 +1,33 @@
 {
-  "name": "powwow",
-  "version": "0.0.1",
-  "description": "A set of JavaScript utilities",
-  "author": "Oleksandr Radvanskyi",
-  "license": "Apache-2.0",
-  "homepage": "https://github.com/JsPowWow/powwow-js#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JsPowWow/powwow-js.git"
-  },
-  "keywords": [
-    "powwow"
-  ],
-  "bugs": {
-    "url": "https://github.com/JsPowWow/powwow-js/issues"
-  },
-  "workspaces": [
-    "./packages/*"
-  ],
+  "name": "powwow-js",
+  "version": "0.0.0",
+  "license": "MIT",
   "scripts": {
-    "cleanup": "rimraf -rf node_modules",
-    "clean:string-utils": "npm run clean --prefix tmp/string-utils",
-    "clean:string-matches": "npm run clean --prefix tmp/string-matches",
-    "build:string-utils": "npm run build --prefix tmp/string-utils",
-    "build:string-matches": "npm run build --prefix tmp/string-matches",
-    "clean:all": "npm run clean:types & npm run clean:core & npm run clean:string-matches",
-    "build:all": "npm run build:types & npm run build:core & npm run build:string-matches"
+    "build:all": "nx run-many --target=build --all --prod",
+    "test:all": "nx affected:test --all --codeCoverage --skip-nx-cache"
   },
-  "engines": {
-    "npm": ">=7.0.0"
+  "private": true,
+  "dependencies": {
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.5",
-    "@typescript-eslint/eslint-plugin": "^5.48.0",
-    "@typescript-eslint/parser": "^5.48.0",
-    "eslint": "^8.31.0",
-    "jest": "^29.3.1",
-    "prettier": "^2.8.1",
-    "rimraf": "^3.0.2",
-    "ts-jest": "^29.0.3",
-    "typescript": "^4.9.4"
+    "@nrwl/eslint-plugin-nx": "15.6.3",
+    "@nrwl/jest": "15.6.3",
+    "@nrwl/js": "15.6.3",
+    "@nrwl/linter": "15.6.3",
+    "@nrwl/workspace": "15.6.3",
+    "@types/jest": "28.1.1",
+    "@types/node": "16.11.7",
+    "@typescript-eslint/eslint-plugin": "^5.36.1",
+    "@typescript-eslint/parser": "^5.36.1",
+    "eslint": "~8.15.0",
+    "eslint-config-prettier": "8.1.0",
+    "jest": "28.1.1",
+    "jest-environment-jsdom": "28.1.1",
+    "nx": "15.6.3",
+    "prettier": "^2.6.2",
+    "ts-jest": "28.0.5",
+    "ts-node": "10.9.1",
+    "typescript": "~4.8.2"
   }
 }

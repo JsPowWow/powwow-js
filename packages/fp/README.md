@@ -1,5 +1,11 @@
-# Powwow maybe
-* https://functionalprogramming.medium.com/maybe-monad-in-typescript-7966d2be8623
-* 
-* https://functionalprogramming.medium.com/maybe-monad-in-typescript-7966d2be8623
-* https://medium.com/@sulistef/how-to-avoid-null-and-undefined-by-using-maybe-and-result-either-in-javascript-ef2cf7b5726b
+# fp
+
+This library was generated with [Nx](https://nx.dev).
+
+## Building
+
+Run `nx build fp` to build the library.
+
+## Running unit tests
+
+Run `nx test fp` to execute the unit tests via [Jest](https://jestjs.io).
