@@ -1,14 +1,17 @@
-import { Nullable } from './index';
+import { Nullable } from '../types';
+import { isSome } from './index';
 
-const useDefaultImpl = <T>(defaultValue: T, value: Nullable.Of<T>): T =>
-  Nullable.isSome(value) ? value : defaultValue;
+const useDefaultImpl = <T>(defaultValue: T, value: Nullable<T>): T =>
+  isSome(value) ? value : defaultValue;
 
-function useDefault<T>(defaultValue: T, value: Nullable.Of<T>): T;
-function useDefault<T>(defaultValue: T): (value: Nullable.Of<T>) => T;
-
-function useDefault<T>(defaultValue: T, value?: Nullable.Of<T>) {
+function useDefault<T>(defaultValue: T, value: Nullable<T>): T;
+function useDefault<T>(defaultValue: T): (value: Nullable<T>) => T;
+/**
+ * @description Returns provided source value or "defaultValue" for nullish source
+ */
+function useDefault<T>(defaultValue: T, value?: Nullable<T>) {
   return arguments.length === 1
-    ? (value: Nullable.Of<T>): T => useDefaultImpl(defaultValue, value)
+    ? (value: Nullable<T>): T => useDefaultImpl(defaultValue, value)
     : useDefaultImpl(defaultValue, value);
 }
 

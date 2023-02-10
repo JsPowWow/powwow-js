@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@powwow-js/core": ["packages/core/src/index.ts"],
-      "@powwow-js/fp": ["packages/fp/src/index.ts"]
+      "@powwow-js/fp": ["packages/fp/src/index.ts"],
+      "@powwow-js/string-utils": ["packages/string-utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

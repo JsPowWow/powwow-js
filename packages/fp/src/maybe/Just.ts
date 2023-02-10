@@ -1,14 +1,20 @@
-import { Maybe } from './';
+import { IJust, Maybe } from './types';
+import { isSome } from '@powwow-js/core';
+import { Nothing } from './Nothing';
 
-class Just<T> implements Maybe.Just<T> {
-  public static of = <T>(value: NonNullable<T>): Maybe.Just<T> => new Just(value);
+class Just<T> implements IJust<T> {
+  readonly tag = 'AlwaysHasSome';
 
-  private readonly value: NonNullable<T>;
+  public static of = <T>(value: T): IJust<T> => new Just(value);
 
-  constructor(value: NonNullable<T>) {
+  private readonly value: T;
+
+  constructor(value: T) {
     this.value = value;
-    if (!Maybe.hasSome(value)) {
-      throw new Error(`Expect to have non-nullable value provided, but got "${value}".`);
+    if (!isSome(value)) {
+      throw new Error(
+        `Expect to have non-nullable provided value, but got "${value}".`
+      );
     }
   }
 
@@ -20,19 +26,25 @@ class Just<T> implements Maybe.Just<T> {
     return false;
   }
 
-  map<U>(fn: (v: T) => NonNullable<U>): Maybe.Of<U> {
+  map<U>(fn: (v: T) => U): Maybe<U> {
     return new Just<U>(fn(this.value));
   }
 
-  fMap<U>(fn: (v: T) => Maybe.Of<U>): Maybe.Of<U> {
+  fMap<U>(fn: (v: T) => Maybe<U>): Maybe<U> {
     return fn(this.value);
   }
 
-  match<U>(options: { just: (v: NonNullable<T>) => NonNullable<U>; nothing: () => U }): U {
+  filter<U extends T>(predicate: (v: T) => v is U): Maybe<U>;
+  filter(predicate: (v: T) => boolean): Maybe<T>;
+  filter(predicate: (v: T) => boolean) {
+    return predicate(this.value) ? Just.of(this.value) : Nothing;
+  }
+
+  match<U>(options: { just: (v: T) => U; nothing: () => U }): U {
     return options.just(this.value);
   }
 
-  extract(): NonNullable<T> {
+  extract(): T {
     return this.value;
   }
 }

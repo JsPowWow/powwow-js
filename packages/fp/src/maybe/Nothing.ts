@@ -1,6 +1,8 @@
-import { Maybe } from './';
+import { INothing, Maybe } from './types';
 
-class Nothing implements Maybe.Nothing {
+class Nothing implements INothing {
+  readonly tag = 'AlwaysNothing';
+
   isJust(): false {
     return false;
   }
@@ -10,12 +12,17 @@ class Nothing implements Maybe.Nothing {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  map<U>(_: (v: never) => U): Maybe.Of<U> {
+  map<U>(_: (v: never) => U): Maybe<U> {
     return NOTHING;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  fMap<U>(_: (v: never) => Maybe.Of<U>): Maybe.Of<U> {
+  fMap<U>(_: (v: never) => Maybe<U>): Maybe<U> {
+    return NOTHING;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  filter(_: (v: never) => boolean): Maybe<never> {
     return NOTHING;
   }
 
@@ -24,6 +31,6 @@ class Nothing implements Maybe.Nothing {
   }
 }
 
-const NOTHING: Maybe.Nothing = Object.freeze(new Nothing());
+const NOTHING = new Nothing();
 
 export { NOTHING as Nothing };

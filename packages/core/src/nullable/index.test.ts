@@ -1,6 +1,6 @@
-import { Nullable } from './index';
+import { isFunction, isNil, isNumber, isSome, isString } from './index';
 
-describe('Nullable.isNil', () => {
+describe('isNil', () => {
   test.each`
     value             | expected
     ${undefined}      | ${true}
@@ -11,11 +11,11 @@ describe('Nullable.isNil', () => {
     ${''}             | ${false}
     ${'phrase'}       | ${false}
   `('"$value" -> $expected', ({ value, expected }) => {
-    expect(Nullable.isNil(value)).toStrictEqual(expected);
+    expect(isNil(value)).toStrictEqual(expected);
   });
 });
 
-describe('Nullable.isSome', () => {
+describe('isSome', () => {
   test.each`
     value             | expected
     ${undefined}      | ${false}
@@ -26,11 +26,11 @@ describe('Nullable.isSome', () => {
     ${''}             | ${true}
     ${'phrase'}       | ${true}
   `('"$value" -> $expected', ({ value, expected }) => {
-    expect(Nullable.isSome(value)).toStrictEqual(expected);
+    expect(isSome(value)).toStrictEqual(expected);
   });
 });
 
-describe('Nullable.isString', () => {
+describe('isString', () => {
   test.each`
     value             | expected
     ${undefined}      | ${false}
@@ -42,11 +42,11 @@ describe('Nullable.isString', () => {
     ${''}             | ${true}
     ${'phrase'}       | ${true}
   `('"$value" -> $expected', ({ value, expected }) => {
-    expect(Nullable.isString(value)).toStrictEqual(expected);
+    expect(isString(value)).toStrictEqual(expected);
   });
 });
 
-describe('Nullable.isNumber', () => {
+describe('isNumber', () => {
   test.each`
     value                       | expected
     ${undefined}                | ${false}
@@ -61,11 +61,11 @@ describe('Nullable.isNumber', () => {
     ${Infinity}                 | ${true}
     ${Number.NEGATIVE_INFINITY} | ${true}
   `('"$value" -> $expected', ({ value, expected }) => {
-    expect(Nullable.isNumber(value)).toStrictEqual(expected);
+    expect(isNumber(value)).toStrictEqual(expected);
   });
 });
 
-describe('Nullable.isFunction', () => {
+describe('isFunction', () => {
   const fn = function () {
     /** this is intentional */
   };
@@ -93,6 +93,6 @@ describe('Nullable.isFunction', () => {
     ${arrowFn}        | ${true}
     ${clz}            | ${true}
   `('"$value" -> $expected', ({ value, expected }) => {
-    expect(Nullable.isFunction(value)).toStrictEqual(expected);
+    expect(isFunction(value)).toStrictEqual(expected);
   });
 });

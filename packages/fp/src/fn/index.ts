@@ -1,7 +1,10 @@
 /**
  * @description Call specified "fn" function with provided arguments
  */
-export const call = <T>(fn: (...fnArgs: unknown[]) => T, ...args: unknown[]): T => {
+export const call = <T>(
+  fn: (...fnArgs: unknown[]) => T,
+  ...args: unknown[]
+): T => {
   return fn(...args);
 };
 
