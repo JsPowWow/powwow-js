@@ -24,7 +24,7 @@ Run `nx g @nrwl/workspace:remove [lib-name]`
 
 ## Publish library
 
-Run `npx nx run [lib-name]:publish --args='--ver=[major.minor.patch]'`
+Run `npx nx run [lib-name]:publish --ver=[major.minor.patch]'`
 
 ## Further help
 

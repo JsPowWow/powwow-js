@@ -23,6 +23,7 @@ function invariant(condition, message) {
 // Default "tag" to "next" so we won't publish the "latest" tag by accident.
 const [, , name, version, tag = 'next'] = process.argv;
 
+console.log('~~~ Inputs: ', { name, version, tag });
 // A simple SemVer validation to validate the version
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
 invariant(
@@ -39,6 +40,8 @@ invariant(
 );
 
 const outputPath = project.data?.targets?.build?.options?.outputPath;
+
+console.log('~~~ OutputPath: ', outputPath);
 invariant(
   outputPath,
   `Could not find "build.options.outputPath" of project "${name}". Is project.json configured  correctly?`
@@ -57,5 +60,6 @@ try {
   );
 }
 
+console.log('~~~ Publishing: tag', tag);
 // Execute "npm publish" to publish
 execSync(`npm publish --access public --tag ${tag}`);

@@ -24,6 +24,8 @@
         "command": "node tools/scripts/publish.mjs core {args.ver} {args.tag}"
       },
       "dependsOn": [
+        "test",
+        "lint",
         "build"
       ]
     },
