@@ -3,7 +3,7 @@ import { useDefault } from './use-default';
 import { Nil, Nullable } from '../types';
 
 /**
- * @description Simple shorthand to check if provided value is {@link null} or {@link undefined}
+ * @description Simple shorthand to check if provided value is null or undefined
  * @param source
  * @returns {boolean}
  */
@@ -11,7 +11,7 @@ export const isNil = <T>(source: Nullable<T>): source is Nil =>
   source === null || source === undefined;
 
 /**
- * @description Simple shorthand to check if provided value is not {@link null} and not {@link undefined}
+ * @description Simple shorthand to check if provided value is not null and not undefined
  * @param source
  * @returns {boolean}
  */
@@ -39,7 +39,7 @@ export const isNumber = (source: Nullable<unknown>): source is number =>
  * @param source
  * @returns {boolean}
  */
-export const isFunction = (source: Nullable<unknown>) =>
+export const isFunction = (source: Nullable<unknown>): boolean =>
   typeof source === 'function' || source instanceof Function;
 
 export { map };
