@@ -1,0 +1,20 @@
+{
+  "name": "powwow-js",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {},
+  "private": true,
+  "devDependencies": {
+    "@nx/eslint": "^18.3.2",
+    "@nx/js": "18.3.2",
+    "@nx/vite": "^18.3.2",
+    "@nx/web": "18.3.2",
+    "@nx/workspace": "18.3.2",
+    "@vitest/ui": "^1.3.1",
+    "eslint": "~8.57.0",
+    "nx": "18.3.2",
+    "vite": "~5.0.0",
+    "vitest": "^1.3.1"
+  },
+  "dependencies": {}
+}
