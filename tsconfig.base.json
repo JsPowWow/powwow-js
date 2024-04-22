@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@powwow-js/emitter": ["packages/emitter/src/index.ts"],
-      "@powwow-js/nullable": ["packages/nullable/src/index.ts"]
+      "@powwow-js/nullable": ["packages/nullable/src/index.ts"],
+      "@powwow-js/state-machine": ["packages/state-machine/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

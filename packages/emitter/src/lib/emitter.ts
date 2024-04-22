@@ -2,7 +2,7 @@ import { isSomeFunction } from '@powwow-js/nullable';
 import {
   EventMapKey,
   EventMap,
-  EventListenerCallback,
+  EventCallback,
   IEventEmitter,
 } from './types';
 
@@ -13,7 +13,7 @@ export class EventEmitter<T extends EventMap> implements IEventEmitter<T> {
 
   public on = <K extends EventMapKey<T>>(
     eventName: K,
-    callback: EventListenerCallback<T[K]>
+    callback: EventCallback<T[K]>
   ): void => {
     if (
       typeof eventName === 'string' &&
@@ -37,7 +37,7 @@ export class EventEmitter<T extends EventMap> implements IEventEmitter<T> {
 
   public off = <K extends EventMapKey<T>>(
     eventName: K,
-    callback: EventListenerCallback<T[K]>
+    callback: EventCallback<T[K]>
   ): void => {
     if (typeof eventName === 'string' && isSomeFunction(callback)) {
       this.listeners[eventName] = (this.listeners[eventName] ?? []).filter(
