@@ -1,59 +1,41 @@
-import { isSomeFunction } from '@powwow-js/nullable';
-import {
-  EventMapKey,
-  EventMap,
-  EventCallback,
-  IEventEmitter,
-} from './types';
+import { EventType, EventsDefinition, EventCallback, IEventEmitter } from './types';
 
-export class EventEmitter<T extends EventMap> implements IEventEmitter<T> {
+export class EventEmitter<Events extends EventsDefinition> implements IEventEmitter<Events> {
   private listeners: {
-    [K in keyof EventMap]?: Array<(p: EventMap[K]) => void>;
+    [K in keyof EventsDefinition]?: CallableFunction[];
   } = {};
 
-  public on = <K extends EventMapKey<T>>(
-    eventName: K,
-    callback: EventCallback<T[K]>
+  public on = <Event extends EventType<Events>, Callback extends EventCallback<Events[Event]>>(
+    event: Event,
+    callback: Callback
   ): void => {
-    if (
-      typeof eventName === 'string' &&
-      isSomeFunction<(p: EventMap[K]) => void>(callback)
-    ) {
-      this.subscribe<K, (p: EventMap[K]) => void>(eventName, callback);
+    if (!this.listeners[event]) {
+      this.listeners[event] = [];
     }
+    this.listeners[event].push(callback);
   };
 
-  private subscribe = <
-    K extends EventMapKey<T>,
-    C extends (p: EventMap[K]) => void
-  >(
-    eventName: K,
-    callback: C
+  public off = <Event extends EventType<Events>, Callback = EventCallback<Events[Event]>>(
+    event: Event,
+    callback: Callback
   ): void => {
-    this.listeners[eventName] = (this.listeners[eventName] ?? []).concat(
-      callback
-    );
-  };
-
-  public off = <K extends EventMapKey<T>>(
-    eventName: K,
-    callback: EventCallback<T[K]>
-  ): void => {
-    if (typeof eventName === 'string' && isSomeFunction(callback)) {
-      this.listeners[eventName] = (this.listeners[eventName] ?? []).filter(
-        (f) => f !== callback
-      );
+    if (!this.listeners[event]) {
+      return;
     }
+    this.listeners[event] = this.listeners[event].filter((f) => f !== callback);
   };
 
-  public emit = <K extends EventMapKey<T>>(eventName: K, data: T[K]): void => {
-    (this.listeners[eventName] ?? []).forEach((fn) => {
+  public emit = <Event extends EventType<Events>, Data = Events[Event]>(event: Event, data: Data): void => {
+    if (!this.listeners[event]) {
+      return;
+    }
+    this.listeners[event].forEach((fn) => {
       fn(data);
     });
   };
 
-  public hasListener = <K extends EventMapKey<T>>(eventName: K): boolean => {
-    return !!this.listeners[eventName];
+  public hasListener = <Event extends EventType<Events>>(event: Event): boolean => {
+    return Boolean(this.listeners[event]);
   };
 
   public destroy = (): void => {
