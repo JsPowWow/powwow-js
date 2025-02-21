@@ -1,28 +1,27 @@
-import { EventCallback, EventEmitter, EventType } from '@powwow-js/emitter';
+import { EventCallback, EventEmitter, EventsDefinition, EventType } from '@powwow-js/emitter';
 import {
   StateMachineChangeEventsDefinition,
   StateMachineContext,
   StateMachineDefinition,
   StateMachineState,
-  StateMachineTransition,
 } from './types';
 
 export class StateMachine<
   State extends StateMachineState,
-  Transition extends StateMachineTransition,
+  TransitionEvent extends EventsDefinition,
   Context extends StateMachineContext = StateMachineContext,
   ChangeEvent extends StateMachineChangeEventsDefinition<
     State,
-    Transition,
+    TransitionEvent,
     Context
-  > = StateMachineChangeEventsDefinition<State, Transition, Context>
+  > = StateMachineChangeEventsDefinition<State, TransitionEvent, Context>
 > {
-  private definition: StateMachineDefinition<State, Transition, Context>;
+  private definition: StateMachineDefinition<State, TransitionEvent, Context>;
   private emitter = new EventEmitter<ChangeEvent>();
   private currentState: State;
   private context: Context;
 
-  constructor(definition: StateMachineDefinition<State, Transition, Context>) {
+  constructor(definition: StateMachineDefinition<State, TransitionEvent, Context>) {
     if (!definition.initialState) {
       throw new Error('stateMachineDef requires `initialState` to be provided');
     }
@@ -39,18 +38,20 @@ export class StateMachine<
     return { ...this.context };
   }
 
-  public transition(
-    transition: Transition,
-    data: unknown = undefined
+  public send<
+    Transition extends EventType<TransitionEvent>,
+    Data extends TransitionEvent[Transition],
+    Event extends { type: Transition; data: Data } = { type: Transition; data: Data }
+  >(
+    event: Event extends { type: Transition; data: undefined } ? { type: Transition; data?: Data } : Event
   ): { state: State } & ({ success: true } | { success: false; message: string }) {
     const currentStateDef = this.definition.states[this.currentState];
-    const destinationTransition = currentStateDef?.transitions?.[transition];
+    const destinationTransition = currentStateDef?.transitions?.[event.type];
     if (!destinationTransition) {
-      console.warn();
       return {
         state: this.currentState,
         success: false,
-        message: `Invalid transition: from "${String(this.currentState)}" by "${String(transition)}"`,
+        message: `Invalid transition: from "${String(this.currentState)}" by "${String(event.type)}"`,
       };
     }
     const prevState = this.currentState;
@@ -75,7 +76,7 @@ export class StateMachine<
       destinationTransition.action.call(this, {
         from: prevState,
         to: newState,
-        by: transition,
+        by: event,
         context: contextUpdater(this),
       });
     }
@@ -84,7 +85,7 @@ export class StateMachine<
       currentStateDef.actions.onExit.call(this, {
         from: prevState,
         to: newState,
-        by: transition,
+        by: event,
         context: contextUpdater(this),
       });
     }
@@ -93,15 +94,15 @@ export class StateMachine<
       destinationStateDef.actions.onEnter.call(this, {
         from: prevState,
         to: newState,
-        by: transition,
+        by: event,
         context: contextUpdater(this),
       });
     }
 
-    this.emitter.emit('stateChanged', { from: prevState, to: newState, by: transition });
+    this.emitter.emit('stateChanged', { from: prevState, to: newState, by: event });
     if (contextDidUpdate) {
       contextDidUpdate = false;
-      this.emitter.emit('contextChanged', { from: prevState, to: newState, by: transition });
+      this.emitter.emit('contextChanged', { from: prevState, to: newState, by: event });
     }
 
     return { state: this.currentState, success: true };

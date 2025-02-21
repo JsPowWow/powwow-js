@@ -116,6 +116,14 @@ const crossWordsLogicDef = {
         //   },
         win: {
           target: 'stateGameOver',
+          action({ from, to, by }) {
+            // updateContext({
+            //   template: data.template,
+            //   matrixState: data.template.matrix,
+            //   selectedCells: [],
+            // });
+            console.log(`Transition: "${to}" from "${from}" by ${by}`);
+          },
         },
         //   reset: {
         //     target: 'stateWaitingForInput',
@@ -257,7 +265,13 @@ const crossWordsLogicDef = {
   },
 } satisfies StateMachineDefinition<
   'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver',
-  'continue' | 'chooseTemplate' | 'getRandomGame' | 'win' | 'solution',
+  {
+    continue: undefined;
+    chooseTemplate: undefined;
+    getRandomGame: undefined;
+    win: { score: number };
+    solution: { selectedCells: number[] };
+  },
   {
     template: number[];
     time: number;
@@ -268,7 +282,10 @@ const crossWordsLogicDef = {
   }
 >;
 
-const simpleFsm: StateMachineDefinition<'init' | 'processing' | 'finish', 'run' | 'stop' | 'done'> = {
+const simpleFsm: StateMachineDefinition<
+  'init' | 'processing' | 'finish',
+  { run: { processId: number }; stop: undefined; done: { status: 'success' | 'error' } }
+> = {
   initialState: 'init',
   states: {
     init: {
@@ -296,35 +313,50 @@ describe('stateMachine', () => {
   const fsm = new StateMachine(simpleFsm);
 
   it('should handle `stateChange` event', () => {
-    fsm.on('stateChanged', ({ from, to, by }) => {
+    fsm.on('stateChanged', ({ from, to, by: { type } }) => {
       expect(['init', 'processing', 'finish'].includes(from)).toBe(true);
       expect(['init', 'processing', 'finish'].includes(to)).toBe(true);
-      expect(['run', 'stop', 'done'].includes(by)).toBe(true);
+      expect(['run', 'stop', 'done'].includes(type)).toBe(true);
+      // if (type === 'run') {
+      //   data.processId;
+      // }
     });
 
     const onStateChange = vi.fn();
 
     fsm.on('stateChanged', onStateChange);
-    fsm.transition('run');
-    expect(onStateChange).toHaveBeenCalledWith({ from: 'init', to: 'processing', by: 'run' });
+    fsm.send({ type: 'run', data: { processId: 20 } });
+    expect(onStateChange).toHaveBeenCalledWith({
+      from: 'init',
+      to: 'processing',
+      by: { type: 'run', data: { processId: 20 } },
+    });
     expect(fsm.state).toBe('processing');
     onStateChange.mockReset();
 
-    fsm.transition('stop');
-    expect(onStateChange).toHaveBeenCalledWith({ from: 'processing', to: 'init', by: 'stop' });
+    fsm.send({ type: 'stop' });
+    expect(onStateChange).toHaveBeenCalledWith({ from: 'processing', to: 'init', by: { type: 'stop' } });
     expect(fsm.state).toBe('init');
     onStateChange.mockReset();
 
-    fsm.transition('done');
+    fsm.send({ type: 'done', data: { status: 'success' } });
     expect(onStateChange).not.toHaveBeenCalled();
     expect(fsm.state).toBe('init');
     onStateChange.mockReset();
 
-    fsm.transition('run');
-    expect(onStateChange).toHaveBeenCalledWith({ from: 'init', to: 'processing', by: 'run' });
+    fsm.send({ type: 'run', data: { processId: 40 } });
+    expect(onStateChange).toHaveBeenCalledWith({
+      from: 'init',
+      to: 'processing',
+      by: { type: 'run', data: { processId: 40 } },
+    });
     expect(fsm.state).toBe('processing');
-    fsm.transition('done');
-    expect(onStateChange).toHaveBeenCalledWith({ from: 'processing', to: 'finish', by: 'done' });
+    fsm.send({ type: 'done', data: { status: 'success' } });
+    expect(onStateChange).toHaveBeenCalledWith({
+      from: 'processing',
+      to: 'finish',
+      by: { type: 'done', data: { status: 'success' } },
+    });
     expect(fsm.state).toBe('finish');
     onStateChange.mockReset();
   });

@@ -1,26 +1,36 @@
-export type StateMachineState = string | number | symbol;
+import { EventsDefinition, EventType } from '@powwow-js/emitter';
 
-export type StateMachineTransition = string | number | symbol;
+export type StateMachineState = string | number | symbol;
 
 export type StateMachineContext = Record<string | number | symbol, unknown>;
 
-export type StateMachineAction<StateFrom, StateTo, Transition, Context> = {
+export type StateMachineAction<
+  StateFrom extends StateMachineState,
+  StateTo extends StateMachineState,
+  TransitionEvent extends EventsDefinition,
+  Context,
+  Transition extends EventType<TransitionEvent> = EventType<TransitionEvent>,
+  Data extends TransitionEvent[Transition] = TransitionEvent[Transition]
+> = {
   from: StateFrom;
   to: StateTo;
-  by: Transition;
+  by: { type: Transition; data?: Data };
   context: {
     get: () => Context;
-    set: (data: Partial<Context>) => StateMachineAction<StateFrom, StateTo, Transition, Context>['context'];
+    set: (data: Partial<Context>) => StateMachineAction<StateFrom, StateTo, TransitionEvent, Context>['context'];
   };
 };
 
-export type StateMachineActionCallback<StateFrom, StateTo, Transition, Context> = (
-  action: StateMachineAction<StateFrom, StateTo, Transition, Context>
-) => void;
+export type StateMachineActionCallback<
+  StateFrom extends StateMachineState,
+  StateTo extends StateMachineState,
+  TransitionEvent extends EventsDefinition,
+  Context
+> = (action: StateMachineAction<StateFrom, StateTo, TransitionEvent, Context>) => void;
 
 export type StateMachineDefinition<
   State extends StateMachineState,
-  Transition extends StateMachineTransition,
+  TransitionEvent extends EventsDefinition,
   Context extends StateMachineContext = StateMachineContext
 > = {
   initialState: State;
@@ -28,13 +38,13 @@ export type StateMachineDefinition<
   states: {
     [S in State]: {
       actions?: {
-        onEnter?: StateMachineActionCallback<State, S, Transition, Context>;
-        onExit?: StateMachineActionCallback<S, State, Transition, Context>;
+        onEnter?: StateMachineActionCallback<State, S, TransitionEvent, Context>;
+        onExit?: StateMachineActionCallback<S, State, TransitionEvent, Context>;
       };
       transitions?: {
-        [T in Transition]?: {
+        [T in EventType<TransitionEvent>]?: {
           target: State;
-          action?: StateMachineActionCallback<S, State, Transition, Context>;
+          action?: StateMachineActionCallback<S, State, TransitionEvent, Context>;
         };
       };
     };
@@ -43,9 +53,9 @@ export type StateMachineDefinition<
 
 export type StateMachineChangeEventsDefinition<
   State extends StateMachineState,
-  Transition extends StateMachineTransition,
+  TransitionEvent extends EventsDefinition,
   Context
 > = {
-  stateChanged: Omit<StateMachineAction<State, State, Transition, Context>, 'context'>;
-  contextChanged: Omit<StateMachineAction<State, State, Transition, Context>, 'context'>;
+  stateChanged: Omit<StateMachineAction<State, State, TransitionEvent, Context>, 'context'>;
+  contextChanged: Omit<StateMachineAction<State, State, TransitionEvent, Context>, 'context'>;
 };
