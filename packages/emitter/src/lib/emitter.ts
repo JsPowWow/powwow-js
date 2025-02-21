@@ -1,11 +1,11 @@
-import { EventType, EventsDefinition, EventCallback, IEventEmitter } from './types';
+import { EventType, EventsMap, EventCallback, IEventEmitter, EventData } from './types';
 
-export class EventEmitter<Events extends EventsDefinition> implements IEventEmitter<Events> {
+export class EventEmitter<Events extends EventsMap> implements IEventEmitter<Events> {
   private listeners: {
-    [Event in keyof EventsDefinition]?: CallableFunction[];
+    [Event in keyof EventsMap]?: CallableFunction[];
   } = {};
 
-  public on = <Event extends EventType<Events>, Callback extends EventCallback<Events[Event]>>(
+  public on = <Event extends EventType<Events>, Callback extends EventCallback<EventData<Events, Event>>>(
     event: Event,
     callback: Callback
   ): void => {
@@ -15,7 +15,7 @@ export class EventEmitter<Events extends EventsDefinition> implements IEventEmit
     this.listeners[event].push(callback);
   };
 
-  public off = <Event extends EventType<Events>, Callback extends EventCallback<Events[Event]>>(
+  public off = <Event extends EventType<Events>, Callback extends EventCallback<EventData<Events, Event>>>(
     event: Event,
     callback: Callback
   ): void => {
@@ -25,7 +25,10 @@ export class EventEmitter<Events extends EventsDefinition> implements IEventEmit
     this.listeners[event] = this.listeners[event].filter((f) => f !== callback);
   };
 
-  public emit = <Event extends EventType<Events>, Data extends Events[Event]>(event: Event, data: Data): void => {
+  public emit = <Event extends EventType<Events>, Data extends EventData<Events, Event>>(
+    event: Event,
+    data: Data
+  ): void => {
     if (!this.listeners[event]) {
       return;
     }

@@ -1,27 +1,25 @@
-import { EventCallback, EventEmitter, EventsDefinition, EventType } from '@powwow-js/emitter';
+import { EventData, EventEmitter, EventsMap, EventType } from '@powwow-js/emitter';
 import {
-  StateMachineChangeEventsDefinition,
+  StateMachineChangeEvents,
   StateMachineContext,
   StateMachineDefinition,
   StateMachineState,
+  StateMachineTransitionResult,
 } from './types';
 
 export class StateMachine<
   State extends StateMachineState,
-  TransitionEvent extends EventsDefinition,
-  Context extends StateMachineContext = StateMachineContext,
-  ChangeEvent extends StateMachineChangeEventsDefinition<
-    State,
-    TransitionEvent,
-    Context
-  > = StateMachineChangeEventsDefinition<State, TransitionEvent, Context>
+  Transitions extends EventsMap,
+  Transition extends EventType<Transitions>,
+  Context extends StateMachineContext = StateMachineContext
 > {
-  private definition: StateMachineDefinition<State, TransitionEvent, Context>;
-  private emitter = new EventEmitter<ChangeEvent>();
+  private definition: StateMachineDefinition<State, Transitions, Context>;
+
+  private emitter = new EventEmitter<StateMachineChangeEvents<State, Transitions, Transition, Context>>();
   private currentState: State;
   private context: Context;
 
-  constructor(definition: StateMachineDefinition<State, TransitionEvent, Context>) {
+  constructor(definition: StateMachineDefinition<State, Transitions, Context>) {
     if (!definition.initialState) {
       throw new Error('stateMachineDef requires `initialState` to be provided');
     }
@@ -39,12 +37,12 @@ export class StateMachine<
   }
 
   public send<
-    Transition extends EventType<TransitionEvent>,
-    Data extends TransitionEvent[Transition],
-    Event extends { type: Transition; data: Data } = { type: Transition; data: Data }
+    T extends Transition,
+    D extends Transitions[T],
+    Event extends { type: T; data: D } = { type: T; data: D }
   >(
-    event: Event extends { type: Transition; data: undefined } ? { type: Transition; data?: Data } : Event
-  ): { state: State } & ({ success: true } | { success: false; message: string }) {
+    event: Event extends { type: T; data: undefined } ? { type: T; data?: D } : Event
+  ): StateMachineTransitionResult<State> {
     const currentStateDef = this.definition.states[this.currentState];
     const destinationTransition = currentStateDef?.transitions?.[event.type];
     if (!destinationTransition) {
@@ -76,8 +74,9 @@ export class StateMachine<
       destinationTransition.action.call(this, {
         from: prevState,
         to: newState,
-        by: event,
-        context: contextUpdater(this),
+        by: event.type,
+        data: event.data as D,
+        ctx: contextUpdater(this),
       });
     }
 
@@ -85,8 +84,9 @@ export class StateMachine<
       currentStateDef.actions.onExit.call(this, {
         from: prevState,
         to: newState,
-        by: event,
-        context: contextUpdater(this),
+        by: event.type,
+        data: event.data as D,
+        ctx: contextUpdater(this),
       });
     }
 
@@ -94,32 +94,36 @@ export class StateMachine<
       destinationStateDef.actions.onEnter.call(this, {
         from: prevState,
         to: newState,
-        by: event,
-        context: contextUpdater(this),
+        by: event.type,
+        data: event.data as D,
+        ctx: contextUpdater(this),
       });
     }
 
-    this.emitter.emit('stateChanged', { from: prevState, to: newState, by: event });
+    this.emitter.emit('stateChanged', {
+      from: prevState,
+      to: newState,
+      by: event.type,
+      data: event.data as D,
+    });
     if (contextDidUpdate) {
       contextDidUpdate = false;
-      this.emitter.emit('contextChanged', { from: prevState, to: newState, by: event });
+      this.emitter.emit('contextChanged', {
+        from: prevState,
+        to: newState,
+        by: event.type,
+      });
     }
 
     return { state: this.currentState, success: true };
   }
 
-  public on<Event extends EventType<ChangeEvent>, Callback extends EventCallback<ChangeEvent[Event]>>(
-    event: Event,
-    cb: Callback
-  ): void {
-    return this.emitter.on(event, cb);
+  public on<P extends Parameters<typeof this.emitter.on>>(...params: P): void {
+    return this.emitter.on.apply(this, params);
   }
 
-  public off<Event extends EventType<ChangeEvent>, Callback extends EventCallback<ChangeEvent[Event]>>(
-    event: Event,
-    cb: Callback
-  ): void {
-    return this.emitter.off(event, cb);
+  public off<P extends Parameters<typeof this.emitter.off>>(...params: P): void {
+    return this.emitter.off.apply(this, params);
   }
 }
 

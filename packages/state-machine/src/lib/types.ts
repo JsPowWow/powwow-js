@@ -1,61 +1,85 @@
-import { EventsDefinition, EventType } from '@powwow-js/emitter';
+import { EventData, EventsMap, EventType } from '@powwow-js/emitter';
 
 export type StateMachineState = string | number | symbol;
 
 export type StateMachineContext = Record<string | number | symbol, unknown>;
 
-export type StateMachineAction<
+export type StateMachineTransition<
+  Transitions extends EventsMap,
   StateFrom extends StateMachineState,
   StateTo extends StateMachineState,
-  TransitionEvent extends EventsDefinition,
-  Context,
-  Transition extends EventType<TransitionEvent> = EventType<TransitionEvent>,
-  Data extends TransitionEvent[Transition] = TransitionEvent[Transition]
+  Transition extends EventType<Transitions>,
+  Context extends StateMachineContext
+> = {
+  target: StateTo;
+  action?: StateMachineTransitionAction<Transitions, StateFrom, StateTo, Transition, Context>;
+};
+
+export type StateMachineTransitionResult<State extends StateMachineState> = { state: State } & (
+  | { success: true }
+  | { success: false; message: string }
+);
+
+export type StateMachineTransitionAction<
+  Transitions extends EventsMap,
+  StateFrom extends StateMachineState,
+  StateTo extends StateMachineState,
+  Transition extends EventType<Transitions>,
+  Context extends StateMachineContext
+> = (action: StateMachineTransitionActionPayload<Transitions, StateFrom, StateTo, Transition, Context>) => void;
+
+export type StateMachineTransitionActionPayload<
+  Transitions extends EventsMap,
+  StateFrom extends StateMachineState,
+  StateTo extends StateMachineState,
+  Transition extends EventType<Transitions>,
+  Context extends StateMachineContext
 > = {
   from: StateFrom;
   to: StateTo;
-  by: { type: Transition; data?: Data };
-  context: {
+  by: Transition;
+  data: Transitions[Transition];
+  ctx: {
     get: () => Context;
-    set: (data: Partial<Context>) => StateMachineAction<StateFrom, StateTo, TransitionEvent, Context>['context'];
+    set: (
+      data: Partial<Context>
+    ) => StateMachineTransitionActionPayload<Transitions, StateFrom, StateTo, Transition, Context>['ctx'];
   };
 };
 
-export type StateMachineActionCallback<
-  StateFrom extends StateMachineState,
-  StateTo extends StateMachineState,
-  TransitionEvent extends EventsDefinition,
-  Context
-> = (action: StateMachineAction<StateFrom, StateTo, TransitionEvent, Context>) => void;
-
 export type StateMachineDefinition<
   State extends StateMachineState,
-  TransitionEvent extends EventsDefinition,
-  Context extends StateMachineContext = StateMachineContext
+  Transitions extends EventsMap,
+  Context extends StateMachineContext = StateMachineContext,
+  Transition extends EventType<Transitions> = EventType<Transitions>
 > = {
   initialState: State;
   context?: Context;
   states: {
     [S in State]: {
       actions?: {
-        onEnter?: StateMachineActionCallback<State, S, TransitionEvent, Context>;
-        onExit?: StateMachineActionCallback<S, State, TransitionEvent, Context>;
+        onEnter?: StateMachineTransitionAction<Transitions, State, S, Transition, Context>;
+        onExit?: StateMachineTransitionAction<Transitions, S, State, Transition, Context>;
       };
       transitions?: {
-        [T in EventType<TransitionEvent>]?: {
-          target: State;
-          action?: StateMachineActionCallback<S, State, TransitionEvent, Context>;
-        };
+        [T in EventType<Transitions>]?: StateMachineTransition<Transitions, S, State, T, Context>;
       };
     };
   };
 };
 
-export type StateMachineChangeEventsDefinition<
+export type StateMachineChangeEvents<
   State extends StateMachineState,
-  TransitionEvent extends EventsDefinition,
-  Context
+  Transitions extends EventsMap,
+  Transition extends EventType<Transitions>,
+  Context extends StateMachineContext = StateMachineContext
 > = {
-  stateChanged: Omit<StateMachineAction<State, State, TransitionEvent, Context>, 'context'>;
-  contextChanged: Omit<StateMachineAction<State, State, TransitionEvent, Context>, 'context'>;
+  stateChanged: Pick<
+    StateMachineTransitionActionPayload<Transitions, State, State, Transition, Context>,
+    'from' | 'to' | 'by' | 'data'
+  >;
+  contextChanged: Pick<
+    StateMachineTransitionActionPayload<Transitions, State, State, Transition, Context>,
+    'from' | 'to' | 'by'
+  >;
 };

@@ -1,8 +1,26 @@
 import { StateMachine } from './state-machine';
 import { StateMachineDefinition } from './types';
 import * as console from 'node:console';
+import { expect } from 'vitest';
 
-const crossWordsLogicDef = {
+const crossWordsLogicDef: StateMachineDefinition<
+  'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver',
+  {
+    continue: undefined;
+    chooseTemplate: undefined;
+    getRandomGame: undefined;
+    win: { score: number };
+    solution: { selectedCells: number[] };
+  },
+  {
+    template: number[];
+    time: number;
+    message: string;
+    history: number[];
+    selectedCells: number[];
+    matrixState: number[];
+  }
+> = {
   initialState: 'stateWaitingForInput',
   context: {
     template: [],
@@ -15,8 +33,11 @@ const crossWordsLogicDef = {
   states: {
     stateWaitingForInput: {
       actions: {
-        onEnter({ to, from, by }) {
+        onEnter({ to, from, by, data }) {
           console.log(`Enter: "${to}" from "${from}" by ${by}`);
+          if (by === 'win') {
+            console.log(data?.score);
+          }
         },
         onExit({ from, to, by }) {
           console.log(`Exit: from "${from}" "${to}" by ${by}`);
@@ -37,6 +58,15 @@ const crossWordsLogicDef = {
         },
         solution: {
           target: 'stateSolution',
+          action({ from, to, by, data }) {
+            console.log(`Transition: "${to}" from "${from}" by ${by} (${data})`);
+            // set({
+            //   template: data.template,
+            //   selectedCells: data.selectedCells,
+            //   matrixState: data.matrixState,
+            //   time: data.time,
+            // });
+          },
         },
         chooseTemplate: {
           target: 'stateWaitingForInput',
@@ -97,13 +127,13 @@ const crossWordsLogicDef = {
         },
         chooseTemplate: {
           target: 'stateWaitingForInput',
-          action({ from, to, by }) {
+          action({ from, to, by, data }) {
             // updateContext({
             //   template: data.template,
             //   matrixState: data.template.matrix,
             //   selectedCells: [],
             // });
-            console.log(`Transition: "${to}" from "${from}" by ${by}`);
+            console.log(`Transition: "${to}" from "${from}" by ${by}: ${data}`);
           },
         },
         //   cellClickRight: {
@@ -116,13 +146,13 @@ const crossWordsLogicDef = {
         //   },
         win: {
           target: 'stateGameOver',
-          action({ from, to, by }) {
+          action({ from, to, by, data }) {
             // updateContext({
             //   template: data.template,
             //   matrixState: data.template.matrix,
             //   selectedCells: [],
             // });
-            console.log(`Transition: "${to}" from "${from}" by ${by}`);
+            console.log(`Transition: "${to}" from "${from}" by ${by}: ${data}`);
           },
         },
         //   reset: {
@@ -263,24 +293,7 @@ const crossWordsLogicDef = {
       },
     },
   },
-} satisfies StateMachineDefinition<
-  'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver',
-  {
-    continue: undefined;
-    chooseTemplate: undefined;
-    getRandomGame: undefined;
-    win: { score: number };
-    solution: { selectedCells: number[] };
-  },
-  {
-    template: number[];
-    time: number;
-    message: string;
-    history: number[];
-    selectedCells: number[];
-    matrixState: number[];
-  }
->;
+};
 
 const simpleFsm: StateMachineDefinition<
   'init' | 'processing' | 'finish',
@@ -309,17 +322,22 @@ const simpleFsm: StateMachineDefinition<
   },
 };
 
-describe('stateMachine', () => {
+describe('stateMachine complex', () => {
+  const fsm = new StateMachine(crossWordsLogicDef);
+
+  it('should handle `stateChange` event', () => {
+    expect(fsm).toBeDefined();
+  });
+});
+
+describe('stateMachine simple', () => {
   const fsm = new StateMachine(simpleFsm);
 
   it('should handle `stateChange` event', () => {
-    fsm.on('stateChanged', ({ from, to, by: { type } }) => {
+    fsm.on('stateChanged', ({ from, to, by }) => {
       expect(['init', 'processing', 'finish'].includes(from)).toBe(true);
       expect(['init', 'processing', 'finish'].includes(to)).toBe(true);
-      expect(['run', 'stop', 'done'].includes(type)).toBe(true);
-      // if (type === 'run') {
-      //   data.processId;
-      // }
+      expect(['run', 'stop', 'done'].includes(by)).toBe(true);
     });
 
     const onStateChange = vi.fn();
@@ -329,13 +347,14 @@ describe('stateMachine', () => {
     expect(onStateChange).toHaveBeenCalledWith({
       from: 'init',
       to: 'processing',
-      by: { type: 'run', data: { processId: 20 } },
+      by: 'run',
+      data: { processId: 20 },
     });
     expect(fsm.state).toBe('processing');
     onStateChange.mockReset();
 
     fsm.send({ type: 'stop' });
-    expect(onStateChange).toHaveBeenCalledWith({ from: 'processing', to: 'init', by: { type: 'stop' } });
+    expect(onStateChange).toHaveBeenCalledWith({ from: 'processing', to: 'init', by: 'stop', data: undefined });
     expect(fsm.state).toBe('init');
     onStateChange.mockReset();
 
@@ -348,14 +367,16 @@ describe('stateMachine', () => {
     expect(onStateChange).toHaveBeenCalledWith({
       from: 'init',
       to: 'processing',
-      by: { type: 'run', data: { processId: 40 } },
+      by: 'run',
+      data: { processId: 40 },
     });
     expect(fsm.state).toBe('processing');
     fsm.send({ type: 'done', data: { status: 'success' } });
     expect(onStateChange).toHaveBeenCalledWith({
       from: 'processing',
       to: 'finish',
-      by: { type: 'done', data: { status: 'success' } },
+      by: 'done',
+      data: { status: 'success' },
     });
     expect(fsm.state).toBe('finish');
     onStateChange.mockReset();
