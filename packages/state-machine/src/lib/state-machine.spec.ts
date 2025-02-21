@@ -1,17 +1,26 @@
 import { StateMachine } from './state-machine';
 import { StateMachineDefinition } from './types';
-import * as console from 'node:console';
 import { expect } from 'vitest';
+import { hasSome } from '@powwow-js/nullable';
+
+type CrossWordsMachineTransitions = {
+  continue: undefined;
+  chooseTemplate: undefined;
+  getRandomGame: undefined;
+  win: { score: number };
+  solution: { selectedCells: number[] };
+  saveGame: undefined;
+  cellClick: { x: number; y: number };
+  reset: undefined;
+};
+
+const cellClickAction = () => {
+  // TODO something
+};
 
 const crossWordsLogicDef: StateMachineDefinition<
   'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver',
-  {
-    continue: undefined;
-    chooseTemplate: undefined;
-    getRandomGame: undefined;
-    win: { score: number };
-    solution: { selectedCells: number[] };
-  },
+  CrossWordsMachineTransitions,
   {
     template: number[];
     time: number;
@@ -33,10 +42,20 @@ const crossWordsLogicDef: StateMachineDefinition<
   states: {
     stateWaitingForInput: {
       actions: {
-        onEnter({ to, from, by, data }) {
-          console.log(`Enter: "${to}" from "${from}" by ${by}`);
-          if (by === 'win') {
-            console.log(data?.score);
+        onEnter({ to, from, by, data, isDataOf }) {
+          console.log(
+            `Enter: "${to}" from "${from}" by "${by}" with "${hasSome(data) ? JSON.stringify(data) : '<no-data>'}"`
+          );
+          switch (true) {
+            case isDataOf(data, 'win'): {
+              return console.log(data.score);
+            }
+            case isDataOf(data, 'solution'): {
+              return console.log(data.selectedCells);
+            }
+            case isDataOf(data, 'chooseTemplate'): {
+              return console.log(data);
+            }
           }
         },
         onExit({ from, to, by }) {
@@ -90,17 +109,13 @@ const crossWordsLogicDef: StateMachineDefinition<
             console.log(`Transition: "${to}" from "${from}" by ${by}`);
           },
         },
-        // cellClickRight: {
-        //   target: 'statePlaying',
-        //   action: cellClickRightAction,
-        // },
-        // saveGame: {
-        //   target: 'statePlaying',
-        // },
-        // cellClick: {
-        //   target: 'statePlaying',
-        //   action: cellClickAction,
-        // },
+        saveGame: {
+          target: 'statePlaying',
+        },
+        cellClick: {
+          target: 'statePlaying',
+          action: cellClickAction,
+        },
       },
     },
 
@@ -136,14 +151,10 @@ const crossWordsLogicDef: StateMachineDefinition<
             console.log(`Transition: "${to}" from "${from}" by ${by}: ${data}`);
           },
         },
-        //   cellClickRight: {
-        //     target: 'statePlaying',
-        //     action: cellClickRightAction,
-        //   },
-        //   cellClick: {
-        //     target: 'statePlaying',
-        //     action: cellClickAction,
-        //   },
+        cellClick: {
+          target: 'statePlaying',
+          action: cellClickAction,
+        },
         win: {
           target: 'stateGameOver',
           action({ from, to, by, data }) {
@@ -155,34 +166,34 @@ const crossWordsLogicDef: StateMachineDefinition<
             console.log(`Transition: "${to}" from "${from}" by ${by}: ${data}`);
           },
         },
-        //   reset: {
-        //     target: 'stateWaitingForInput',
-        //     action({ context: { updateContext } }) {
-        //       updateContext({ selectedCells: [] });
-        //     },
-        //   },
-        //   saveGame: {
-        //     target: 'statePlaying',
-        //   },
-        //   continue: {
-        //     target: 'statePlaying',
-        //     action({ prevState, data, context: { getContext, updateContext } }) {
-        //       updateContext({
-        //         template: data.template,
-        //         selectedCells: data.selectedCells,
-        //         matrixState: data.matrixState,
-        //         time: data.time,
-        //       });
-        //       console.log('Continue from', prevState, getContext());
-        //     },
-        //   },
-        //   solution: {
-        //     target: 'stateSolution',
-        //     action({ context: { updateContext } }) {
-        //       updateContext({ selectedCells: [] });
-        //       console.log('Solution');
-        //     },
-        //   },
+        reset: {
+          target: 'stateWaitingForInput',
+          action() {
+            // updateContext({ selectedCells: [] });
+          },
+        },
+        saveGame: {
+          target: 'statePlaying',
+        },
+        continue: {
+          target: 'statePlaying',
+          action({ from, to }) {
+            // updateContext({
+            //   template: data.template,
+            //   selectedCells: data.selectedCells,
+            //   matrixState: data.matrixState,
+            //   time: data.time,
+            // });
+            console.log('Continue from', from, to);
+          },
+        },
+        solution: {
+          target: 'stateSolution',
+          action() {
+            // updateContext({ selectedCells: [] });
+            console.log('Solution');
+          },
+        },
       },
     },
 
@@ -196,46 +207,46 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
       },
       transitions: {
-        //     continue: {
-        //       target: 'statePlaying',
-        //       action({ prevState, data, context: { getContext, updateContext } }) {
-        //         updateContext({
-        //           template: data.template,
-        //           selectedCells: data.selectedCells,
-        //           matrixState: data.matrixState,
-        //           time: data.time,
-        //         });
-        //         console.log('Continue from', prevState, getContext());
-        //       },
-        //     },
-        //     chooseTemplate: {
-        //       target: 'stateWaitingForInput',
-        //       action({ data, context: { updateContext } }) {
-        //         updateContext({
-        //           template: data.template,
-        //           matrixState: data.template.matrix,
-        //           selectedCells: [],
-        //         });
-        //         console.log('Select template from init');
-        //       },
-        //     },
-        //     reset: {
-        //       target: 'stateWaitingForInput',
-        //       action() {
-        //         console.log(`Reset`);
-        //       },
-        //     },
-        //     getRandomGame: {
-        //       target: 'stateWaitingForInput',
-        //       action({ data, context: { updateContext } }) {
-        //         updateContext({
-        //           template: data.template,
-        //           matrixState: data.template.matrix,
-        //           selectedCells: [],
-        //         });
-        //         console.log(`random game: ${data.template.name}`);
-        //       },
-        //     },
+        continue: {
+          target: 'statePlaying',
+          action({ from }) {
+            // updateContext({
+            //   template: data.template,
+            //   selectedCells: data.selectedCells,
+            //   matrixState: data.matrixState,
+            //   time: data.time,
+            // });
+            console.log('Continue from', from);
+          },
+        },
+        chooseTemplate: {
+          target: 'stateWaitingForInput',
+          action() {
+            // updateContext({
+            //   template: data.template,
+            //   matrixState: data.template.matrix,
+            //   selectedCells: [],
+            // });
+            // console.log('select template from init');
+          },
+        },
+        reset: {
+          target: 'stateWaitingForInput',
+          action() {
+            console.log(`Reset`);
+          },
+        },
+        getRandomGame: {
+          target: 'stateWaitingForInput',
+          action() {
+            // updateContext({
+            //   template: data.template,
+            //   matrixState: data.template.matrix,
+            //   selectedCells: [],
+            // });
+            //console.log(`random game: ${data.template.name}`);
+          },
+        },
       },
     },
 
@@ -249,47 +260,47 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
       },
       transitions: {
-        //     reset: {
-        //       target: 'stateWaitingForInput',
-        //       action({ context: { updateContext } }) {
-        //         updateContext({ selectedCells: [] });
-        //         console.log(`Reset`);
-        //       },
-        //     },
-        //     chooseTemplate: {
-        //       target: 'stateWaitingForInput',
-        //       action({ data, context: { getContext, updateContext } }) {
-        //         updateContext({
-        //           template: data.template,
-        //           matrixState: data.template.matrix,
-        //           selectedCells: [],
-        //         });
-        //         console.log('Select template', getContext());
-        //       },
-        //     },
-        //     getRandomGame: {
-        //       target: 'stateWaitingForInput',
-        //       action({ data, context: { updateContext } }) {
-        //         updateContext({
-        //           template: data.template,
-        //           matrixState: data.template.matrix,
-        //           selectedCells: [],
-        //         });
-        //         console.log(`Random game from solution: ${data.template.name}`);
-        //       },
-        //     },
-        //     continue: {
-        //       target: 'statePlaying',
-        //       action({ prevState, data, context: { getContext, updateContext } }) {
-        //         updateContext({
-        //           template: data.template,
-        //           selectedCells: data.selectedCells,
-        //           matrixState: data.matrixState,
-        //           time: data.time,
-        //         });
-        //         console.log('Continue from', prevState, getContext());
-        //       },
-        //     },
+        reset: {
+          target: 'stateWaitingForInput',
+          action() {
+            // updateContext({ selectedCells: [] });
+            console.log(`Reset`);
+          },
+        },
+        chooseTemplate: {
+          target: 'stateWaitingForInput',
+          action() {
+            // updateContext({
+            //   template: data.template,
+            //   matrixState: data.template.matrix,
+            //   selectedCells: [],
+            // });
+            console.log('Select template');
+          },
+        },
+        getRandomGame: {
+          target: 'stateWaitingForInput',
+          action() {
+            // updateContext({
+            //   template: data.template,
+            //   matrixState: data.template.matrix,
+            //   selectedCells: [],
+            // });
+            console.log(`Random game from solution:`);
+          },
+        },
+        continue: {
+          target: 'statePlaying',
+          action({ from }) {
+            // updateContext({
+            //   template: data.template,
+            //   selectedCells: data.selectedCells,
+            //   matrixState: data.matrixState,
+            //   time: data.time,
+            // });
+            console.log('Continue from', from);
+          },
+        },
       },
     },
   },
@@ -327,20 +338,14 @@ describe('stateMachine complex', () => {
 
   it('should handle `stateChange` event', () => {
     expect(fsm).toBeDefined();
+    fsm.send({ type: 'chooseTemplate' });
   });
 });
 
 describe('stateMachine simple', () => {
-  const fsm = new StateMachine(simpleFsm);
-
   it('should handle `stateChange` event', () => {
-    fsm.on('stateChanged', ({ from, to, by }) => {
-      expect(['init', 'processing', 'finish'].includes(from)).toBe(true);
-      expect(['init', 'processing', 'finish'].includes(to)).toBe(true);
-      expect(['run', 'stop', 'done'].includes(by)).toBe(true);
-    });
-
     const onStateChange = vi.fn();
+    const fsm = new StateMachine(simpleFsm);
 
     fsm.on('stateChanged', onStateChange);
     fsm.send({ type: 'run', data: { processId: 20 } });
@@ -349,12 +354,19 @@ describe('stateMachine simple', () => {
       to: 'processing',
       by: 'run',
       data: { processId: 20 },
+      isDataOf: expect.any(Function),
     });
     expect(fsm.state).toBe('processing');
     onStateChange.mockReset();
 
     fsm.send({ type: 'stop' });
-    expect(onStateChange).toHaveBeenCalledWith({ from: 'processing', to: 'init', by: 'stop', data: undefined });
+    expect(onStateChange).toHaveBeenCalledWith({
+      from: 'processing',
+      to: 'init',
+      by: 'stop',
+      data: undefined,
+      isDataOf: expect.any(Function),
+    });
     expect(fsm.state).toBe('init');
     onStateChange.mockReset();
 
@@ -369,6 +381,7 @@ describe('stateMachine simple', () => {
       to: 'processing',
       by: 'run',
       data: { processId: 40 },
+      isDataOf: expect.any(Function),
     });
     expect(fsm.state).toBe('processing');
     fsm.send({ type: 'done', data: { status: 'success' } });
@@ -377,8 +390,68 @@ describe('stateMachine simple', () => {
       to: 'finish',
       by: 'done',
       data: { status: 'success' },
+      isDataOf: expect.any(Function),
     });
     expect(fsm.state).toBe('finish');
     onStateChange.mockReset();
+  });
+
+  it('should correctly handle `stateChange` event with `from, to, by`', () => {
+    const fsm = new StateMachine(simpleFsm);
+
+    fsm.on('stateChanged', ({ from, to, by }) => {
+      expect(['init', 'processing', 'finish'].includes(from)).toBe(true);
+      expect(['init', 'processing', 'finish'].includes(to)).toBe(true);
+      expect(['run', 'stop', 'done'].includes(by)).toBe(true);
+    });
+    expect.assertions(4 * 3 + 4); // 4 times * 3 expect(s) above + 4 below
+
+    fsm.send({ type: 'run', data: { processId: 40 } });
+    expect(fsm.state).toBe('processing');
+
+    fsm.send({ type: 'stop' });
+    expect(fsm.state).toBe('init');
+
+    fsm.send({ type: 'run', data: { processId: 40 } });
+    expect(fsm.state).toBe('processing');
+
+    fsm.send({ type: 'done', data: { status: 'success' } });
+    expect(fsm.state).toBe('finish');
+  });
+
+  it('should correctly handle `stateChange` event with `data`', () => {
+    const fsm = new StateMachine(simpleFsm);
+
+    fsm.on('stateChanged', ({ data, isDataOf }) => {
+      switch (true) {
+        case isDataOf(data, 'run'): {
+          expect(data).toStrictEqual({ processId: 40 });
+          break;
+        }
+
+        case isDataOf(data, 'stop'): {
+          expect(data).toBeUndefined();
+          break;
+        }
+
+        case isDataOf(data, 'done'): {
+          expect(data).toStrictEqual({ status: 'success' });
+          break;
+        }
+      }
+    });
+    expect.assertions(4 + 4); // 4 times * 1 expect(s) above + 4 below
+
+    fsm.send({ type: 'run', data: { processId: 40 } });
+    expect(fsm.state).toBe('processing');
+
+    fsm.send({ type: 'stop' });
+    expect(fsm.state).toBe('init');
+
+    fsm.send({ type: 'run', data: { processId: 40 } });
+    expect(fsm.state).toBe('processing');
+
+    fsm.send({ type: 'done', data: { status: 'success' } });
+    expect(fsm.state).toBe('finish');
   });
 });

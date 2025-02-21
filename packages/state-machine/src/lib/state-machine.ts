@@ -1,4 +1,4 @@
-import { EventData, EventEmitter, EventsMap, EventType } from '@powwow-js/emitter';
+import { EventEmitter, EventsMap, EventType } from '@powwow-js/emitter';
 import {
   StateMachineChangeEvents,
   StateMachineContext,
@@ -14,8 +14,8 @@ export class StateMachine<
   Context extends StateMachineContext = StateMachineContext
 > {
   private definition: StateMachineDefinition<State, Transitions, Context>;
+  private emitter = new EventEmitter<StateMachineChangeEvents<State, Transitions, Context>>();
 
-  private emitter = new EventEmitter<StateMachineChangeEvents<State, Transitions, Transition, Context>>();
   private currentState: State;
   private context: Context;
 
@@ -70,49 +70,33 @@ export class StateMachine<
       },
     });
 
-    if (destinationTransition.action) {
-      destinationTransition.action.call(this, {
+    const actionPayload = () => {
+      return {
         from: prevState,
         to: newState,
         by: event.type,
-        data: event.data as D,
-        ctx: contextUpdater(this),
-      });
+        data: event.data,
+        isDataOf: <T extends EventType<Transitions>>(data: unknown, transition: T): data is Transitions[T] =>
+          Object.is(transition, event.type),
+      };
+    };
+
+    if (destinationTransition.action) {
+      destinationTransition.action.call(this, { ...actionPayload(), ...{ ctx: contextUpdater(this) } });
     }
 
     if (currentStateDef?.actions?.onExit) {
-      currentStateDef.actions.onExit.call(this, {
-        from: prevState,
-        to: newState,
-        by: event.type,
-        data: event.data as D,
-        ctx: contextUpdater(this),
-      });
+      currentStateDef.actions.onExit.call(this, { ...actionPayload(), ...{ ctx: contextUpdater(this) } });
     }
 
     if (destinationStateDef?.actions?.onEnter) {
-      destinationStateDef.actions.onEnter.call(this, {
-        from: prevState,
-        to: newState,
-        by: event.type,
-        data: event.data as D,
-        ctx: contextUpdater(this),
-      });
+      destinationStateDef.actions.onEnter.call(this, { ...actionPayload(), ...{ ctx: contextUpdater(this) } });
     }
 
-    this.emitter.emit('stateChanged', {
-      from: prevState,
-      to: newState,
-      by: event.type,
-      data: event.data as D,
-    });
+    this.emitter.emit('stateChanged', actionPayload());
     if (contextDidUpdate) {
       contextDidUpdate = false;
-      this.emitter.emit('contextChanged', {
-        from: prevState,
-        to: newState,
-        by: event.type,
-      });
+      this.emitter.emit('contextChanged', actionPayload());
     }
 
     return { state: this.currentState, success: true };

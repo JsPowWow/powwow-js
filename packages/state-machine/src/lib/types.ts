@@ -1,4 +1,4 @@
-import { EventData, EventsMap, EventType } from '@powwow-js/emitter';
+import { EventsMap, EventType } from '@powwow-js/emitter';
 
 export type StateMachineState = string | number | symbol;
 
@@ -38,7 +38,8 @@ export type StateMachineTransitionActionPayload<
   from: StateFrom;
   to: StateTo;
   by: Transition;
-  data: Transitions[Transition];
+  data: Transitions[Transition] | undefined;
+  isDataOf: <T extends EventType<Transitions>>(data: unknown, transition: T) => data is Transitions[T];
   ctx: {
     get: () => Context;
     set: (
@@ -71,15 +72,14 @@ export type StateMachineDefinition<
 export type StateMachineChangeEvents<
   State extends StateMachineState,
   Transitions extends EventsMap,
-  Transition extends EventType<Transitions>,
   Context extends StateMachineContext = StateMachineContext
 > = {
   stateChanged: Pick<
-    StateMachineTransitionActionPayload<Transitions, State, State, Transition, Context>,
-    'from' | 'to' | 'by' | 'data'
+    StateMachineTransitionActionPayload<Transitions, State, State, EventType<Transitions>, Context>,
+    'from' | 'to' | 'by' | 'data' | 'isDataOf'
   >;
   contextChanged: Pick<
-    StateMachineTransitionActionPayload<Transitions, State, State, Transition, Context>,
-    'from' | 'to' | 'by'
+    StateMachineTransitionActionPayload<Transitions, State, State, EventType<Transitions>, Context>,
+    'from' | 'to' | 'by' | 'data' | 'isDataOf'
   >;
 };
