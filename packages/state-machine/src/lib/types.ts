@@ -30,8 +30,8 @@ export type StateMachineDefinition<
   states: {
     [S in State]: {
       actions?: {
-        onEnter?: StateMachineTransitionAction<Transitions, State, Context, S, Transition>;
-        onExit?: StateMachineTransitionAction<Transitions, S, Context, State, Transition>;
+        onEnter?: StateMachineTransitionActionEffect<Transitions, State, Context, S, Transition>;
+        onExit?: StateMachineTransitionActionEffect<Transitions, S, Context, State, Transition>;
       };
       transitions?: {
         [T in EventType<Transitions>]?: StateMachineTransition<Transitions, S, State, T, Context>;
@@ -48,7 +48,7 @@ export type StateMachineTransition<
   Context extends StateMachineContext
 > = {
   target: StateTo;
-  action?: StateMachineTransitionAction<Transitions, StateFrom, Context, StateTo, Transition>;
+  action?: StateMachineTransitionActionEffect<Transitions, StateFrom, Context, StateTo, Transition>;
 };
 
 export type StateMachineTransitionResult<State extends StateMachineState> = { state: State } & (
@@ -56,27 +56,30 @@ export type StateMachineTransitionResult<State extends StateMachineState> = { st
   | { success: false; message: string }
 );
 
+export type StateMachineTransitionActionEffect<
+  Transitions extends EventsMap,
+  State extends StateMachineState,
+  Context extends StateMachineContext,
+  StateTo extends StateMachineState = State,
+  Transition extends EventType<Transitions> = EventType<Transitions>
+> = (action: StateMachineTransitionAction<Transitions, State, Context, StateTo, Transition>) => void;
+
+export type StateMachineTransitionActionType = 'stateExit' | 'stateEnter' | 'stateTransition';
+
 export type StateMachineTransitionAction<
   Transitions extends EventsMap,
   State extends StateMachineState,
   Context extends StateMachineContext,
   StateTo extends StateMachineState = State,
   Transition extends EventType<Transitions> = EventType<Transitions>
-> = (action: StateMachineTransitionActionPayload<Transitions, State, Context, StateTo, Transition>) => void;
-
-export type StateMachineTransitionActionPayload<
-  Transitions extends EventsMap,
-  State extends StateMachineState,
-  Context extends StateMachineContext,
-  StateTo extends StateMachineState = State,
-  Transition extends EventType<Transitions> = EventType<Transitions>
 > = {
+  type: StateMachineTransitionActionType;
   from: State;
   to: StateTo;
   by: Transition;
   data: Transitions[Transition] | undefined;
   isDataOf: <T extends EventType<Transitions>>(data: unknown, transition: T) => data is Transitions[T];
-  self: IStateMachine<State & StateTo, Transitions, Context>;
+  owner: IStateMachine<State & StateTo, Transitions, Context>;
 };
 
 export type StateMachineChangeEvents<
@@ -84,5 +87,5 @@ export type StateMachineChangeEvents<
   State extends StateMachineState,
   Context extends StateMachineContext = StateMachineContext
 > = {
-  stateChanged: StateMachineTransitionActionPayload<Transitions, State, Context>;
+  stateChanged: StateMachineTransitionAction<Transitions, State, Context>;
 };

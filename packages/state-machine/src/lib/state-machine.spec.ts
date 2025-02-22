@@ -1,7 +1,7 @@
 import { StateMachine } from './state-machine';
-import { StateMachineDefinition, StateMachineTransitionAction } from './types';
+import { StateMachineDefinition, StateMachineTransitionActionEffect } from './types';
 import { expect } from 'vitest';
-import { hasSome } from '@powwow-js/nullable';
+import { enqueue, logAction } from './utils';
 
 type CrossWordsMachineState = 'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver';
 
@@ -25,15 +25,14 @@ type CrossWordsMachineContext = {
   matrixState: { x: number; y: number }[];
 };
 
-const cellClickAction: StateMachineTransitionAction<
+const cellClickAction: StateMachineTransitionActionEffect<
   CrossWordsMachineTransitions,
   CrossWordsMachineState,
   CrossWordsMachineContext
-> = ({ from, to, by, self, data, isDataOf }) => {
-  console.log(`Transition: "${to}" from "${from}" by ${by}`);
-
+> = (action) => {
+  const { owner, data, isDataOf } = action;
   if (isDataOf(data, 'cellClick')) {
-    self.context.history.push(data);
+    owner.context.history.push(data);
   }
 };
 
@@ -54,25 +53,23 @@ const crossWordsLogicDef: StateMachineDefinition<
   states: {
     stateWaitingForInput: {
       actions: {
-        onEnter({ to, from, by, data, isDataOf }) {
-          console.log(
-            `Enter: "${to}" from "${from}" by "${by}" with "${hasSome(data) ? JSON.stringify(data) : '<no-data>'}"`
-          );
+        onEnter: enqueue(logAction, function ({ data, isDataOf, owner }) {
           switch (true) {
             case isDataOf(data, 'win'): {
-              return console.log(data.score);
+              owner.context.message = `Your score is ${data.score}`;
+              break;
             }
             case isDataOf(data, 'solution'): {
-              return console.log(data.selectedCells);
+              owner.context.message = `The solution is ${data.selectedCells.join('')}`;
+              break;
             }
             case isDataOf(data, 'chooseTemplate'): {
-              return console.log(data);
+              owner.context.message = `The template is "${data}"`;
+              break;
             }
           }
-        },
-        onExit({ from, to, by }) {
-          console.log(`Exit: from "${from}" "${to}" by ${by}`);
-        },
+        }),
+        onExit: enqueue(logAction),
       },
       transitions: {
         continue: {
@@ -126,19 +123,15 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
         cellClick: {
           target: 'statePlaying',
-          action: cellClickAction,
+          action: enqueue(logAction, cellClickAction),
         },
       },
     },
 
     statePlaying: {
       actions: {
-        onEnter({ to, from, by }) {
-          console.log(`Enter: "${to}" from "${from}" by ${by}`);
-        },
-        onExit({ from, to, by }) {
-          console.log(`Exit: from "${from}" "${to}" by ${by}`);
-        },
+        onEnter: logAction,
+        onExit: logAction,
       },
       transitions: {
         getRandomGame: {
@@ -211,12 +204,8 @@ const crossWordsLogicDef: StateMachineDefinition<
 
     stateGameOver: {
       actions: {
-        onEnter({ to, from, by }) {
-          console.log(`Enter: "${to}" from "${from}" by ${by}`);
-        },
-        onExit({ from, to, by }) {
-          console.log(`Exit: from "${from}" "${to}" by ${by}`);
-        },
+        onEnter: logAction,
+        onExit: logAction,
       },
       transitions: {
         continue: {
@@ -244,9 +233,7 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
         reset: {
           target: 'stateWaitingForInput',
-          action() {
-            console.log(`Reset`);
-          },
+          action: logAction,
         },
         getRandomGame: {
           target: 'stateWaitingForInput',
@@ -264,12 +251,8 @@ const crossWordsLogicDef: StateMachineDefinition<
 
     stateSolution: {
       actions: {
-        onEnter({ to, from, by }) {
-          console.log(`Enter: "${to}" from "${from}" by ${by}`);
-        },
-        onExit({ from, to, by }) {
-          console.log(`Exit: from "${from}" "${to}" by ${by}`);
-        },
+        onEnter: logAction,
+        onExit: logAction,
       },
       transitions: {
         reset: {
@@ -328,8 +311,8 @@ const simpleFsm: StateMachineDefinition<
   states: {
     init: {
       actions: {
-        onEnter: ({ self }) => {
-          self.context = 100;
+        onEnter: ({ owner }) => {
+          owner.context = 100;
         },
       },
       transitions: {
@@ -340,8 +323,8 @@ const simpleFsm: StateMachineDefinition<
     },
     processing: {
       actions: {
-        onEnter: ({ self }) => {
-          self.context = 150;
+        onEnter: ({ owner }) => {
+          owner.context = 150;
         },
       },
       transitions: {
@@ -355,8 +338,8 @@ const simpleFsm: StateMachineDefinition<
     },
     finish: {
       actions: {
-        onEnter: ({ self }) => {
-          self.context = 200;
+        onEnter: ({ owner }) => {
+          owner.context = 200;
         },
       },
     },
@@ -368,7 +351,8 @@ describe('stateMachine complex', () => {
 
   it('should handle `stateChange` event', () => {
     expect(fsm).toBeDefined();
-    fsm.send({ type: 'chooseTemplate', data: 'new-template' });
+    //fsm.send({ type: 'chooseTemplate', data: 'new-template' });
+    fsm.send({ type: 'cellClick', data: { x: 1, y: 4 } });
   });
 });
 

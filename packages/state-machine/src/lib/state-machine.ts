@@ -5,6 +5,7 @@ import {
   StateMachineContext,
   StateMachineDefinition,
   StateMachineState,
+  StateMachineTransitionActionType,
   StateMachineTransitionResult,
 } from './types';
 
@@ -69,30 +70,32 @@ export class StateMachine<
 
     this.currentState = newState;
 
-    const actionPayload = Object.freeze({
-      from: prevState,
-      to: newState,
-      by: event.type,
-      data: event.data,
-      isDataOf: <T extends EventType<Transitions>>(data: unknown, transition: T): data is Transitions[T] =>
-        Object.is(transition, event.type),
-      self: this,
-    });
+    const actionPayload = <T extends StateMachineTransitionActionType>(actionType: T) =>
+      Object.freeze({
+        type: actionType,
+        from: prevState,
+        to: newState,
+        by: event.type,
+        data: event.data,
+        isDataOf: <T extends EventType<Transitions>>(data: unknown, transition: T): data is Transitions[T] =>
+          Object.is(transition, event.type),
+        owner: this,
+      });
 
     if (destinationTransition.action) {
-      destinationTransition.action.call(this, actionPayload);
+      destinationTransition.action.call(this, actionPayload('stateTransition'));
     }
 
     if (currentStateDef?.actions?.onExit) {
-      currentStateDef.actions.onExit.call(this, actionPayload);
+      currentStateDef.actions.onExit.call(this, actionPayload('stateExit'));
     }
 
     const destinationStateDef = this.definition.states[newState];
     if (destinationStateDef?.actions?.onEnter) {
-      destinationStateDef.actions.onEnter.call(this, actionPayload);
+      destinationStateDef.actions.onEnter.call(this, actionPayload('stateEnter'));
     }
 
-    this.emitter.emit('stateChanged', actionPayload);
+    this.emitter.emit('stateChanged', actionPayload('stateEnter'));
 
     return { state: this.currentState, success: true };
   }
