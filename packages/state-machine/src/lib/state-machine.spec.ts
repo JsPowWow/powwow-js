@@ -1,38 +1,50 @@
 import { StateMachine } from './state-machine';
-import { StateMachineDefinition } from './types';
+import { StateMachineDefinition, StateMachineTransitionAction } from './types';
 import { expect } from 'vitest';
 import { hasSome } from '@powwow-js/nullable';
 
+type CrossWordsMachineState = 'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver';
+
 type CrossWordsMachineTransitions = {
-  continue: undefined;
-  chooseTemplate: undefined;
-  getRandomGame: undefined;
+  continue: never;
+  chooseTemplate: string;
+  getRandomGame: never;
   win: { score: number };
   solution: { selectedCells: number[] };
-  saveGame: undefined;
+  saveGame: never;
   cellClick: { x: number; y: number };
-  reset: undefined;
+  reset: never;
 };
 
-const cellClickAction = () => {
-  // TODO something
+type CrossWordsMachineContext = {
+  template: string;
+  time: number;
+  message: string;
+  history: { x: number; y: number }[];
+  selectedCells: { x: number; y: number }[];
+  matrixState: { x: number; y: number }[];
+};
+
+const cellClickAction: StateMachineTransitionAction<
+  CrossWordsMachineTransitions,
+  CrossWordsMachineState,
+  CrossWordsMachineContext
+> = ({ from, to, by, self, data, isDataOf }) => {
+  console.log(`Transition: "${to}" from "${from}" by ${by}`);
+
+  if (isDataOf(data, 'cellClick')) {
+    self.context.history.push(data);
+  }
 };
 
 const crossWordsLogicDef: StateMachineDefinition<
-  'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver',
+  CrossWordsMachineState,
   CrossWordsMachineTransitions,
-  {
-    template: number[];
-    time: number;
-    message: string;
-    history: number[];
-    selectedCells: number[];
-    matrixState: number[];
-  }
+  CrossWordsMachineContext
 > = {
   initialState: 'stateWaitingForInput',
   context: {
-    template: [],
+    template: 'the-template',
     time: 0,
     message: '',
     history: [],
@@ -308,11 +320,18 @@ const crossWordsLogicDef: StateMachineDefinition<
 
 const simpleFsm: StateMachineDefinition<
   'init' | 'processing' | 'finish',
-  { run: { processId: number }; stop: undefined; done: { status: 'success' | 'error' } }
+  { run: { processId: number }; stop: undefined; done: { status: 'success' | 'error' } },
+  number
 > = {
   initialState: 'init',
+  context: 0,
   states: {
     init: {
+      actions: {
+        onEnter: ({ self }) => {
+          self.context = 100;
+        },
+      },
       transitions: {
         run: {
           target: 'processing',
@@ -320,6 +339,11 @@ const simpleFsm: StateMachineDefinition<
       },
     },
     processing: {
+      actions: {
+        onEnter: ({ self }) => {
+          self.context = 150;
+        },
+      },
       transitions: {
         stop: {
           target: 'init',
@@ -329,7 +353,13 @@ const simpleFsm: StateMachineDefinition<
         },
       },
     },
-    finish: {},
+    finish: {
+      actions: {
+        onEnter: ({ self }) => {
+          self.context = 200;
+        },
+      },
+    },
   },
 };
 
@@ -338,7 +368,7 @@ describe('stateMachine complex', () => {
 
   it('should handle `stateChange` event', () => {
     expect(fsm).toBeDefined();
-    fsm.send({ type: 'chooseTemplate' });
+    fsm.send({ type: 'chooseTemplate', data: 'new-template' });
   });
 });
 
@@ -355,6 +385,7 @@ describe('stateMachine simple', () => {
       by: 'run',
       data: { processId: 20 },
       isDataOf: expect.any(Function),
+      self: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('processing');
     onStateChange.mockReset();
@@ -366,6 +397,7 @@ describe('stateMachine simple', () => {
       by: 'stop',
       data: undefined,
       isDataOf: expect.any(Function),
+      self: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('init');
     onStateChange.mockReset();
@@ -382,6 +414,7 @@ describe('stateMachine simple', () => {
       by: 'run',
       data: { processId: 40 },
       isDataOf: expect.any(Function),
+      self: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('processing');
     fsm.send({ type: 'done', data: { status: 'success' } });
@@ -391,6 +424,7 @@ describe('stateMachine simple', () => {
       by: 'done',
       data: { status: 'success' },
       isDataOf: expect.any(Function),
+      self: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('finish');
     onStateChange.mockReset();
@@ -453,5 +487,22 @@ describe('stateMachine simple', () => {
 
     fsm.send({ type: 'done', data: { status: 'success' } });
     expect(fsm.state).toBe('finish');
+  });
+
+  it('should correctly update context `data`', () => {
+    const fsm = new StateMachine(simpleFsm);
+    expect(fsm.context).toBe(0);
+
+    fsm.send({ type: 'run', data: { processId: 40 } });
+    expect(fsm.context).toBe(150);
+
+    fsm.send({ type: 'stop' });
+    expect(fsm.context).toBe(100);
+
+    fsm.send({ type: 'run', data: { processId: 40 } });
+    expect(fsm.context).toBe(150);
+
+    fsm.send({ type: 'done', data: { status: 'success' } });
+    expect(fsm.context).toBe(200);
   });
 });

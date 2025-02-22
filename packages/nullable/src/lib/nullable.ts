@@ -28,3 +28,18 @@ export function assertIsInstanceOf<T>(elemType: ConstructorOf<T>, value: unknown
 export function isInstanceOf<T>(elemType: ConstructorOf<T>, value: unknown): value is T {
   return value instanceof elemType;
 }
+
+// export const isDeepFrozen = <T extends object>(obj: T): boolean => {
+//   return (
+//     Object.isFrozen(obj) && Object.keys(obj).every((prop) => typeof obj[prop] !== 'object' || isDeepFrozen(obj[prop]))
+//   );
+// };
+//
+// export const deepFreeze = <T extends object>(obj: T) => {
+//   Object.keys(obj).forEach((prop) => {
+//     if (typeof obj[prop as keyof T] === 'object' && !Object.isFrozen(obj[prop as keyof T])) {
+//       deepFreeze(obj[prop as keyof T]);
+//     }
+//   });
+//   return Object.freeze(obj);
+// };
