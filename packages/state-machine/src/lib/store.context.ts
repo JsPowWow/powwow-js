@@ -1,4 +1,4 @@
-import { isSomeFunction, RecordKey } from '@powwow-js/nullable';
+import { RecordKey } from '@powwow-js/nullable';
 
 export class StoreContext<T extends Record<RecordKey, unknown>> {
   private context;
@@ -8,12 +8,14 @@ export class StoreContext<T extends Record<RecordKey, unknown>> {
   }
 
   public set<K extends keyof T>(reducer: (ctx: T) => Pick<T, K>): typeof this;
-  public set<K extends keyof T>(slice: Pick<T, K>): typeof this;
-  public set<K extends keyof T>(updater: Pick<T, K> | ((ctx: T) => Pick<T, K>)): typeof this {
-    if (isSomeFunction<<C>(ctx: C) => Pick<T, K>>(updater)) {
+  public set<K extends keyof T>(slice: Pick<T, K> | undefined): typeof this;
+  public set<K extends keyof T>(updater: Pick<T, K> | undefined | ((ctx: T) => Pick<T, K>)): typeof this {
+    if (typeof updater === 'function') {
       this.context = { ...this.context, ...updater(this.context) };
     }
-    this.context = { ...this.context, ...updater };
+    if (updater && typeof updater === 'object') {
+      this.context = { ...this.context, ...updater };
+    }
     return this;
   }
 

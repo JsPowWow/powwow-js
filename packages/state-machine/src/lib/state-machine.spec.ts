@@ -8,7 +8,7 @@ import { StoreContext } from './store.context';
 type CrossWordsMachineState = 'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver';
 
 type CrossWordsMachineTransitions = {
-  chooseTemplate: string;
+  chooseTemplate: { templateName: string };
   getRandomGame: { templateName: string };
   win: { score: number };
   solution: { selectedCells: { x: number; y: number }[] };
@@ -38,6 +38,19 @@ const cellClickAction: StateMachineTransitionActionEffect<
     }));
   }
 };
+
+const resetSelection: StateMachineTransitionActionEffect<
+  CrossWordsMachineTransitions,
+  CrossWordsMachineState,
+  CrossWordsMachineContext
+> = ({ owner }) => owner.context.set({ selectedCells: [] });
+
+const updateTemplate: StateMachineTransitionActionEffect<
+  CrossWordsMachineTransitions,
+  CrossWordsMachineState,
+  CrossWordsMachineContext
+> = ({ owner, data }) =>
+  owner.context.set(data && 'templateName' in data ? { template: data.templateName } : undefined);
 
 const crossWordsLogicDef: StateMachineDefinition<
   CrossWordsMachineState,
@@ -78,15 +91,11 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
         chooseTemplate: {
           target: 'stateWaitingForInput',
-          action: enqueue(logWithContext, ({ owner, data }) =>
-            owner.context.set({ template: data, selectedCells: [] })
-          ),
+          action: enqueue(updateTemplate, resetSelection, logWithContext),
         },
         getRandomGame: {
           target: 'stateWaitingForInput',
-          action: enqueue(logWithContext, ({ owner, data }) =>
-            owner.context.set({ template: data.templateName, selectedCells: [] })
-          ),
+          action: enqueue(logWithContext, updateTemplate, resetSelection),
         },
         saveGame: {
           target: 'statePlaying',
@@ -106,15 +115,11 @@ const crossWordsLogicDef: StateMachineDefinition<
       transitions: {
         getRandomGame: {
           target: 'stateWaitingForInput',
-          action: enqueue(logWithContext, ({ owner, data }) =>
-            owner.context.set({ template: data.templateName, selectedCells: [] })
-          ),
+          action: enqueue(logWithContext, updateTemplate, resetSelection),
         },
         chooseTemplate: {
           target: 'stateWaitingForInput',
-          action: enqueue(logWithContext, ({ owner, data }) =>
-            owner.context.set({ template: data, selectedCells: [] })
-          ),
+          action: enqueue(logWithContext, updateTemplate, resetSelection),
         },
         cellClick: {
           target: 'statePlaying',
@@ -122,19 +127,11 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
         win: {
           target: 'stateGameOver',
-          action({ from, to, by, data }) {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: [],
-            // });
-            console.log(`Transition: "${to}" from "${from}" by ${by}: ${data}`);
-          },
+          action: enqueue(logWithContext, updateTemplate, resetSelection),
         },
         reset: {
           target: 'stateWaitingForInput',
-          action() {
-            // updateContext({ selectedCells: [] });
-          },
+          action: enqueue(logWithContext, resetSelection),
         },
         saveGame: {
           target: 'statePlaying',
@@ -142,10 +139,7 @@ const crossWordsLogicDef: StateMachineDefinition<
 
         solution: {
           target: 'stateSolution',
-          action() {
-            // updateContext({ selectedCells: [] });
-            console.log('Solution');
-          },
+          action: resetSelection,
         },
       },
     },
@@ -158,9 +152,7 @@ const crossWordsLogicDef: StateMachineDefinition<
       transitions: {
         chooseTemplate: {
           target: 'stateWaitingForInput',
-          action: enqueue(logWithContext, ({ owner, data }) =>
-            owner.context.set({ template: data, selectedCells: [] })
-          ),
+          action: enqueue(logWithContext, updateTemplate, resetSelection),
         },
         reset: {
           target: 'stateWaitingForInput',
@@ -168,9 +160,7 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
         getRandomGame: {
           target: 'stateWaitingForInput',
-          action: enqueue(logWithContext, ({ owner, data }) =>
-            owner.context.set({ template: data.templateName, selectedCells: [] })
-          ),
+          action: enqueue(logWithContext, updateTemplate, resetSelection),
         },
       },
     },
@@ -183,22 +173,15 @@ const crossWordsLogicDef: StateMachineDefinition<
       transitions: {
         reset: {
           target: 'stateWaitingForInput',
-          action() {
-            // updateContext({ selectedCells: [] });
-            console.log(`Reset`);
-          },
+          action: resetSelection,
         },
         chooseTemplate: {
           target: 'stateWaitingForInput',
-          action: enqueue(logWithContext, ({ owner, data }) =>
-            owner.context.set({ template: data, selectedCells: [] })
-          ),
+          action: enqueue(logWithContext, updateTemplate, resetSelection),
         },
         getRandomGame: {
           target: 'stateWaitingForInput',
-          action: enqueue(logWithContext, ({ owner, data }) =>
-            owner.context.set({ template: data.templateName, selectedCells: [] })
-          ),
+          action: enqueue(logWithContext, updateTemplate),
         },
       },
     },
@@ -268,7 +251,7 @@ describe('stateMachine complex', () => {
 
   it('should handle `stateChange` event', () => {
     expect(fsm).toBeDefined();
-    fsm.send({ type: 'chooseTemplate', data: 'new-template' });
+    fsm.send({ type: 'chooseTemplate', data: { templateName: 'new-template' } });
     expect(fsm.context.get().template).toBe('new-template');
 
     fsm.send({ type: 'cellClick', data: { x: 1, y: 4 } });
