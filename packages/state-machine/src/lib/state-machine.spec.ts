@@ -9,12 +9,12 @@ type CrossWordsMachineState = 'stateWaitingForInput' | 'statePlaying' | 'stateSo
 
 type CrossWordsMachineTransitions = {
   chooseTemplate: string;
-  getRandomGame: never;
+  getRandomGame: { templateName: string };
   win: { score: number };
   solution: { selectedCells: { x: number; y: number }[] };
-  saveGame: never;
+  saveGame: undefined;
   cellClick: { x: number; y: number };
-  reset: never;
+  reset: undefined;
 };
 
 type CrossWordsMachineContext = StoreContext<{
@@ -84,13 +84,9 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
         getRandomGame: {
           target: 'stateWaitingForInput',
-          action({ from, to, by }) {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: [],
-            // });
-            console.log(`Transition: "${to}" from "${from}" by ${by}`);
-          },
+          action: enqueue(logWithContext, ({ owner, data }) =>
+            owner.context.set({ template: data.templateName, selectedCells: [] })
+          ),
         },
         saveGame: {
           target: 'statePlaying',
@@ -110,23 +106,15 @@ const crossWordsLogicDef: StateMachineDefinition<
       transitions: {
         getRandomGame: {
           target: 'stateWaitingForInput',
-          action({ from, to, by }) {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: [],
-            // });
-            console.log(`Transition: "${to}" from "${from}" by ${by}`);
-          },
+          action: enqueue(logWithContext, ({ owner, data }) =>
+            owner.context.set({ template: data.templateName, selectedCells: [] })
+          ),
         },
         chooseTemplate: {
           target: 'stateWaitingForInput',
-          action({ from, to, by, data }) {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: [],
-            // });
-            console.log(`Transition: "${to}" from "${from}" by ${by}: ${data}`);
-          },
+          action: enqueue(logWithContext, ({ owner, data }) =>
+            owner.context.set({ template: data, selectedCells: [] })
+          ),
         },
         cellClick: {
           target: 'statePlaying',
@@ -170,13 +158,9 @@ const crossWordsLogicDef: StateMachineDefinition<
       transitions: {
         chooseTemplate: {
           target: 'stateWaitingForInput',
-          action() {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: [],
-            // });
-            // console.log('select template from init');
-          },
+          action: enqueue(logWithContext, ({ owner, data }) =>
+            owner.context.set({ template: data, selectedCells: [] })
+          ),
         },
         reset: {
           target: 'stateWaitingForInput',
@@ -184,13 +168,9 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
         getRandomGame: {
           target: 'stateWaitingForInput',
-          action() {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: [],
-            // });
-            //console.log(`random game: ${data.template.name}`);
-          },
+          action: enqueue(logWithContext, ({ owner, data }) =>
+            owner.context.set({ template: data.templateName, selectedCells: [] })
+          ),
         },
       },
     },
@@ -210,23 +190,15 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
         chooseTemplate: {
           target: 'stateWaitingForInput',
-          action() {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: [],
-            // });
-            console.log('Select template');
-          },
+          action: enqueue(logWithContext, ({ owner, data }) =>
+            owner.context.set({ template: data, selectedCells: [] })
+          ),
         },
         getRandomGame: {
           target: 'stateWaitingForInput',
-          action() {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: [],
-            // });
-            console.log(`Random game from solution:`);
-          },
+          action: enqueue(logWithContext, ({ owner, data }) =>
+            owner.context.set({ template: data.templateName, selectedCells: [] })
+          ),
         },
       },
     },
@@ -323,7 +295,7 @@ describe('stateMachine simple', () => {
     expect(fsm.state).toBe('processing');
     onStateChange.mockReset();
 
-    fsm.send({ type: 'stop' });
+    fsm.transition('stop');
     expect(onStateChange).toHaveBeenCalledWith({
       type: 'stateEnter',
       from: 'processing',
@@ -367,7 +339,7 @@ describe('stateMachine simple', () => {
     onStateChange.mockReset();
 
     fsm.off('stateChanged', onStateChange);
-    fsm.send({ type: 'reset' });
+    fsm.transition('reset');
     expect(onStateChange).not.toHaveBeenCalled();
     expect(fsm.state).toBe('init');
     fsm.send({ type: 'run', data: { processId: 80 } });
@@ -389,9 +361,11 @@ describe('stateMachine simple', () => {
     expect.assertions(4 * 3 + 4); // 4 times * 3 expect(s) above + 4 below
 
     fsm.send({ type: 'run', data: { processId: 40 } });
+    fsm.transition('run', { processId: 90 });
     expect(fsm.state).toBe('processing');
 
-    fsm.send({ type: 'stop' });
+    fsm.transition('stop');
+
     expect(fsm.state).toBe('init');
 
     fsm.send({ type: 'run', data: { processId: 40 } });
@@ -427,7 +401,7 @@ describe('stateMachine simple', () => {
     fsm.send({ type: 'run', data: { processId: 40 } });
     expect(fsm.state).toBe('processing');
 
-    fsm.send({ type: 'stop' });
+    fsm.send({ type: 'stop', data: undefined });
     expect(fsm.state).toBe('init');
 
     fsm.send({ type: 'run', data: { processId: 40 } });
@@ -444,7 +418,7 @@ describe('stateMachine simple', () => {
     fsm.send({ type: 'run', data: { processId: 40 } });
     expect(fsm.context.value).toBe(150);
 
-    fsm.send({ type: 'stop' });
+    fsm.send({ type: 'stop', data: undefined });
     expect(fsm.context.value).toBe(100);
 
     fsm.send({ type: 'run', data: { processId: 40 } });

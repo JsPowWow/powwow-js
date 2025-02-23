@@ -11,7 +11,6 @@ import {
 export class StateMachine<
   State extends StateMachineState,
   Transitions extends EventsMap,
-  Transition extends EventType<Transitions>,
   Context extends NonNullable<unknown> = NonNullable<unknown>
 > implements IStateMachine<State, Transitions, Context>
 {
@@ -42,13 +41,16 @@ export class StateMachine<
     return this.contextData;
   }
 
-  public send<
-    T extends Transition,
-    D extends Transitions[T],
-    Event extends { type: T; data: D } = { type: T; data: D }
-  >(
-    event: Event extends { type: T; data: undefined } ? { type: T; data?: D } : Event
+  public transition<T extends EventType<Transitions>, D extends Transitions[T], Args extends [T, D]>(
+    ...args: Args extends [T, undefined] ? [T] : Args
   ): StateMachineTransitionResult<State> {
+    return this.send({ type: args[0], data: <D>(args[1] ? args[1] : undefined) });
+  }
+
+  public send<T extends EventType<Transitions>, D extends Transitions[T]>(event: {
+    type: T;
+    data: D;
+  }): StateMachineTransitionResult<State> {
     const currentStateDef = this.definition.states[this.currentState];
     const destinationTransition = currentStateDef?.transitions?.[event.type];
 
@@ -56,7 +58,7 @@ export class StateMachine<
       return {
         state: this.currentState,
         success: false,
-        message: `Invalid transition: from "${String(this.currentState)}" by "${String(event.type)}"`,
+        message: `No transition(s) from "${String(this.currentState)}" by "${String(event.type)}"`,
       };
     }
 
@@ -65,7 +67,7 @@ export class StateMachine<
 
     this.currentState = newState;
 
-    const actionPayload = <T extends StateMachineTransitionActionType>(actionType: T) =>
+    const actionPayload = <A extends StateMachineTransitionActionType>(actionType: A) =>
       Object.freeze({
         type: actionType,
         from: prevState,

@@ -6,27 +6,28 @@ export type StateMachineState = RecordKey;
 export interface IStateMachine<
   State extends StateMachineState,
   Transitions extends EventsMap,
-  Context extends NonNullable<unknown>,
-  Transition extends EventType<Transitions> = EventType<Transitions>
+  Context extends NonNullable<unknown>
 > {
   get state(): State;
   get context(): Context;
-  send<T extends Transition, D extends Transitions[T]>(e: { type: T; data: D }): StateMachineTransitionResult<State>;
-  send<T extends Transition>(e: { type: T }): StateMachineTransitionResult<State>;
+
+  send<T extends EventType<Transitions>, D extends Transitions[T]>(event: {
+    type: T;
+    data: D;
+  }): StateMachineTransitionResult<State>;
 }
 
 export type StateMachineDefinition<
   State extends StateMachineState,
   Transitions extends EventsMap,
-  Context extends NonNullable<unknown>,
-  Transition extends EventType<Transitions> = EventType<Transitions>
+  Context extends NonNullable<unknown>
 > = {
-  initialState: State;
+  initialState: NoInfer<State>;
   states: {
     [S in State]: {
       actions?: {
-        onEnter?: StateMachineTransitionActionEffect<Transitions, State, Context, S, Transition>;
-        onExit?: StateMachineTransitionActionEffect<Transitions, S, Context, State, Transition>;
+        onEnter?: StateMachineTransitionActionEffect<Transitions, State, Context, S, EventType<Transitions>>;
+        onExit?: StateMachineTransitionActionEffect<Transitions, S, Context, State, EventType<Transitions>>;
       };
       transitions?: {
         [T in EventType<Transitions>]?: StateMachineTransition<Transitions, S, State, T, Context>;
@@ -74,7 +75,7 @@ export type StateMachineTransitionAction<
   by: Transition;
   data: Transitions[Transition];
   isDataOf: <T extends EventType<Transitions>>(data: unknown, transition: T) => data is Transitions[T];
-  owner: IStateMachine<State & StateTo, Transitions, Context>;
+  owner: IStateMachine<State, Transitions, Context>;
 };
 
 export type StateMachineChangeEvents<
