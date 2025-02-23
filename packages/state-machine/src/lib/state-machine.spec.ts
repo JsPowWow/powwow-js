@@ -1,29 +1,29 @@
 import { StateMachine } from './state-machine';
 import { StateMachineDefinition, StateMachineTransitionActionEffect } from './types';
 import { expect } from 'vitest';
-import { enqueue, logAction } from './utils';
+import { enqueue, log, logAction, logWithContext } from './utils';
+import { ValueContext } from './value.context';
+import { StoreContext } from './store.context';
 
 type CrossWordsMachineState = 'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver';
 
 type CrossWordsMachineTransitions = {
-  continue: never;
   chooseTemplate: string;
   getRandomGame: never;
   win: { score: number };
-  solution: { selectedCells: number[] };
+  solution: { selectedCells: { x: number; y: number }[] };
   saveGame: never;
   cellClick: { x: number; y: number };
   reset: never;
 };
 
-type CrossWordsMachineContext = {
+type CrossWordsMachineContext = StoreContext<{
   template: string;
   time: number;
   message: string;
   history: { x: number; y: number }[];
   selectedCells: { x: number; y: number }[];
-  matrixState: { x: number; y: number }[];
-};
+}>;
 
 const cellClickAction: StateMachineTransitionActionEffect<
   CrossWordsMachineTransitions,
@@ -32,7 +32,10 @@ const cellClickAction: StateMachineTransitionActionEffect<
 > = (action) => {
   const { owner, data, isDataOf } = action;
   if (isDataOf(data, 'cellClick')) {
-    owner.context.history.push(data);
+    owner.context.set((ctx) => ({
+      ...ctx,
+      history: [...ctx.history, data],
+    }));
   }
 };
 
@@ -42,77 +45,48 @@ const crossWordsLogicDef: StateMachineDefinition<
   CrossWordsMachineContext
 > = {
   initialState: 'stateWaitingForInput',
-  context: {
-    template: 'the-template',
-    time: 0,
-    message: '',
-    history: [],
-    selectedCells: [],
-    matrixState: [],
-  },
   states: {
     stateWaitingForInput: {
       actions: {
         onEnter: enqueue(logAction, function ({ data, isDataOf, owner }) {
           switch (true) {
             case isDataOf(data, 'win'): {
-              owner.context.message = `Your score is ${data.score}`;
+              owner.context.set({ message: `Your score is ${data.score}` });
               break;
             }
             case isDataOf(data, 'solution'): {
-              owner.context.message = `The solution is ${data.selectedCells.join('')}`;
+              owner.context.set({ message: `The solution is ${data.selectedCells.join('')}` });
               break;
             }
             case isDataOf(data, 'chooseTemplate'): {
-              owner.context.message = `The template is "${data}"`;
+              owner.context.set({ message: `The template is "${data}"` });
               break;
             }
           }
         }),
-        onExit: enqueue(logAction),
+        onExit: log,
       },
       transitions: {
-        continue: {
-          target: 'statePlaying',
-          action({ from, to, by }) {
-            console.log(`Transition: "${to}" from "${from}" by ${by}`);
-            // set({
-            //   template: data.template,
-            //   selectedCells: data.selectedCells,
-            //   matrixState: data.matrixState,
-            //   time: data.time,
-            // });
-          },
-        },
         solution: {
           target: 'stateSolution',
-          action({ from, to, by, data }) {
-            console.log(`Transition: "${to}" from "${from}" by ${by} (${data})`);
-            // set({
-            //   template: data.template,
-            //   selectedCells: data.selectedCells,
-            //   matrixState: data.matrixState,
-            //   time: data.time,
-            // });
-          },
+          action: enqueue(logAction, ({ owner, data }) => {
+            owner.context.set({
+              selectedCells: data.selectedCells,
+              time: 0,
+            });
+          }),
         },
         chooseTemplate: {
           target: 'stateWaitingForInput',
-          action({ from, to, by }) {
-            console.log(`Transition: "${to}" from "${from}" by ${by}`);
-            // updateContext({
-            //   template: data.template,
-            //   matrixState: data.template.matrix,
-            //   selectedCells: [],
-            // });
-          },
+          action: enqueue(logWithContext, ({ owner, data }) =>
+            owner.context.set({ template: data, selectedCells: [] })
+          ),
         },
         getRandomGame: {
           target: 'stateWaitingForInput',
           action({ from, to, by }) {
             // updateContext({
             //   template: data.template,
-            //   matrixState: data.template.matrix,
             //   selectedCells: [],
             // });
             console.log(`Transition: "${to}" from "${from}" by ${by}`);
@@ -130,8 +104,8 @@ const crossWordsLogicDef: StateMachineDefinition<
 
     statePlaying: {
       actions: {
-        onEnter: logAction,
-        onExit: logAction,
+        onEnter: log,
+        onExit: log,
       },
       transitions: {
         getRandomGame: {
@@ -139,7 +113,6 @@ const crossWordsLogicDef: StateMachineDefinition<
           action({ from, to, by }) {
             // updateContext({
             //   template: data.template,
-            //   matrixState: data.template.matrix,
             //   selectedCells: [],
             // });
             console.log(`Transition: "${to}" from "${from}" by ${by}`);
@@ -150,7 +123,6 @@ const crossWordsLogicDef: StateMachineDefinition<
           action({ from, to, by, data }) {
             // updateContext({
             //   template: data.template,
-            //   matrixState: data.template.matrix,
             //   selectedCells: [],
             // });
             console.log(`Transition: "${to}" from "${from}" by ${by}: ${data}`);
@@ -165,7 +137,6 @@ const crossWordsLogicDef: StateMachineDefinition<
           action({ from, to, by, data }) {
             // updateContext({
             //   template: data.template,
-            //   matrixState: data.template.matrix,
             //   selectedCells: [],
             // });
             console.log(`Transition: "${to}" from "${from}" by ${by}: ${data}`);
@@ -180,18 +151,7 @@ const crossWordsLogicDef: StateMachineDefinition<
         saveGame: {
           target: 'statePlaying',
         },
-        continue: {
-          target: 'statePlaying',
-          action({ from, to }) {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: data.selectedCells,
-            //   matrixState: data.matrixState,
-            //   time: data.time,
-            // });
-            console.log('Continue from', from, to);
-          },
-        },
+
         solution: {
           target: 'stateSolution',
           action() {
@@ -204,28 +164,15 @@ const crossWordsLogicDef: StateMachineDefinition<
 
     stateGameOver: {
       actions: {
-        onEnter: logAction,
-        onExit: logAction,
+        onEnter: log,
+        onExit: log,
       },
       transitions: {
-        continue: {
-          target: 'statePlaying',
-          action({ from }) {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: data.selectedCells,
-            //   matrixState: data.matrixState,
-            //   time: data.time,
-            // });
-            console.log('Continue from', from);
-          },
-        },
         chooseTemplate: {
           target: 'stateWaitingForInput',
           action() {
             // updateContext({
             //   template: data.template,
-            //   matrixState: data.template.matrix,
             //   selectedCells: [],
             // });
             // console.log('select template from init');
@@ -233,14 +180,13 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
         reset: {
           target: 'stateWaitingForInput',
-          action: logAction,
+          action: log,
         },
         getRandomGame: {
           target: 'stateWaitingForInput',
           action() {
             // updateContext({
             //   template: data.template,
-            //   matrixState: data.template.matrix,
             //   selectedCells: [],
             // });
             //console.log(`random game: ${data.template.name}`);
@@ -251,8 +197,8 @@ const crossWordsLogicDef: StateMachineDefinition<
 
     stateSolution: {
       actions: {
-        onEnter: logAction,
-        onExit: logAction,
+        onEnter: log,
+        onExit: log,
       },
       transitions: {
         reset: {
@@ -267,7 +213,6 @@ const crossWordsLogicDef: StateMachineDefinition<
           action() {
             // updateContext({
             //   template: data.template,
-            //   matrixState: data.template.matrix,
             //   selectedCells: [],
             // });
             console.log('Select template');
@@ -278,22 +223,9 @@ const crossWordsLogicDef: StateMachineDefinition<
           action() {
             // updateContext({
             //   template: data.template,
-            //   matrixState: data.template.matrix,
             //   selectedCells: [],
             // });
             console.log(`Random game from solution:`);
-          },
-        },
-        continue: {
-          target: 'statePlaying',
-          action({ from }) {
-            // updateContext({
-            //   template: data.template,
-            //   selectedCells: data.selectedCells,
-            //   matrixState: data.matrixState,
-            //   time: data.time,
-            // });
-            console.log('Continue from', from);
           },
         },
       },
@@ -303,16 +235,15 @@ const crossWordsLogicDef: StateMachineDefinition<
 
 const simpleFsm: StateMachineDefinition<
   'init' | 'processing' | 'finish',
-  { run: { processId: number }; stop: undefined; done: { status: 'success' | 'error' } },
-  number
+  { run: { processId: number }; stop: undefined; done: { status: 'success' | 'error' }; reset: never },
+  ValueContext<number>
 > = {
   initialState: 'init',
-  context: 0,
   states: {
     init: {
       actions: {
         onEnter: ({ owner }) => {
-          owner.context = 100;
+          owner.context.value = 100;
         },
       },
       transitions: {
@@ -324,7 +255,7 @@ const simpleFsm: StateMachineDefinition<
     processing: {
       actions: {
         onEnter: ({ owner }) => {
-          owner.context = 150;
+          owner.context.value = 150;
         },
       },
       transitions: {
@@ -339,7 +270,12 @@ const simpleFsm: StateMachineDefinition<
     finish: {
       actions: {
         onEnter: ({ owner }) => {
-          owner.context = 200;
+          owner.context.value = 200;
+        },
+      },
+      transitions: {
+        reset: {
+          target: 'init',
         },
       },
     },
@@ -347,41 +283,55 @@ const simpleFsm: StateMachineDefinition<
 };
 
 describe('stateMachine complex', () => {
-  const fsm = new StateMachine(crossWordsLogicDef);
+  const fsm = new StateMachine(
+    crossWordsLogicDef,
+    new StoreContext({
+      template: 'initial-template',
+      time: 0,
+      message: '',
+      history: [],
+      selectedCells: [],
+    })
+  );
 
   it('should handle `stateChange` event', () => {
     expect(fsm).toBeDefined();
-    //fsm.send({ type: 'chooseTemplate', data: 'new-template' });
+    fsm.send({ type: 'chooseTemplate', data: 'new-template' });
+    expect(fsm.context.get().template).toBe('new-template');
+
     fsm.send({ type: 'cellClick', data: { x: 1, y: 4 } });
+    expect(fsm.context.get().history).toStrictEqual([{ x: 1, y: 4 }]);
   });
 });
 
 describe('stateMachine simple', () => {
   it('should handle `stateChange` event', () => {
     const onStateChange = vi.fn();
-    const fsm = new StateMachine(simpleFsm);
+    const fsm = new StateMachine(simpleFsm, new ValueContext(0));
 
     fsm.on('stateChanged', onStateChange);
     fsm.send({ type: 'run', data: { processId: 20 } });
     expect(onStateChange).toHaveBeenCalledWith({
+      type: 'stateEnter',
       from: 'init',
       to: 'processing',
       by: 'run',
       data: { processId: 20 },
       isDataOf: expect.any(Function),
-      self: expect.any(StateMachine),
+      owner: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('processing');
     onStateChange.mockReset();
 
     fsm.send({ type: 'stop' });
     expect(onStateChange).toHaveBeenCalledWith({
+      type: 'stateEnter',
       from: 'processing',
       to: 'init',
       by: 'stop',
       data: undefined,
       isDataOf: expect.any(Function),
-      self: expect.any(StateMachine),
+      owner: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('init');
     onStateChange.mockReset();
@@ -393,29 +343,43 @@ describe('stateMachine simple', () => {
 
     fsm.send({ type: 'run', data: { processId: 40 } });
     expect(onStateChange).toHaveBeenCalledWith({
+      type: 'stateEnter',
       from: 'init',
       to: 'processing',
       by: 'run',
       data: { processId: 40 },
       isDataOf: expect.any(Function),
-      self: expect.any(StateMachine),
+      owner: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('processing');
+
     fsm.send({ type: 'done', data: { status: 'success' } });
     expect(onStateChange).toHaveBeenCalledWith({
+      type: 'stateEnter',
       from: 'processing',
       to: 'finish',
       by: 'done',
       data: { status: 'success' },
       isDataOf: expect.any(Function),
-      self: expect.any(StateMachine),
+      owner: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('finish');
     onStateChange.mockReset();
+
+    fsm.off('stateChanged', onStateChange);
+    fsm.send({ type: 'reset' });
+    expect(onStateChange).not.toHaveBeenCalled();
+    expect(fsm.state).toBe('init');
+    fsm.send({ type: 'run', data: { processId: 80 } });
+    expect(onStateChange).not.toHaveBeenCalled();
+    expect(fsm.state).toBe('processing');
+    fsm.send({ type: 'done', data: { status: 'error' } });
+    expect(onStateChange).not.toHaveBeenCalled();
+    expect(fsm.state).toBe('finish');
   });
 
   it('should correctly handle `stateChange` event with `from, to, by`', () => {
-    const fsm = new StateMachine(simpleFsm);
+    const fsm = new StateMachine(simpleFsm, new ValueContext(0));
 
     fsm.on('stateChanged', ({ from, to, by }) => {
       expect(['init', 'processing', 'finish'].includes(from)).toBe(true);
@@ -438,7 +402,7 @@ describe('stateMachine simple', () => {
   });
 
   it('should correctly handle `stateChange` event with `data`', () => {
-    const fsm = new StateMachine(simpleFsm);
+    const fsm = new StateMachine(simpleFsm, new ValueContext(0));
 
     fsm.on('stateChanged', ({ data, isDataOf }) => {
       switch (true) {
@@ -474,19 +438,19 @@ describe('stateMachine simple', () => {
   });
 
   it('should correctly update context `data`', () => {
-    const fsm = new StateMachine(simpleFsm);
-    expect(fsm.context).toBe(0);
+    const fsm = new StateMachine(simpleFsm, new ValueContext(0));
+    expect(fsm.context.value).toBe(0);
 
     fsm.send({ type: 'run', data: { processId: 40 } });
-    expect(fsm.context).toBe(150);
+    expect(fsm.context.value).toBe(150);
 
     fsm.send({ type: 'stop' });
-    expect(fsm.context).toBe(100);
+    expect(fsm.context.value).toBe(100);
 
     fsm.send({ type: 'run', data: { processId: 40 } });
-    expect(fsm.context).toBe(150);
+    expect(fsm.context.value).toBe(150);
 
     fsm.send({ type: 'done', data: { status: 'success' } });
-    expect(fsm.context).toBe(200);
+    expect(fsm.context.value).toBe(200);
   });
 });

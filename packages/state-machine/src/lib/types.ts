@@ -1,20 +1,16 @@
 import { EventsMap, EventType } from '@powwow-js/emitter';
+import { RecordKey } from '@powwow-js/nullable';
 
-export type StateMachineState = string | number | symbol;
-
-export type StateMachineContext = NonNullable<unknown>;
+export type StateMachineState = RecordKey;
 
 export interface IStateMachine<
   State extends StateMachineState,
   Transitions extends EventsMap,
-  Context extends StateMachineContext,
+  Context extends NonNullable<unknown>,
   Transition extends EventType<Transitions> = EventType<Transitions>
 > {
   get state(): State;
-
   get context(): Context;
-  set context(v: Context);
-
   send<T extends Transition, D extends Transitions[T]>(e: { type: T; data: D }): StateMachineTransitionResult<State>;
   send<T extends Transition>(e: { type: T }): StateMachineTransitionResult<State>;
 }
@@ -22,11 +18,10 @@ export interface IStateMachine<
 export type StateMachineDefinition<
   State extends StateMachineState,
   Transitions extends EventsMap,
-  Context extends StateMachineContext,
+  Context extends NonNullable<unknown>,
   Transition extends EventType<Transitions> = EventType<Transitions>
 > = {
   initialState: State;
-  context: Context;
   states: {
     [S in State]: {
       actions?: {
@@ -45,7 +40,7 @@ export type StateMachineTransition<
   StateFrom extends StateMachineState,
   StateTo extends StateMachineState,
   Transition extends EventType<Transitions>,
-  Context extends StateMachineContext
+  Context extends NonNullable<unknown>
 > = {
   target: StateTo;
   action?: StateMachineTransitionActionEffect<Transitions, StateFrom, Context, StateTo, Transition>;
@@ -59,7 +54,7 @@ export type StateMachineTransitionResult<State extends StateMachineState> = { st
 export type StateMachineTransitionActionEffect<
   Transitions extends EventsMap,
   State extends StateMachineState,
-  Context extends StateMachineContext,
+  Context extends NonNullable<unknown>,
   StateTo extends StateMachineState = State,
   Transition extends EventType<Transitions> = EventType<Transitions>
 > = (action: StateMachineTransitionAction<Transitions, State, Context, StateTo, Transition>) => void;
@@ -69,7 +64,7 @@ export type StateMachineTransitionActionType = 'stateExit' | 'stateEnter' | 'sta
 export type StateMachineTransitionAction<
   Transitions extends EventsMap,
   State extends StateMachineState,
-  Context extends StateMachineContext,
+  Context extends NonNullable<unknown>,
   StateTo extends StateMachineState = State,
   Transition extends EventType<Transitions> = EventType<Transitions>
 > = {
@@ -77,7 +72,7 @@ export type StateMachineTransitionAction<
   from: State;
   to: StateTo;
   by: Transition;
-  data: Transitions[Transition] | undefined;
+  data: Transitions[Transition];
   isDataOf: <T extends EventType<Transitions>>(data: unknown, transition: T) => data is Transitions[T];
   owner: IStateMachine<State & StateTo, Transitions, Context>;
 };
@@ -85,7 +80,7 @@ export type StateMachineTransitionAction<
 export type StateMachineChangeEvents<
   Transitions extends EventsMap,
   State extends StateMachineState,
-  Context extends StateMachineContext = StateMachineContext
+  Context extends NonNullable<unknown> = NonNullable<unknown>
 > = {
   stateChanged: StateMachineTransitionAction<Transitions, State, Context>;
 };

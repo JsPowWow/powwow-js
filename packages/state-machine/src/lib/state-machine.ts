@@ -2,7 +2,6 @@ import { EventEmitter, EventsMap, EventType } from '@powwow-js/emitter';
 import {
   IStateMachine,
   StateMachineChangeEvents,
-  StateMachineContext,
   StateMachineDefinition,
   StateMachineState,
   StateMachineTransitionActionType,
@@ -13,22 +12,22 @@ export class StateMachine<
   State extends StateMachineState,
   Transitions extends EventsMap,
   Transition extends EventType<Transitions>,
-  Context extends StateMachineContext = StateMachineContext
+  Context extends NonNullable<unknown> = NonNullable<unknown>
 > implements IStateMachine<State, Transitions, Context>
 {
   private definition: StateMachineDefinition<State, Transitions, Context>;
   private emitter = new EventEmitter<StateMachineChangeEvents<Transitions, State, Context>>();
 
   private currentState: State;
-  private contextData: Context;
+  private readonly contextData: Context;
 
-  constructor(definition: StateMachineDefinition<State, Transitions, Context>) {
+  constructor(definition: StateMachineDefinition<State, Transitions, Context>, context: Context) {
     if (!definition.initialState) {
       throw new Error('stateMachineDef requires `initialState` to be provided');
     }
     this.definition = definition;
     this.currentState = definition.initialState;
-    this.contextData = definition.context;
+    this.contextData = context;
 
     this.send = this.send.bind(this);
     this.on = this.on.bind(this);
@@ -37,10 +36,6 @@ export class StateMachine<
 
   public get state() {
     return this.currentState;
-  }
-
-  public set context(ctx: Context) {
-    this.contextData = ctx;
   }
 
   public get context() {
