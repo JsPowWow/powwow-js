@@ -39,6 +39,17 @@ const cellClickAction: StateMachineTransitionActionEffect<
   }
 };
 
+const checkIsWin: StateMachineTransitionActionEffect<
+  CrossWordsMachineTransitions,
+  CrossWordsMachineState,
+  CrossWordsMachineContext
+> = (action) => {
+  const { owner, data, isDataOf } = action;
+  if (isDataOf(data, 'cellClick') && data.x === 5 && data.y === 5) {
+    owner.send({ type: 'win', data: { score: 25 } });
+  }
+};
+
 const resetSelection: StateMachineTransitionActionEffect<
   CrossWordsMachineTransitions,
   CrossWordsMachineState,
@@ -123,7 +134,7 @@ const crossWordsLogicDef: StateMachineDefinition<
         },
         cellClick: {
           target: 'statePlaying',
-          action: cellClickAction,
+          action: enqueue(cellClickAction, checkIsWin),
         },
         win: {
           target: 'stateGameOver',
@@ -136,7 +147,6 @@ const crossWordsLogicDef: StateMachineDefinition<
         saveGame: {
           target: 'statePlaying',
         },
-
         solution: {
           target: 'stateSolution',
           action: resetSelection,
@@ -253,9 +263,18 @@ describe('stateMachine complex', () => {
     expect(fsm).toBeDefined();
     fsm.send({ type: 'chooseTemplate', data: { templateName: 'new-template' } });
     expect(fsm.context.get().template).toBe('new-template');
+    expect(fsm.state).toBe('stateWaitingForInput');
 
     fsm.send({ type: 'cellClick', data: { x: 1, y: 4 } });
     expect(fsm.context.get().history).toStrictEqual([{ x: 1, y: 4 }]);
+    expect(fsm.state).toBe('statePlaying');
+
+    fsm.send({ type: 'cellClick', data: { x: 5, y: 5 } });
+    expect(fsm.context.get().history).toStrictEqual([
+      { x: 1, y: 4 },
+      { x: 5, y: 5 },
+    ]);
+    expect(fsm.state).toBe('stateGameOver');
   });
 });
 
