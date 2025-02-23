@@ -40,3 +40,6 @@ testem.log
 Thumbs.db
 
 .nx/cache
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
