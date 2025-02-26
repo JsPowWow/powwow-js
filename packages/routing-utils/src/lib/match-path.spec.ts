@@ -1,4 +1,4 @@
-import { findMatchingRoute } from './routing';
+import { findMatchingRoute } from './match-path';
 import { expect } from 'vitest';
 import { noop } from '@powwow-js/nullable';
 

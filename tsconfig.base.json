@@ -8,14 +8,15 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
+    "target": "es2021",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": ["es2021", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
       "@powwow-js/emitter": ["packages/emitter/src/index.ts"],
+      "@powwow-js/fun-dom": ["packages/fun-dom/src/index.ts"],
       "@powwow-js/nullable": ["packages/nullable/src/index.ts"],
       "@powwow-js/routing-utils": ["packages/routing-utils/src/index.ts"],
       "@powwow-js/state-machine": ["packages/state-machine/src/index.ts"]

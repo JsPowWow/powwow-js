@@ -2,7 +2,11 @@
   "name": "powwow-js",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "typecheck:all": "nx run-many -t=typecheck",
+    "lint:all": "nx run-many -t=lint",
+    "test:all": "nx run-many -t=test"
+  },
   "private": false,
   "devDependencies": {
     "@nx/devkit": "20.4.6",
@@ -39,5 +43,6 @@
   },
   "nx": {
     "includedScripts": []
-  }
+  },
+  "dependencies": {}
 }

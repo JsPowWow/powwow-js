@@ -45,15 +45,18 @@ const toMatchingRoute =
     const match = matchPathWithUrl(pathname, url);
     return match.matches
       ? {
-          url,
+          searchedTerm: url,
           pathname,
           params: match.params ?? {},
         }
       : undefined;
   };
 
+export const getMatchingRoutes = (routes: string[], url: string): MatchingRoute[] =>
+  routes.map(toMatchingRoute(url)).filter((r) => hasSome(r));
+
 export const findMatchingRoute = (routes: string[], url: string): RouteMatchingResult => {
-  const matchedRoutes = routes.map(toMatchingRoute(url)).filter((r) => hasSome(r));
+  const matchedRoutes = getMatchingRoutes(routes, url);
 
   if (!matchedRoutes.length) {
     return { success: false, error: new Error(`There wasn't found anything matching the url-request: "${url}"`) };

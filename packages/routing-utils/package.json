@@ -4,5 +4,7 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
-  "dependencies": {}
+  "dependencies": {
+    "@powwow-js/nullable": "^0.0.2"
+  }
 }

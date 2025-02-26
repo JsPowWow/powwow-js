@@ -4,7 +4,10 @@
     "access": "public"
   },
   "version": "0.0.1",
-  "dependencies": {},
+  "dependencies": {
+    "@powwow-js/nullable": "^0.0.2",
+    "@powwow-js/emitter": "^0.0.1"
+  },
   "main": "./index.js",
   "module": "./index.mjs",
   "typings": "./index.d.ts"

@@ -8,7 +8,7 @@ exports[`findMatchingRoute > should find and create matching route per provided 
       "entityId": "15",
     },
     "pathname": "/details/:detailsId/entity/:entityId",
-    "url": "/details/20/entity/15",
+    "searchedTerm": "/details/20/entity/15",
   },
   "success": true,
 }
