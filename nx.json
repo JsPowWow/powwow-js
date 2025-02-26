@@ -28,6 +28,12 @@
         "previewTargetName": "preview",
         "serveStaticTargetName": "serve-static"
       }
+    },
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
     }
   ],
   "targetDefaults": {
@@ -35,12 +41,23 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "e2e-ci--**/*": {
+      "dependsOn": ["^build"]
     }
   },
   "release": {
     "projects": ["packages/*"],
     "version": {
       "preVersionCommand": "npx nx run-many -t build"
+    }
+  },
+  "generators": {
+    "@nx/web:application": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "vitest",
+      "e2eTestRunner": "playwright"
     }
   }
 }

@@ -1,0 +1,10 @@
+{
+  "name": "spa-routing-e2e",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/vanilla/spa-routing-e2e/src",
+  "projectType": "application",
+  "tags": [],
+  "implicitDependencies": ["spa-routing"],
+  "// targets": "to see all targets run: nx show project spa-routing-e2e --web",
+  "targets": {}
+}

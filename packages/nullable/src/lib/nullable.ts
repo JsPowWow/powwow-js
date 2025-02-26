@@ -29,6 +29,24 @@ export function isInstanceOf<T>(elemType: ConstructorOf<T>, value: unknown): val
   return value instanceof elemType;
 }
 
+export const exhaustiveGuard = (_: never): never => {
+  throw new Error(`Not expected value: "${String(_)}"`);
+};
+
+export const noop = () => {
+  /** This is intentional */
+};
+
+export const identity = <T>(source: T): T => source;
+
+export function sleep(delay: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  });
+}
+
 // export const isDeepFrozen = <T extends object>(obj: T): boolean => {
 //   return (
 //     Object.isFrozen(obj) && Object.keys(obj).every((prop) => typeof obj[prop] !== 'object' || isDeepFrozen(obj[prop]))

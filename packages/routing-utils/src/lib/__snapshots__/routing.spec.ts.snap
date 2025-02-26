@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`findMatchingRoute > should find and create matching route per provided url 1`] = `
+{
+  "route": {
+    "params": {
+      "detailsId": "20",
+      "entityId": "15",
+    },
+    "pathname": "/details/:detailsId/entity/:entityId",
+    "url": "/details/20/entity/15",
+  },
+  "success": true,
+}
+`;
