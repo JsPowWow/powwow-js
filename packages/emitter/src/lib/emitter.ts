@@ -1,8 +1,9 @@
 import { EventType, EventsMap, EventCallback, IEventEmitter, EventData } from './types';
+import { hasSome } from '@powwow-js/nullable';
 
 export class EventEmitter<Events extends EventsMap> implements IEventEmitter<Events> {
   private listeners: {
-    [Event in keyof EventsMap]?: CallableFunction[];
+    [Event in keyof EventsMap]?: ((p: EventsMap[Event]) => void)[];
   } = {};
 
   public on = <Event extends EventType<Events>, Callback extends EventCallback<EventData<Events, Event>>>(
@@ -12,7 +13,9 @@ export class EventEmitter<Events extends EventsMap> implements IEventEmitter<Eve
     if (!this.listeners[event]) {
       this.listeners[event] = [];
     }
-    this.listeners[event].push(callback);
+    if (typeof event === 'string' && hasSome<(p: EventsMap[Event]) => void>(callback)) {
+      this.listeners[event].push(callback);
+    }
   };
 
   public off = <Event extends EventType<Events>, Callback extends EventCallback<EventData<Events, Event>>>(
@@ -32,8 +35,8 @@ export class EventEmitter<Events extends EventsMap> implements IEventEmitter<Eve
     if (!this.listeners[event]) {
       return;
     }
-    this.listeners[event].forEach((fn) => {
-      fn(data);
+    this.listeners[event].forEach((callback) => {
+      callback(data);
     });
   };
 

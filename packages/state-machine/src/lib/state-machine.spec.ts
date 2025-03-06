@@ -200,7 +200,7 @@ const crossWordsLogicDef: StateMachineDefinition<
 
 const simpleFsm: StateMachineDefinition<
   'init' | 'processing' | 'finish',
-  { run: { processId: number }; stop: undefined; done: { status: 'success' | 'error' }; reset: never },
+  { run: { processId: number }; stop: undefined; done: { status: 'success' | 'error' }; reset: undefined },
   ValueContext<number>
 > = {
   initialState: 'init',
@@ -297,7 +297,7 @@ describe('stateMachine simple', () => {
     expect(fsm.state).toBe('processing');
     onStateChange.mockReset();
 
-    fsm.transition('stop');
+    fsm.send({ type: 'stop', data: undefined });
     expect(onStateChange).toHaveBeenCalledWith({
       type: 'stateEnter',
       from: 'processing',
@@ -341,7 +341,7 @@ describe('stateMachine simple', () => {
     onStateChange.mockReset();
 
     fsm.off('stateChanged', onStateChange);
-    fsm.transition('reset');
+    fsm.send({ type: 'reset', data: undefined });
     expect(onStateChange).not.toHaveBeenCalled();
     expect(fsm.state).toBe('init');
     fsm.send({ type: 'run', data: { processId: 80 } });
@@ -363,10 +363,10 @@ describe('stateMachine simple', () => {
     expect.assertions(4 * 3 + 4); // 4 times * 3 expect(s) above + 4 below
 
     fsm.send({ type: 'run', data: { processId: 40 } });
-    fsm.transition('run', { processId: 90 });
+    fsm.send({ type: 'run', data: { processId: 90 } });
     expect(fsm.state).toBe('processing');
 
-    fsm.transition('stop');
+    fsm.send({ type: 'stop', data: undefined });
 
     expect(fsm.state).toBe('init');
 

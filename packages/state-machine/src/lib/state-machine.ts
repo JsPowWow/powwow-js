@@ -41,12 +41,6 @@ export class StateMachine<
     return this.contextData;
   }
 
-  public transition<T extends EventType<Transitions>, D extends Transitions[T], Args extends [T, D]>(
-    ...args: Args extends [T, undefined] ? [T] : Args
-  ): StateMachineTransitionResult<State> {
-    return this.send({ type: args[0], data: <D>(args[1] ? args[1] : undefined) });
-  }
-
   public send<T extends EventType<Transitions>, D extends Transitions[T]>(event: {
     type: T;
     data: D;
