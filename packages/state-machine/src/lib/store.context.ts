@@ -11,9 +11,7 @@ export class StoreContext<T extends Record<RecordKey, unknown>>
     this.context = initialValue;
   }
 
-  public set<K extends keyof T>(reducer: (ctx: T) => Pick<T, K>): typeof this;
-  public set<K extends keyof T>(slice: Pick<T, K> | undefined): typeof this;
-  public set<K extends keyof T>(updater: Pick<T, K> | undefined | ((ctx: T) => Pick<T, K>)): typeof this {
+  public set<K extends keyof T>(updater: Pick<T, K> | ((ctx: T) => Pick<T, K>)): typeof this {
     if (typeof updater === 'function') {
       this.context = { ...this.context, ...updater(this.context) };
       this.emitter.emit('changed', this.context);

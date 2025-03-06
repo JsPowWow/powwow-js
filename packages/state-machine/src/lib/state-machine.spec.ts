@@ -17,13 +17,15 @@ type CrossWordsMachineTransitions = {
   reset: undefined;
 };
 
-type CrossWordsMachineContext = StoreContext<{
+type CrossWordsMachineContextData = {
   template: string;
   time: number;
   message: string;
   history: { x: number; y: number }[];
   selectedCells: { x: number; y: number }[];
-}>;
+};
+
+type CrossWordsMachineContext = StoreContext<CrossWordsMachineContextData>;
 
 const cellClickAction: StateMachineTransitionActionEffect<
   CrossWordsMachineTransitions,
@@ -60,8 +62,11 @@ const updateTemplate: StateMachineTransitionActionEffect<
   CrossWordsMachineTransitions,
   CrossWordsMachineState,
   CrossWordsMachineContext
-> = ({ owner, data }) =>
-  owner.context.set(data && 'templateName' in data ? { template: data.templateName } : undefined);
+> = ({ owner, data }) => {
+  if (data && 'templateName' in data) {
+    owner.context.set({ template: data.templateName });
+  }
+};
 
 const crossWordsLogicDef: StateMachineDefinition<
   CrossWordsMachineState,
@@ -250,7 +255,7 @@ const simpleFsm: StateMachineDefinition<
 describe('stateMachine complex', () => {
   const fsm = new StateMachine(
     crossWordsLogicDef,
-    new StoreContext({
+    new StoreContext<CrossWordsMachineContextData>({
       template: 'initial-template',
       time: 0,
       message: '',
