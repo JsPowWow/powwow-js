@@ -1,23 +1,23 @@
 import { hasSome, isInstanceOf } from '@powwow-js/nullable';
-import { MatchingRoute, RouteMatchingResult, RoutePath } from './types';
+import type { MatchingRoute, RouteMatchingResult, RoutePath } from './types';
 
 const toRegExp = (route: string): RegExp => {
   return new RegExp(
     route
       /** replaces literal dot "." in the route with the escaped dot (\\.) */
-      .replace(/\./g, '\\.')
+      .replaceAll('.', String.raw`\.`)
       /** escape literal slashes */
-      .replace(/\//g, '/')
+      .replaceAll('/', '/')
       /** replaces literal question marks (?) with escaped question marks (\\?) */
-      .replace(/\?/g, '\\?')
+      .replaceAll('?', String.raw`\?`)
       /** removes any trailing slashes (/) at the end of the route string */
       .replace(/\/+$/, '')
       /** replace  * (wildcard) characters in the route to the regular expression .* */
-      .replace(/\*+/g, '.*')
+      .replaceAll(/\*+/g, '.*')
       /** converts params from form of :paramName (e.g., :id) into regular expression named capturing groups. */
-      .replace(/:([^\d|^/][a-zA-Z0-9_]*(?=(?:\/|\\.)|$))/g, (_, paramName) => `(?<${paramName}>[^/]+?)`)
+      .replaceAll(/:([^\d/^|]\w*(?=(?:\/|\\.)|$))/g, (_, parameterName) => `(?<${parameterName}>[^/]+?)`)
       /** Allow optional trailing slash */
-      .concat('(\\/|$)'),
+      .concat(String.raw`(\/|$)`),
     'gi'
   );
 };
@@ -30,7 +30,9 @@ const matchPathWithUrl = (
   params: Record<string, string> | null;
 } => {
   const expression = isInstanceOf(RegExp, routePath) ? routePath : toRegExp(routePath);
+
   const match = expression.exec(url) || false;
+
   const matches = isInstanceOf(RegExp, routePath) ? !!match : !!match && match[0] === match.input;
 
   return {
@@ -43,6 +45,7 @@ const toMatchingRoute =
   (url: string) =>
   (pathname: string): MatchingRoute | undefined => {
     const match = matchPathWithUrl(pathname, url);
+
     return match.matches
       ? {
           searchedTerm: url,
@@ -58,7 +61,7 @@ export const getMatchingRoutes = (routes: string[], url: string): MatchingRoute[
 export const findMatchingRoute = (routes: string[], url: string): RouteMatchingResult => {
   const matchedRoutes = getMatchingRoutes(routes, url);
 
-  if (!matchedRoutes.length) {
+  if (matchedRoutes.length === 0) {
     return { success: false, error: new Error(`There wasn't found anything matching the url-request: "${url}"`) };
   }
 

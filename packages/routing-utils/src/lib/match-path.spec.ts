@@ -12,6 +12,7 @@ describe('findMatchingRoute', () => {
     '/details/:detailsId/entity/:entityId': noop,
     '/lang/*': noop,
   });
+
   it('should find and create matching route per provided url', () => {
     expect(findMatchingRoute(routes, '/lang/en')).toMatchObject({ success: true });
     expect(findMatchingRoute(routes, '/lang/ru')).toMatchObject({ success: true });
