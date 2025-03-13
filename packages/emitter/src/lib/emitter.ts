@@ -1,5 +1,5 @@
-import { EventType, EventsMap, EventCallback, IEventEmitter, EventData } from './types';
-import { hasSome } from '@powwow-js/nullable';
+import type { EventType, EventsMap, EventCallback, IEventEmitter, EventData } from './types';
+import { isSomeFunction } from '@powwow-js/nullable';
 
 export class EventEmitter<Events extends EventsMap> implements IEventEmitter<Events> {
   private listeners: {
@@ -13,7 +13,7 @@ export class EventEmitter<Events extends EventsMap> implements IEventEmitter<Eve
     if (!this.listeners[event]) {
       this.listeners[event] = [];
     }
-    if (typeof event === 'string' && hasSome<(p: EventsMap[Event]) => void>(callback)) {
+    if (typeof event === 'string' && isSomeFunction<(p: EventsMap[Event]) => void>(callback)) {
       this.listeners[event].push(callback);
     }
   };

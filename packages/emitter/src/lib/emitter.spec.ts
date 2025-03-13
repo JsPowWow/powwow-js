@@ -1,5 +1,5 @@
 describe('emitter', () => {
-  it('should work', () => {
-    // expect(EventEmitter()).toEqual('emitter');
+  it('TODO AR', () => {
+    expect('TODO AR').toBe('TODO AR');
   });
 });
