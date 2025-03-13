@@ -1,17 +1,20 @@
 import { FlatCompat } from '@eslint/eslintrc';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import js from '@eslint/js';
 import nxEslintPlugin from '@nx/eslint-plugin';
+import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 
 const compat = new FlatCompat({
-  baseDirectory: dirname(fileURLToPath(import.meta.url)),
+  baseDirectory: path.dirname(fileURLToPath(import.meta.url)),
   recommendedConfig: js.configs.recommended,
 });
 
+const MAX_LINES_PER_FUNCTION = 55;
+
 export default [
   {
-    ignores: ['**/dist'],
+    ignores: ['**/dist', 'vite.config.*', 'eslint.config.*'],
   },
   { plugins: { '@nx': nxEslintPlugin } },
   {
@@ -54,4 +57,50 @@ export default [
         ...config.rules,
       },
     })),
+  eslintPluginUnicorn.configs.recommended,
+  {
+    rules: {
+      'unicorn/better-regex': 'warn',
+      semi: ['error', 'always'],
+      'max-lines-per-function': ['error', MAX_LINES_PER_FUNCTION],
+    },
+  },
+  {
+    rules: {
+      'unicorn/prefer-event-target': 'off',
+      'unicorn/no-array-callback-reference': 'off',
+      'unicorn/no-array-for-each': 'off',
+      'unicorn/no-array-reduce': 'off',
+      'unicorn/no-array-map': 'off',
+      'unicorn/no-null': 'off',
+      'unicorn/number-literal-case': 'off',
+      'unicorn/numeric-separators-style': 'off',
+      'unicorn/prevent-abbreviations': [
+        'error',
+        {
+          checkFilenames: false,
+          allowList: {
+            acc: true,
+            env: true,
+            i: true,
+            j: true,
+            props: true,
+            Props: true,
+          },
+        },
+      ],
+      'no-magic-numbers': [
+        'warn',
+        {
+          ignoreArrayIndexes: true,
+          ignoreDefaultValues: true,
+          ignoreClassFieldInitialValues: true,
+        },
+      ],
+      'padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', prev: ['function', 'const', 'let'], next: '*' },
+      ],
+    },
+  },
 ];
