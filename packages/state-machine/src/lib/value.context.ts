@@ -1,4 +1,5 @@
-import { EventEmitter, IEventEmitter } from '@powwow-js/emitter';
+import type { IEventEmitter } from '@powwow-js/emitter';
+import { EventEmitter } from '@powwow-js/emitter';
 
 export class ValueContext<T> implements Pick<IEventEmitter<{ changed: T }>, 'on' | 'off'> {
   private contextValue;
@@ -8,6 +9,10 @@ export class ValueContext<T> implements Pick<IEventEmitter<{ changed: T }>, 'on'
     this.contextValue = initialValue;
   }
 
+  public get value(): T {
+    return this.contextValue;
+  }
+
   public set value(newValue: T) {
     if (!Object.is(newValue, this.contextValue)) {
       this.contextValue = newValue;
@@ -15,15 +20,11 @@ export class ValueContext<T> implements Pick<IEventEmitter<{ changed: T }>, 'on'
     }
   }
 
-  public get value() {
-    return this.contextValue;
+  public on<P extends Parameters<typeof this.emitter.on>>(...parameters: P): void {
+    return this.emitter.on.apply(this, parameters);
   }
 
-  public on<P extends Parameters<typeof this.emitter.on>>(...params: P): void {
-    return this.emitter.on.apply(this, params);
-  }
-
-  public off<P extends Parameters<typeof this.emitter.off>>(...params: P): void {
-    return this.emitter.off.apply(this, params);
+  public off<P extends Parameters<typeof this.emitter.off>>(...parameters: P): void {
+    return this.emitter.off.apply(this, parameters);
   }
 }

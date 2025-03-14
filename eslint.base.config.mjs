@@ -97,10 +97,6 @@ export default [
           ignoreClassFieldInitialValues: true,
         },
       ],
-      'padding-line-between-statements': [
-        'error',
-        { blankLine: 'always', prev: ['function', 'const', 'let'], next: '*' },
-      ],
     },
   },
 ];

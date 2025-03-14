@@ -1,9 +1,11 @@
-import { EventEmitter, EventsMap, EventType } from '@powwow-js/emitter';
-import {
+import type { EventsMap, EventType } from '@powwow-js/emitter';
+import { EventEmitter } from '@powwow-js/emitter';
+import type {
   IStateMachine,
   StateMachineChangeEvents,
   StateMachineDefinition,
   StateMachineState,
+  StateMachineTransitionAction,
   StateMachineTransitionActionType,
   StateMachineTransitionResult,
 } from './types';
@@ -33,11 +35,11 @@ export class StateMachine<
     this.off = this.off.bind(this);
   }
 
-  public get state() {
+  public get state(): State {
     return this.currentState;
   }
 
-  public get context() {
+  public get context(): Context {
     return this.contextData;
   }
 
@@ -45,8 +47,9 @@ export class StateMachine<
     type: T;
     data: D;
   }): StateMachineTransitionResult<State> {
-    const currentStateDef = this.definition.states[this.currentState];
-    const destinationTransition = currentStateDef?.transitions?.[event.type];
+    const currentStateDefinition = this.definition.states[this.currentState];
+
+    const destinationTransition = currentStateDefinition?.transitions?.[event.type];
 
     if (!destinationTransition) {
       return {
@@ -56,46 +59,69 @@ export class StateMachine<
       };
     }
 
-    const prevState = this.currentState;
+    const previousState = this.currentState;
+
     const newState = destinationTransition.target;
 
     this.currentState = newState;
 
-    const actionPayload = <A extends StateMachineTransitionActionType>(actionType: A) =>
-      Object.freeze({
-        type: actionType,
-        from: prevState,
-        to: newState,
-        by: event.type,
-        data: event.data,
-        isDataOf: <T extends EventType<Transitions>>(data: unknown, transition: T): data is Transitions[T] =>
-          Object.is(transition, event.type),
-        owner: this,
-      });
-
     if (destinationTransition.action) {
-      destinationTransition.action.call(this, actionPayload('stateTransition'));
+      destinationTransition.action.call(
+        this,
+        this.actionPayload('stateTransition', previousState, newState, event.type, event.data)
+      );
     }
 
-    if (currentStateDef?.actions?.onExit) {
-      currentStateDef.actions.onExit.call(this, actionPayload('stateExit'));
+    if (currentStateDefinition?.actions?.onExit) {
+      currentStateDefinition.actions.onExit.call(
+        this,
+        this.actionPayload('stateExit', previousState, newState, event.type, event.data)
+      );
     }
 
-    const destinationStateDef = this.definition.states[newState];
-    if (destinationStateDef?.actions?.onEnter) {
-      destinationStateDef.actions.onEnter.call(this, actionPayload('stateEnter'));
+    const destinationStateDefinition = this.definition.states[newState];
+
+    if (destinationStateDefinition?.actions?.onEnter) {
+      destinationStateDefinition.actions.onEnter.call(
+        this,
+        this.actionPayload('stateEnter', previousState, newState, event.type, event.data)
+      );
     }
 
-    this.emitter.emit('stateChanged', actionPayload('stateEnter'));
+    this.emitter.emit(
+      'stateChanged',
+      this.actionPayload('stateEnter', previousState, newState, event.type, event.data)
+    );
 
     return { state: this.currentState, success: true };
   }
 
-  public on<P extends Parameters<typeof this.emitter.on>>(...params: P): void {
-    return this.emitter.on.apply(this, params);
+  public on<P extends Parameters<typeof this.emitter.on>>(...parameters: P): void {
+    return this.emitter.on.apply(this, parameters);
   }
 
-  public off<P extends Parameters<typeof this.emitter.off>>(...params: P): void {
-    return this.emitter.off.apply(this, params);
+  public off<P extends Parameters<typeof this.emitter.off>>(...parameters: P): void {
+    return this.emitter.off.apply(this, parameters);
+  }
+
+  private actionPayload<
+    A extends StateMachineTransitionActionType,
+    T extends EventType<Transitions>,
+    D extends Transitions[T]
+  >(
+    actionType: A,
+    from: State,
+    to: State,
+    by: T,
+    data: D
+  ): StateMachineTransitionAction<Transitions, State, Context, State, T> {
+    return Object.freeze({
+      type: actionType,
+      from,
+      to,
+      by,
+      data,
+      owner: this,
+    });
   }
 }

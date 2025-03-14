@@ -1,7 +1,7 @@
 import { StateMachine } from './state-machine';
-import { StateMachineDefinition, StateMachineTransitionActionEffect } from './types';
+import type { StateMachineDefinition, StateMachineTransitionActionEffect } from './types';
 import { expect } from 'vitest';
-import { enqueue, log, logAction, logWithContext } from './utils';
+import { enqueue, matchAction, log, logAction, logWithContext, runActionEffect } from './utils';
 import { ValueContext } from './value.context';
 import { StoreContext } from './store.context';
 
@@ -32,13 +32,25 @@ const cellClickAction: StateMachineTransitionActionEffect<
   CrossWordsMachineState,
   CrossWordsMachineContext
 > = (action) => {
-  const { owner, data, isDataOf } = action;
-  if (isDataOf(data, 'cellClick')) {
-    owner.context.set((ctx) => ({
-      ...ctx,
-      history: [...ctx.history, data],
-    }));
-  }
+  matchAction(action)
+    .withTransition('getRandomGame', (a) => {
+      const { data, by } = a;
+      const d = data;
+      const b = by;
+      logAction({ ...a, data: d, by: b });
+    })
+    .withTransition('cellClick', ({ owner, data }) => {
+      owner.context.set((context) => ({
+        ...context,
+        history: [...context.history, data],
+      }));
+    })
+    .withTransition('win', (a) => {
+      const { data, by } = a;
+      const d = data;
+      const b = by;
+      logAction({ ...a, data: d, by: b });
+    });
 };
 
 const checkIsWin: StateMachineTransitionActionEffect<
@@ -46,10 +58,11 @@ const checkIsWin: StateMachineTransitionActionEffect<
   CrossWordsMachineState,
   CrossWordsMachineContext
 > = (action) => {
-  const { owner, data, isDataOf } = action;
-  if (isDataOf(data, 'cellClick') && data.x === 5 && data.y === 5) {
-    owner.send({ type: 'win', data: { score: 25 } });
-  }
+  matchAction(action).withTransition('cellClick', ({ owner, data }) => {
+    if (data.x === 5 && data.y === 5) {
+      owner.send({ type: 'win', data: { score: 25 } });
+    }
+  });
 };
 
 const resetSelection: StateMachineTransitionActionEffect<
@@ -68,7 +81,7 @@ const updateTemplate: StateMachineTransitionActionEffect<
   }
 };
 
-const crossWordsLogicDef: StateMachineDefinition<
+const crossWordsLogicDefinition: StateMachineDefinition<
   CrossWordsMachineState,
   CrossWordsMachineTransitions,
   CrossWordsMachineContext
@@ -77,22 +90,17 @@ const crossWordsLogicDef: StateMachineDefinition<
   states: {
     stateWaitingForInput: {
       actions: {
-        onEnter: enqueue(logAction, function ({ data, isDataOf, owner }) {
-          switch (true) {
-            case isDataOf(data, 'win'): {
-              owner.context.set({ message: `Your score is ${data.score}` });
-              break;
-            }
-            case isDataOf(data, 'solution'): {
-              owner.context.set({ message: `The solution is ${data.selectedCells.join('')}` });
-              break;
-            }
-            case isDataOf(data, 'chooseTemplate'): {
-              owner.context.set({ message: `The template is "${data}"` });
-              break;
-            }
-          }
-        }),
+        onEnter: enqueue(
+          logAction,
+          runActionEffect<CrossWordsMachineState, CrossWordsMachineTransitions, CrossWordsMachineContext>()
+            .when('win', ({ owner, data }) => owner.context.set({ message: `Your score is ${data.score}` }))
+            .when('solution', ({ owner, data }) =>
+              owner.context.set({ message: `The solution is ${data.selectedCells.join('')}` })
+            )
+            .when('chooseTemplate', ({ owner, data }) => {
+              owner.context.set({ message: `The template is "${String(data)}"` });
+            }).invokeAction
+        ),
         onExit: log,
       },
       transitions: {
@@ -254,7 +262,7 @@ const simpleFsm: StateMachineDefinition<
 
 describe('stateMachine complex', () => {
   const fsm = new StateMachine(
-    crossWordsLogicDef,
+    crossWordsLogicDefinition,
     new StoreContext<CrossWordsMachineContextData>({
       template: 'initial-template',
       time: 0,
@@ -286,6 +294,7 @@ describe('stateMachine complex', () => {
 describe('stateMachine simple', () => {
   it('should handle `stateChange` event', () => {
     const onStateChange = vi.fn();
+
     const fsm = new StateMachine(simpleFsm, new ValueContext(0));
 
     fsm.on('stateChanged', onStateChange);
@@ -296,7 +305,6 @@ describe('stateMachine simple', () => {
       to: 'processing',
       by: 'run',
       data: { processId: 20 },
-      isDataOf: expect.any(Function),
       owner: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('processing');
@@ -309,7 +317,6 @@ describe('stateMachine simple', () => {
       to: 'init',
       by: 'stop',
       data: undefined,
-      isDataOf: expect.any(Function),
       owner: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('init');
@@ -327,7 +334,6 @@ describe('stateMachine simple', () => {
       to: 'processing',
       by: 'run',
       data: { processId: 40 },
-      isDataOf: expect.any(Function),
       owner: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('processing');
@@ -339,7 +345,6 @@ describe('stateMachine simple', () => {
       to: 'finish',
       by: 'done',
       data: { status: 'success' },
-      isDataOf: expect.any(Function),
       owner: expect.any(StateMachine),
     });
     expect(fsm.state).toBe('finish');
@@ -385,25 +390,21 @@ describe('stateMachine simple', () => {
   it('should correctly handle `stateChange` event with `data`', () => {
     const fsm = new StateMachine(simpleFsm, new ValueContext(0));
 
-    fsm.on('stateChanged', ({ data, isDataOf }) => {
-      switch (true) {
-        case isDataOf(data, 'run'): {
-          expect(data).toStrictEqual({ processId: 40 });
-          break;
-        }
-
-        case isDataOf(data, 'stop'): {
-          expect(data).toBeUndefined();
-          break;
-        }
-
-        case isDataOf(data, 'done'): {
-          expect(data).toStrictEqual({ status: 'success' });
-          break;
-        }
-      }
+    fsm.on('stateChanged', (action) => {
+      matchAction(action)
+        .withTransition('run', ({ data }) => expect(data).toStrictEqual({ processId: 40 }))
+        .withTransition('stop', ({ data }) => expect(data).toBeUndefined())
+        .withTransition('done', ({ data }) => expect(data).toStrictEqual({ status: 'success' }));
     });
-    expect.assertions(4 + 4); // 4 times * 1 expect(s) above + 4 below
+
+    fsm.on(
+      'stateChanged',
+      runActionEffect()
+        .when('run', ({ data }) => expect(data).toStrictEqual({ processId: 40 }))
+        .when('stop', ({ data }) => expect(data).toBeUndefined())
+        .when('done', ({ data }) => expect(data).toStrictEqual({ status: 'success' })).invokeAction
+    );
+    expect.assertions(4 + 4 + 4); // 8 times * 1 expect(s) above + 4 below
 
     fsm.send({ type: 'run', data: { processId: 40 } });
     expect(fsm.state).toBe('processing');
@@ -420,6 +421,7 @@ describe('stateMachine simple', () => {
 
   it('should correctly update context `data`', () => {
     const fsm = new StateMachine(simpleFsm, new ValueContext(0));
+
     expect(fsm.context.value).toBe(0);
 
     fsm.send({ type: 'run', data: { processId: 40 } });

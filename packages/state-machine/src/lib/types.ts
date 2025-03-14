@@ -1,13 +1,13 @@
-import { EventsMap, EventType } from '@powwow-js/emitter';
-import { RecordKey } from '@powwow-js/nullable';
+import type { EventsMap, EventType } from '@powwow-js/emitter';
+import type { RecordKey } from '@powwow-js/nullable';
 
 export type StateMachineState = RecordKey;
 
-export interface IStateMachine<
+export type IStateMachine<
   State extends StateMachineState,
   Transitions extends EventsMap,
   Context extends NonNullable<unknown>
-> {
+> = {
   get state(): State;
   get context(): Context;
 
@@ -15,7 +15,7 @@ export interface IStateMachine<
     type: T;
     data: D;
   }): StateMachineTransitionResult<State>;
-}
+};
 
 export type StateMachineDefinition<
   State extends StateMachineState,
@@ -74,7 +74,6 @@ export type StateMachineTransitionAction<
   to: StateTo;
   by: Transition;
   data: Transitions[Transition];
-  isDataOf: <T extends EventType<Transitions>>(data: unknown, transition: T) => data is Transitions[T];
   owner: IStateMachine<State, Transitions, Context>;
 };
 
