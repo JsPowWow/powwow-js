@@ -78,8 +78,8 @@ export type StateMachineTransitionAction<
 };
 
 export type StateMachineChangeEvents<
-  Transitions extends EventsMap,
   State extends StateMachineState,
+  Transitions extends EventsMap,
   Context extends NonNullable<unknown> = NonNullable<unknown>
 > = {
   stateChanged: StateMachineTransitionAction<Transitions, State, Context>;

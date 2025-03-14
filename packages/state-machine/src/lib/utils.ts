@@ -4,7 +4,7 @@ import { hasSome, isSomeFunction } from '@powwow-js/nullable';
 
 export const logTransitionAction =
   (options?: { withContext?: boolean; withData?: boolean }) =>
-  <Transitions extends EventsMap, State extends StateMachineState, Context extends NonNullable<unknown>>(
+  <State extends StateMachineState, Transitions extends EventsMap, Context extends NonNullable<unknown>>(
     action: StateMachineTransitionAction<Transitions, State, Context>
   ): void => {
     const { type, to, from, by, data, owner } = action;
@@ -34,8 +34,8 @@ export const logWithContext = logTransitionAction({ withContext: true });
 
 export const enqueue =
   <
-    Transitions extends EventsMap,
     State extends StateMachineState,
+    Transitions extends EventsMap,
     Context extends NonNullable<unknown>,
     StateTo extends StateMachineState,
     Transition extends EventType<Transitions>
@@ -53,8 +53,8 @@ type MatchActionHelper<
   Transitions extends EventsMap,
   Context extends NonNullable<unknown>
 > = {
-  withTransition: <T extends EventType<Transitions>>(
-    by: T,
+  when: <T extends EventType<Transitions>>(
+    pattern: { by: T },
     f: StateMachineTransitionActionEffect<Transitions, State, Context, State, T>
   ) => MatchActionHelper<State, Transitions, Context>;
 };
@@ -67,7 +67,7 @@ export const matchAction = <
   action: StateMachineTransitionAction<Transitions, State, Context, State>
 ): MatchActionHelper<State, Transitions, Context> => {
   const matcher: MatchActionHelper<State, Transitions, Context> = {
-    withTransition: function (by, f): typeof this {
+    when: function ({ by }, f): typeof this {
       if (
         hasSome<StateMachineTransitionAction<Transitions, State, Context, State, typeof by>>(action) &&
         action.by === by
@@ -78,7 +78,7 @@ export const matchAction = <
     },
   };
 
-  matcher.withTransition = matcher.withTransition.bind(matcher);
+  matcher.when = matcher.when.bind(matcher);
   return matcher;
 };
 
@@ -88,7 +88,7 @@ type ActionEffectRunner<
   Context extends NonNullable<unknown>
 > = {
   when: <T extends EventType<Transitions>>(
-    by: T,
+    pattern: { by: T },
     f: StateMachineTransitionActionEffect<Transitions, State, Context, State, T>
   ) => ActionEffectRunner<State, Transitions, Context>;
   invokeAction: (a: StateMachineTransitionAction<Transitions, State, Context, State>) => void;
@@ -100,8 +100,9 @@ export const runActionEffect = <
   Context extends NonNullable<unknown>
 >(): ActionEffectRunner<State, Transitions, Context> => {
   const listeners = new Map<EventType<Transitions>, CallableFunction>();
-  const matcher: ActionEffectRunner<State, Transitions, Context> = {
-    when: function (by, f): typeof this {
+
+  const runner: ActionEffectRunner<State, Transitions, Context> = {
+    when: function ({ by }, f): typeof this {
       listeners.set(by, f);
       return this;
     },
@@ -114,7 +115,7 @@ export const runActionEffect = <
     },
   };
 
-  matcher.when = matcher.when.bind(matcher);
-  matcher.invokeAction = matcher.invokeAction.bind(matcher);
-  return matcher;
+  runner.when = runner.when.bind(runner);
+  runner.invokeAction = runner.invokeAction.bind(runner);
+  return runner;
 };

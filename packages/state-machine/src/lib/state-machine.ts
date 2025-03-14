@@ -17,7 +17,7 @@ export class StateMachine<
 > implements IStateMachine<State, Transitions, Context>
 {
   private definition: StateMachineDefinition<State, Transitions, Context>;
-  private emitter = new EventEmitter<StateMachineChangeEvents<Transitions, State, Context>>();
+  private emitter = new EventEmitter<StateMachineChangeEvents<State, Transitions, Context>>();
 
   private currentState: State;
   private readonly contextData: Context;

@@ -33,19 +33,19 @@ const cellClickAction: StateMachineTransitionActionEffect<
   CrossWordsMachineContext
 > = (action) => {
   matchAction(action)
-    .withTransition('getRandomGame', (a) => {
+    .when({ by: 'getRandomGame' }, (a) => {
       const { data, by } = a;
       const d = data;
       const b = by;
       logAction({ ...a, data: d, by: b });
     })
-    .withTransition('cellClick', ({ owner, data }) => {
+    .when({ by: 'cellClick' }, ({ owner, data }) => {
       owner.context.set((context) => ({
         ...context,
         history: [...context.history, data],
       }));
     })
-    .withTransition('win', (a) => {
+    .when({ by: 'win' }, (a) => {
       const { data, by } = a;
       const d = data;
       const b = by;
@@ -58,7 +58,7 @@ const checkIsWin: StateMachineTransitionActionEffect<
   CrossWordsMachineState,
   CrossWordsMachineContext
 > = (action) => {
-  matchAction(action).withTransition('cellClick', ({ owner, data }) => {
+  matchAction(action).when({ by: 'cellClick' }, ({ owner, data }) => {
     if (data.x === 5 && data.y === 5) {
       owner.send({ type: 'win', data: { score: 25 } });
     }
@@ -93,11 +93,11 @@ const crossWordsLogicDefinition: StateMachineDefinition<
         onEnter: enqueue(
           logAction,
           runActionEffect<CrossWordsMachineState, CrossWordsMachineTransitions, CrossWordsMachineContext>()
-            .when('win', ({ owner, data }) => owner.context.set({ message: `Your score is ${data.score}` }))
-            .when('solution', ({ owner, data }) =>
+            .when({ by: 'win' }, ({ owner, data }) => owner.context.set({ message: `Your score is ${data.score}` }))
+            .when({ by: 'solution' }, ({ owner, data }) =>
               owner.context.set({ message: `The solution is ${data.selectedCells.join('')}` })
             )
-            .when('chooseTemplate', ({ owner, data }) => {
+            .when({ by: 'chooseTemplate' }, ({ owner, data }) => {
               owner.context.set({ message: `The template is "${String(data)}"` });
             }).invokeAction
         ),
@@ -211,11 +211,16 @@ const crossWordsLogicDefinition: StateMachineDefinition<
   },
 };
 
-const simpleFsm: StateMachineDefinition<
-  'init' | 'processing' | 'finish',
-  { run: { processId: number }; stop: undefined; done: { status: 'success' | 'error' }; reset: undefined },
-  ValueContext<number>
-> = {
+type SimpleFsmState = 'init' | 'processing' | 'finish';
+type SimpleFsmTransitions = {
+  run: { processId: number };
+  stop: undefined;
+  done: { status: 'success' | 'error' };
+  reset: undefined;
+};
+type SimpleFsmContext = ValueContext<number>;
+
+const simpleFsm: StateMachineDefinition<SimpleFsmState, SimpleFsmTransitions, SimpleFsmContext> = {
   initialState: 'init',
   states: {
     init: {
@@ -392,17 +397,17 @@ describe('stateMachine simple', () => {
 
     fsm.on('stateChanged', (action) => {
       matchAction(action)
-        .withTransition('run', ({ data }) => expect(data).toStrictEqual({ processId: 40 }))
-        .withTransition('stop', ({ data }) => expect(data).toBeUndefined())
-        .withTransition('done', ({ data }) => expect(data).toStrictEqual({ status: 'success' }));
+        .when({ by: 'run' }, ({ data }) => expect(data).toStrictEqual({ processId: 40 }))
+        .when({ by: 'stop' }, ({ data }) => expect(data).toBeUndefined())
+        .when({ by: 'done' }, ({ data }) => expect(data).toStrictEqual({ status: 'success' }));
     });
 
     fsm.on(
       'stateChanged',
-      runActionEffect()
-        .when('run', ({ data }) => expect(data).toStrictEqual({ processId: 40 }))
-        .when('stop', ({ data }) => expect(data).toBeUndefined())
-        .when('done', ({ data }) => expect(data).toStrictEqual({ status: 'success' })).invokeAction
+      runActionEffect<SimpleFsmState, SimpleFsmTransitions, SimpleFsmContext>()
+        .when({ by: 'run' }, ({ data }) => expect(data).toStrictEqual({ processId: 40 }))
+        .when({ by: 'stop' }, ({ data }) => expect(data).toBeUndefined())
+        .when({ by: 'done' }, ({ data }) => expect(data).toStrictEqual({ status: 'success' })).invokeAction
     );
     expect.assertions(4 + 4 + 4); // 8 times * 1 expect(s) above + 4 below
 
