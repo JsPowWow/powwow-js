@@ -89,14 +89,6 @@ export default [
           },
         },
       ],
-      'no-magic-numbers': [
-        'warn',
-        {
-          ignoreArrayIndexes: true,
-          ignoreDefaultValues: true,
-          ignoreClassFieldInitialValues: true,
-        },
-      ],
     },
   },
 ];

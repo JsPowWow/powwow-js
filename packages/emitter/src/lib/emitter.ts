@@ -1,20 +1,16 @@
-import type { EventType, EventsMap, EventCallback, IEventEmitter, EventData } from './types';
+import type { EventCallback, EventsCallback, EventData, EventsMap, EventType, IEventEmitter } from './types';
 import { isSomeFunction } from '@powwow-js/nullable';
+import { EventsListeners } from './events-listeners';
 
 export class EventEmitter<Events extends EventsMap> implements IEventEmitter<Events> {
-  private listeners: {
-    [Event in keyof EventsMap]?: ((p: EventsMap[Event]) => void)[];
-  } = {};
+  private listeners = new EventsListeners();
 
   public on = <Event extends EventType<Events>, Callback extends EventCallback<EventData<Events, Event>>>(
     event: Event,
     callback: Callback
   ): void => {
-    if (!this.listeners[event]) {
-      this.listeners[event] = [];
-    }
-    if (typeof event === 'string' && isSomeFunction<(p: EventsMap[Event]) => void>(callback)) {
-      this.listeners[event].push(callback);
+    if (isSomeFunction<EventsCallback>(callback)) {
+      this.listeners.add(event, callback);
     }
   };
 
@@ -22,29 +18,24 @@ export class EventEmitter<Events extends EventsMap> implements IEventEmitter<Eve
     event: Event,
     callback: Callback
   ): void => {
-    if (!this.listeners[event]) {
-      return;
+    if (isSomeFunction<EventsCallback>(callback)) {
+      this.listeners.remove(event, callback);
     }
-    this.listeners[event] = this.listeners[event].filter((f) => f !== callback);
   };
 
   public emit = <Event extends EventType<Events>, Data extends EventData<Events, Event>>(
     event: Event,
     data: Data
-  ): void => {
-    if (!this.listeners[event]) {
-      return;
-    }
-    this.listeners[event].forEach((callback) => {
-      callback(data);
-    });
-  };
+  ): void => this.listeners.invoke(event, data);
 
-  public hasListener = <Event extends EventType<Events>>(event: Event): boolean => {
-    return Boolean(this.listeners[event]);
-  };
+  public emitEvent = <Event extends EventType<Events>, Data extends EventData<Events, Event>>(
+    event: Event,
+    ...parameters: Data extends undefined ? [] : [Data]
+  ): void => this.listeners.invoke(event, parameters[0]);
 
-  public destroy = (): void => {
-    this.listeners = {};
+  public hasListener = <Event extends EventType<Events>>(event: Event): boolean => this.listeners.hasListener(event);
+
+  public clearAllListeners = (): void => {
+    this.listeners.removeAll();
   };
 }
