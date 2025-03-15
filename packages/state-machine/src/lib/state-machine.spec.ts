@@ -2,8 +2,8 @@ import { StateMachine } from './state-machine';
 import type { StateMachineDefinition, StateMachineTransitionActionEffect } from './types';
 import { expect } from 'vitest';
 import { enqueue, matchAction, log, logAction, logWithContext, runActionEffect } from './utils';
-import { ValueContext } from './value.context';
-import { StoreContext } from './store.context';
+import { PrimitiveStore } from '@powwow-js/simple-store';
+import { ObjectStore } from '@powwow-js/simple-store';
 
 type CrossWordsMachineState = 'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver';
 
@@ -25,7 +25,7 @@ type CrossWordsMachineContextData = {
   selectedCells: { x: number; y: number }[];
 };
 
-type CrossWordsMachineContext = StoreContext<CrossWordsMachineContextData>;
+type CrossWordsMachineContext = ObjectStore<CrossWordsMachineContextData>;
 
 const cellClickAction: StateMachineTransitionActionEffect<
   CrossWordsMachineTransitions,
@@ -218,7 +218,7 @@ type SimpleFsmTransitions = {
   done: { status: 'success' | 'error' };
   reset: undefined;
 };
-type SimpleFsmContext = ValueContext<number>;
+type SimpleFsmContext = PrimitiveStore<number>;
 
 const simpleFsm: StateMachineDefinition<SimpleFsmState, SimpleFsmTransitions, SimpleFsmContext> = {
   initialState: 'init',
@@ -268,7 +268,7 @@ const simpleFsm: StateMachineDefinition<SimpleFsmState, SimpleFsmTransitions, Si
 describe('stateMachine complex', () => {
   const fsm = new StateMachine(
     crossWordsLogicDefinition,
-    new StoreContext<CrossWordsMachineContextData>({
+    new ObjectStore<CrossWordsMachineContextData>({
       template: 'initial-template',
       time: 0,
       message: '',
@@ -300,7 +300,7 @@ describe('stateMachine simple', () => {
   it('should handle `stateChange` event', () => {
     const onStateChange = vi.fn();
 
-    const fsm = new StateMachine(simpleFsm, new ValueContext(0));
+    const fsm = new StateMachine(simpleFsm, new PrimitiveStore(0));
 
     fsm.on('stateChanged', onStateChange);
     fsm.send({ type: 'run', data: { processId: 20 } });
@@ -368,7 +368,7 @@ describe('stateMachine simple', () => {
   });
 
   it('should correctly handle `stateChange` event with `from, to, by`', () => {
-    const fsm = new StateMachine(simpleFsm, new ValueContext(0));
+    const fsm = new StateMachine(simpleFsm, new PrimitiveStore(0));
 
     fsm.on('stateChanged', ({ from, to, by }) => {
       expect(['init', 'processing', 'finish'].includes(from)).toBe(true);
@@ -393,7 +393,7 @@ describe('stateMachine simple', () => {
   });
 
   it('should correctly handle `stateChange` event with `data`', () => {
-    const fsm = new StateMachine(simpleFsm, new ValueContext(0));
+    const fsm = new StateMachine(simpleFsm, new PrimitiveStore(0));
 
     fsm.on('stateChanged', (action) => {
       matchAction(action)
@@ -425,7 +425,7 @@ describe('stateMachine simple', () => {
   });
 
   it('should correctly update context `data`', () => {
-    const fsm = new StateMachine(simpleFsm, new ValueContext(0));
+    const fsm = new StateMachine(simpleFsm, new PrimitiveStore(0));
 
     expect(fsm.context.value).toBe(0);
 

@@ -35,7 +35,7 @@ export default [
     // Override or add rules here
     languageOptions: {
       parserOptions: {
-        project: ['packages/nullable/tsconfig.*?.json'],
+        project: ['packages/simple-store/tsconfig.*?.json'],
       },
     },
     rules: {

@@ -3,11 +3,11 @@ import type { RecordKey } from '@powwow-js/nullable';
 
 export type StateMachineState = RecordKey;
 
-export type IStateMachine<
+export interface IStateMachine<
   State extends StateMachineState,
   Transitions extends EventsMap,
   Context extends NonNullable<unknown>
-> = {
+> {
   get state(): State;
   get context(): Context;
 
@@ -15,7 +15,7 @@ export type IStateMachine<
     type: T;
     data: D;
   }): StateMachineTransitionResult<State>;
-};
+}
 
 export type StateMachineDefinition<
   State extends StateMachineState,

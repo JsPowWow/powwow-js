@@ -3,7 +3,7 @@ export type EventType<Events extends EventsMap> = string & keyof Events;
 export type EventData<Events extends EventsMap, Event extends EventType<Events>> = Events[Event];
 export type EventCallback<Data> = (data: Data) => void;
 
-export type IEventEmitter<Events extends EventsMap> = {
+export interface IEventEmitter<Events extends EventsMap> {
   on: <Event extends EventType<Events>, Callback extends EventCallback<EventData<Events, Event>>>(
     event: Event,
     callback: Callback
@@ -16,4 +16,4 @@ export type IEventEmitter<Events extends EventsMap> = {
     event: Event,
     parameters: Parameters
   ) => void;
-};
+}

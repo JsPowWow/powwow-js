@@ -2,30 +2,30 @@ import type { RecordKey } from '@powwow-js/nullable';
 import type { IEventEmitter } from '@powwow-js/emitter';
 import { EventEmitter } from '@powwow-js/emitter';
 
-export class StoreContext<T extends Record<RecordKey, unknown>>
+export class ObjectStore<T extends Record<RecordKey, unknown>>
   implements Pick<IEventEmitter<{ changed: T }>, 'on' | 'off'>
 {
-  private context;
+  private storeValue;
   private emitter = new EventEmitter<{ changed: T }>();
 
   constructor(initialValue: T) {
-    this.context = initialValue;
+    this.storeValue = initialValue;
   }
 
-  public set<K extends keyof T>(updater: Pick<T, K> | ((context: T) => Pick<T, K>)): typeof this {
+  public set<K extends keyof T>(updater: Pick<T, K> | ((store: T) => Pick<T, K>)): typeof this {
     if (typeof updater === 'function') {
-      this.context = { ...this.context, ...updater(this.context) };
-      this.emitter.emit('changed', this.context);
+      this.storeValue = { ...this.storeValue, ...updater(this.storeValue) };
+      this.emitter.emit('changed', this.storeValue);
     }
     if (updater && typeof updater === 'object') {
-      this.context = { ...this.context, ...updater };
-      this.emitter.emit('changed', this.context);
+      this.storeValue = { ...this.storeValue, ...updater };
+      this.emitter.emit('changed', this.storeValue);
     }
     return this;
   }
 
   public get(): T {
-    return this.context;
+    return this.storeValue;
   }
 
   public on<P extends Parameters<typeof this.emitter.on>>(...parameters: P): void {
