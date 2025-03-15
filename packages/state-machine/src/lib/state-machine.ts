@@ -43,55 +43,38 @@ export class StateMachine<
     return this.contextData;
   }
 
-  public send<T extends EventType<Transitions>, D extends Transitions[T]>(event: {
-    type: T;
-    data: D;
-  }): StateMachineTransitionResult<State> {
-    const currentStateDefinition = this.definition.states[this.currentState];
+  public send<T extends EventType<Transitions>, D extends Transitions[T]>(
+    transition: T,
+    ...parameters: D extends undefined ? [] : [D]
+  ): StateMachineTransitionResult<State> {
+    const payload = { transition, data: parameters[0] };
 
-    const destinationTransition = currentStateDefinition?.transitions?.[event.type];
+    this.assertsValidTransition(payload);
+
+    const data = payload.data;
+
+    const stateDefinition = this.definition.states[this.currentState];
+    const destinationTransition = stateDefinition?.transitions?.[transition];
 
     if (!destinationTransition) {
       return {
         state: this.currentState,
         success: false,
-        message: `No transition(s) from "${String(this.currentState)}" by "${String(event.type)}"`,
+        message: `No transition(s) from "${String(this.currentState)}" by "${String(transition)}"`,
       };
     }
 
     const previousState = this.currentState;
-
     const newState = destinationTransition.target;
+    const newStateDefinition = this.definition.states[newState];
 
     this.currentState = newState;
 
-    if (destinationTransition.action) {
-      destinationTransition.action.call(
-        this,
-        this.actionPayload('stateTransition', previousState, newState, event.type, event.data)
-      );
-    }
+    destinationTransition?.action?.(this.createAction('stateTransition', previousState, newState, transition, data));
+    stateDefinition?.actions?.onExit?.(this.createAction('stateExit', previousState, newState, transition, data));
+    newStateDefinition?.actions?.onEnter?.(this.createAction('stateEnter', previousState, newState, transition, data));
 
-    if (currentStateDefinition?.actions?.onExit) {
-      currentStateDefinition.actions.onExit.call(
-        this,
-        this.actionPayload('stateExit', previousState, newState, event.type, event.data)
-      );
-    }
-
-    const destinationStateDefinition = this.definition.states[newState];
-
-    if (destinationStateDefinition?.actions?.onEnter) {
-      destinationStateDefinition.actions.onEnter.call(
-        this,
-        this.actionPayload('stateEnter', previousState, newState, event.type, event.data)
-      );
-    }
-
-    this.emitter.emit(
-      'stateChanged',
-      this.actionPayload('stateEnter', previousState, newState, event.type, event.data)
-    );
+    this.emitter.emit('stateChanged', this.createAction('stateChange', previousState, newState, transition, data));
 
     return { state: this.currentState, success: true };
   }
@@ -104,7 +87,7 @@ export class StateMachine<
     return this.emitter.off.apply(this, parameters);
   }
 
-  private actionPayload<
+  private createAction<
     A extends StateMachineTransitionActionType,
     T extends EventType<Transitions>,
     D extends Transitions[T]
@@ -123,5 +106,14 @@ export class StateMachine<
       data,
       owner: this,
     });
+  }
+
+  private assertsValidTransition<T extends EventType<Transitions>, D extends Transitions[T]>(payload: {
+    transition: T;
+    data: unknown;
+  }): asserts payload is { transition: T; data: D } {
+    if (!payload.transition) {
+      throw new Error('Transition must be provided');
+    }
   }
 }

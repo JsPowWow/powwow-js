@@ -60,7 +60,7 @@ const checkIsWin: StateMachineTransitionActionEffect<
 > = (action) => {
   matchAction(action).when({ by: 'cellClick' }, ({ owner, data }) => {
     if (data.x === 5 && data.y === 5) {
-      owner.send({ type: 'win', data: { score: 25 } });
+      owner.send('win', { score: 25 });
     }
   });
 };
@@ -279,15 +279,15 @@ describe('stateMachine complex', () => {
 
   it('should handle `stateChange` event', () => {
     expect(fsm).toBeDefined();
-    fsm.send({ type: 'chooseTemplate', data: { templateName: 'new-template' } });
+    fsm.send('chooseTemplate', { templateName: 'new-template' });
     expect(fsm.context.get().template).toBe('new-template');
     expect(fsm.state).toBe('stateWaitingForInput');
 
-    fsm.send({ type: 'cellClick', data: { x: 1, y: 4 } });
+    fsm.send('cellClick', { x: 1, y: 4 });
     expect(fsm.context.get().history).toStrictEqual([{ x: 1, y: 4 }]);
     expect(fsm.state).toBe('statePlaying');
 
-    fsm.send({ type: 'cellClick', data: { x: 5, y: 5 } });
+    fsm.send('cellClick', { x: 5, y: 5 });
     expect(fsm.context.get().history).toStrictEqual([
       { x: 1, y: 4 },
       { x: 5, y: 5 },
@@ -303,9 +303,9 @@ describe('stateMachine simple', () => {
     const fsm = new StateMachine(simpleFsm, new PrimitiveStore(0));
 
     fsm.on('stateChanged', onStateChange);
-    fsm.send({ type: 'run', data: { processId: 20 } });
+    fsm.send('run', { processId: 20 });
     expect(onStateChange).toHaveBeenCalledWith({
-      type: 'stateEnter',
+      type: 'stateChange',
       from: 'init',
       to: 'processing',
       by: 'run',
@@ -315,9 +315,9 @@ describe('stateMachine simple', () => {
     expect(fsm.state).toBe('processing');
     onStateChange.mockReset();
 
-    fsm.send({ type: 'stop', data: undefined });
+    fsm.send('stop');
     expect(onStateChange).toHaveBeenCalledWith({
-      type: 'stateEnter',
+      type: 'stateChange',
       from: 'processing',
       to: 'init',
       by: 'stop',
@@ -327,14 +327,14 @@ describe('stateMachine simple', () => {
     expect(fsm.state).toBe('init');
     onStateChange.mockReset();
 
-    fsm.send({ type: 'done', data: { status: 'success' } });
+    fsm.send('done', { status: 'success' });
     expect(onStateChange).not.toHaveBeenCalled();
     expect(fsm.state).toBe('init');
     onStateChange.mockReset();
 
-    fsm.send({ type: 'run', data: { processId: 40 } });
+    fsm.send('run', { processId: 40 });
     expect(onStateChange).toHaveBeenCalledWith({
-      type: 'stateEnter',
+      type: 'stateChange',
       from: 'init',
       to: 'processing',
       by: 'run',
@@ -343,9 +343,9 @@ describe('stateMachine simple', () => {
     });
     expect(fsm.state).toBe('processing');
 
-    fsm.send({ type: 'done', data: { status: 'success' } });
+    fsm.send('done', { status: 'success' });
     expect(onStateChange).toHaveBeenCalledWith({
-      type: 'stateEnter',
+      type: 'stateChange',
       from: 'processing',
       to: 'finish',
       by: 'done',
@@ -356,13 +356,13 @@ describe('stateMachine simple', () => {
     onStateChange.mockReset();
 
     fsm.off('stateChanged', onStateChange);
-    fsm.send({ type: 'reset', data: undefined });
+    fsm.send('reset');
     expect(onStateChange).not.toHaveBeenCalled();
     expect(fsm.state).toBe('init');
-    fsm.send({ type: 'run', data: { processId: 80 } });
+    fsm.send('run', { processId: 80 });
     expect(onStateChange).not.toHaveBeenCalled();
     expect(fsm.state).toBe('processing');
-    fsm.send({ type: 'done', data: { status: 'error' } });
+    fsm.send('done', { status: 'error' });
     expect(onStateChange).not.toHaveBeenCalled();
     expect(fsm.state).toBe('finish');
   });
@@ -377,18 +377,18 @@ describe('stateMachine simple', () => {
     });
     expect.assertions(4 * 3 + 4); // 4 times * 3 expect(s) above + 4 below
 
-    fsm.send({ type: 'run', data: { processId: 40 } });
-    fsm.send({ type: 'run', data: { processId: 90 } });
+    fsm.send('run', { processId: 40 });
+    fsm.send('run', { processId: 90 });
     expect(fsm.state).toBe('processing');
 
-    fsm.send({ type: 'stop', data: undefined });
+    fsm.send('stop');
 
     expect(fsm.state).toBe('init');
 
-    fsm.send({ type: 'run', data: { processId: 40 } });
+    fsm.send('run', { processId: 40 });
     expect(fsm.state).toBe('processing');
 
-    fsm.send({ type: 'done', data: { status: 'success' } });
+    fsm.send('done', { status: 'success' });
     expect(fsm.state).toBe('finish');
   });
 
@@ -411,16 +411,16 @@ describe('stateMachine simple', () => {
     );
     expect.assertions(4 + 4 + 4); // 8 times * 1 expect(s) above + 4 below
 
-    fsm.send({ type: 'run', data: { processId: 40 } });
+    fsm.send('run', { processId: 40 });
     expect(fsm.state).toBe('processing');
 
-    fsm.send({ type: 'stop', data: undefined });
+    fsm.send('stop');
     expect(fsm.state).toBe('init');
 
-    fsm.send({ type: 'run', data: { processId: 40 } });
+    fsm.send('run', { processId: 40 });
     expect(fsm.state).toBe('processing');
 
-    fsm.send({ type: 'done', data: { status: 'success' } });
+    fsm.send('done', { status: 'success' });
     expect(fsm.state).toBe('finish');
   });
 
@@ -429,16 +429,16 @@ describe('stateMachine simple', () => {
 
     expect(fsm.context.value).toBe(0);
 
-    fsm.send({ type: 'run', data: { processId: 40 } });
+    fsm.send('run', { processId: 40 });
     expect(fsm.context.value).toBe(150);
 
-    fsm.send({ type: 'stop', data: undefined });
+    fsm.send('stop');
     expect(fsm.context.value).toBe(100);
 
-    fsm.send({ type: 'run', data: { processId: 40 } });
+    fsm.send('run', { processId: 40 });
     expect(fsm.context.value).toBe(150);
 
-    fsm.send({ type: 'done', data: { status: 'success' } });
+    fsm.send('done', { status: 'success' });
     expect(fsm.context.value).toBe(200);
   });
 });

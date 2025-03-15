@@ -1,5 +1,5 @@
 import type { EventsMap, EventType } from '@powwow-js/emitter';
-import type { RecordKey } from '@powwow-js/nullable';
+import type { KeysWithType, RecordKey } from '@powwow-js/nullable';
 
 export type StateMachineState = RecordKey;
 
@@ -11,10 +11,11 @@ export interface IStateMachine<
   get state(): State;
   get context(): Context;
 
-  send<T extends EventType<Transitions>, D extends Transitions[T]>(event: {
-    type: T;
-    data: D;
-  }): StateMachineTransitionResult<State>;
+  send<T extends KeysWithType<Transitions, undefined>>(event: T): StateMachineTransitionResult<State>;
+  send<T extends EventType<Transitions>, D extends Transitions[T]>(
+    event: T,
+    data: D
+  ): StateMachineTransitionResult<State>;
 }
 
 export type StateMachineDefinition<
@@ -60,7 +61,7 @@ export type StateMachineTransitionActionEffect<
   Transition extends EventType<Transitions> = EventType<Transitions>
 > = (action: StateMachineTransitionAction<Transitions, State, Context, StateTo, Transition>) => void;
 
-export type StateMachineTransitionActionType = 'stateExit' | 'stateEnter' | 'stateTransition';
+export type StateMachineTransitionActionType = 'stateTransition' | 'stateExit' | 'stateEnter' | 'stateChange';
 
 export type StateMachineTransitionAction<
   Transitions extends EventsMap,
