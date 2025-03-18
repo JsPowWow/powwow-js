@@ -1,5 +1,6 @@
 {
   "name": "@powwow-js/fun-dom",
+  "version": "0.5.0",
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
@@ -8,6 +9,6 @@
   },
   "dependencies": {
     "tslib": "^2.3.0",
-    "@powwow-js/routing-utils": "workspace:*"
+    "@powwow-js/routing-utils": "^0.5.0"
   }
 }

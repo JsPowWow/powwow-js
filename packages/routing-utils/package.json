@@ -1,5 +1,6 @@
 {
   "name": "@powwow-js/routing-utils",
+  "version": "0.5.0",
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -7,6 +8,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@powwow-js/core": "workspace:*"
+    "@powwow-js/core": "^0.5.0"
   }
 }

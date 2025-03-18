@@ -68,10 +68,11 @@
     "projects": ["packages/*"],
     "version": {
       "generatorOptions": {
-        "fallbackCurrentVersionResolver": "disk"
+        "fallbackCurrentVersionResolver": "disk",
+        "packageRoot": "dist/packages/{projectName}",
+        "currentVersionResolver": "git-tag"
       },
-      "preVersionCommand": "npx nx run-many -t build",
-      "conventionalCommits": true
+      "preVersionCommand": "npx nx run-many -t build"
     }
   },
   "generators": {

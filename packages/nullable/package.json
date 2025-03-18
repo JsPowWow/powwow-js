@@ -1,10 +1,11 @@
 {
   "name": "@powwow-js/nullable",
+  "version": "0.5.0",
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@powwow-js/core": "workspace:*"
+    "@powwow-js/core": "^0.5.0"
   },
   "main": "./index.js",
   "module": "./index.mjs",
