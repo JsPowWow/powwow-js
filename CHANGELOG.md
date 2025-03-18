@@ -1,3 +1,13 @@
+## 0.4.0 (2025-03-18)
+
+### 🚀 Features
+
+- **core:** add few core util(s) ([3999815](https://github.com/JsPowWow/powwow-js/commit/3999815))
+
+### ❤️ Thank You
+
+- PowWoWJs
+
 ## 0.3.0 (2025-03-18)
 
 ### 🚀 Features
