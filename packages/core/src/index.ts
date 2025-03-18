@@ -14,6 +14,7 @@ export { default as stubTrue } from './lib/fp/stubTrue';
 export { default as stubFalse } from './lib/fp/stubFalse';
 export { default as stubNull } from './lib/fp/stubNull';
 export { default as toggle } from './lib/fp/toggle';
+export { default as call } from './lib/fp/call';
 
 export { default as hasProperty } from './lib/objects/hasProperty';
 export { default as removeProperty } from './lib/objects/removeProperty';

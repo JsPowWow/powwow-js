@@ -16,5 +16,3 @@ export function assertIsInstanceOf<T>(elementType: ConstructorOf<T>, value: unkn
 export const exhaustiveGuard = (_: never): never => {
   throw new Error(`Not expected value: "${String(_)}"`);
 };
-
-// ================= https://catchts.com/FP-style =================
