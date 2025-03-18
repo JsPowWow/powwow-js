@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { RouteHandler, Router } from '@powwow-js/fun-dom';
 import { RoutesConfig } from '@powwow-js/routing-utils';
 
@@ -23,12 +24,12 @@ const learnJsRoute: RoutesConfig<RouteHandler> = [
     handler: () => {
       const ele = document.createElement('h4');
       ele.innerText = 'Learning JS library publishing';
-      const btn = document.createElement('button');
-      btn.innerText = 'Refresh';
-      btn.onclick = () => {
+      const button = document.createElement('button');
+      button.innerText = 'Refresh';
+      button.addEventListener('click', () => {
         Router.refresh();
-      };
-      ele.appendChild(btn);
+      });
+      ele.append(button);
       return ele;
     },
   },
@@ -41,10 +42,10 @@ const learnRoutes: RoutesConfig<RouteHandler> = [
       const fragment = document.createDocumentFragment();
       const ele = document.createElement('h3');
       ele.innerText = 'Learning JS';
-      fragment.appendChild(ele);
+      fragment.append(ele);
       const section = document.createElement('section');
-      section.setAttribute('data-vanilla-route-ele', 'router-wrap');
-      fragment.appendChild(section);
+      section.dataset.vanillaRouteEle = 'router-wrap';
+      fragment.append(section);
       return fragment;
     },
     children: learnJsRoute,
@@ -67,7 +68,7 @@ export const routeConfig: RoutesConfig<RouteHandler> = [
     pathname: '*',
     handler: () => {
       const ele = document.createElement('h3');
-      ele.innerText = '>> 404 Page not found <<';
+      ele.textContent = '>> 404 Page not found <<';
       return ele;
     },
   },
@@ -75,7 +76,7 @@ export const routeConfig: RoutesConfig<RouteHandler> = [
     pathname: '/',
     handler: () => {
       const ele = document.createElement('h2');
-      ele.innerText = 'HOME PAGE';
+      ele.textContent = 'HOME PAGE';
       return ele;
     },
   },
@@ -83,13 +84,13 @@ export const routeConfig: RoutesConfig<RouteHandler> = [
     pathname: '/about',
     handler: ({ dispose }) => {
       const ele = document.createElement('h2');
-      ele.innerText = 'ABOUT PAGE';
-      const btn = document.createElement('button');
-      btn.innerText = 'Take me to the About page with details';
-      btn.onclick = () => {
+      ele.textContent = 'ABOUT PAGE';
+      const button = document.createElement('button');
+      button.textContent = 'Take me to the About page with details';
+      button.addEventListener('click', () => {
         Router.go('/about/frontend-dev');
-      };
-      ele.appendChild(btn);
+      });
+      ele.append(button);
       dispose(() => {
         console.log('Dispose: Bye Bye from About Page');
       });
@@ -100,22 +101,22 @@ export const routeConfig: RoutesConfig<RouteHandler> = [
     pathname: '/about/:id',
     handler: () => {
       const ele = document.createElement('h2');
-      ele.innerText = `ABOUT PAGE with details about ${Router.getLocation().params.id}`;
+      ele.textContent = `ABOUT PAGE with details about ${Router.getLocation().params.id}`;
 
-      const btnBack = document.createElement('button');
-      btnBack.innerText = 'Go back';
-      btnBack.onclick = () => {
+      const buttonBack = document.createElement('button');
+      buttonBack.textContent = 'Go back';
+      buttonBack.addEventListener('click', () => {
         console.log('Bye Bye from About page');
         Router.back();
-      };
-      const btnForward = document.createElement('button');
-      btnForward.innerText = 'Go Forward';
-      btnForward.onclick = () => {
+      });
+      const buttonForward = document.createElement('button');
+      buttonForward.innerText = 'Go Forward';
+      buttonForward.addEventListener('click', () => {
         Router.forward();
-      };
+      });
 
-      ele.appendChild(btnBack);
-      ele.appendChild(btnForward);
+      ele.append(buttonBack);
+      ele.append(buttonForward);
       return ele;
     },
   },
@@ -125,16 +126,16 @@ export const routeConfig: RoutesConfig<RouteHandler> = [
       const fragment = document.createDocumentFragment();
       const ele = document.createElement('h2');
       ele.innerText = 'LEARN PAGE';
-      fragment.appendChild(ele);
-      const btn = document.createElement('button');
-      btn.innerText = 'Replace with css page';
-      btn.onclick = () => {
+      fragment.append(ele);
+      const button = document.createElement('button');
+      button.innerText = 'Replace with css page';
+      button.addEventListener('click', () => {
         Router.replace('/learn/css');
-      };
-      fragment.appendChild(btn);
+      });
+      fragment.append(button);
       const section = document.createElement('section');
-      section.setAttribute('data-vanilla-route-ele', 'router-wrap');
-      fragment.appendChild(section);
+      section.dataset.vanillaRouteEle = 'router-wrap';
+      fragment.append(section);
       return fragment;
     },
     children: learnRoutes,

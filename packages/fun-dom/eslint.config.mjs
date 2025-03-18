@@ -2,6 +2,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
 import baseConfig from '../../eslint.base.config.mjs';
 
 const compat = new FlatCompat({
@@ -18,6 +19,12 @@ export default [
     browser: true,
     node: true,
   }),
+  ...tseslint.configs.strict,
+  ...tseslint.configs.stylistic,
+  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
+    ...config,
+    files: ['**/*.ts'], // We use TS config only for TS files
+  })),
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     // Override or add rules here
@@ -26,7 +33,24 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx'],
     // Override or add rules here
-    rules: {},
+    languageOptions: {
+      parserOptions: {
+        project: ['packages/fun-dom/tsconfig.*?.json'],
+      },
+    },
+    rules: {
+      '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'error',
+      '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }],
+      '@typescript-eslint/explicit-member-accessibility': [
+        'error',
+        { accessibility: 'explicit', overrides: { constructors: 'off' } },
+      ],
+      '@typescript-eslint/member-ordering': 'error',
+      'unicorn/no-instanceof-builtins': ['error', { exclude: ['String', 'Number'] }],
+      'unicorn/no-abusive-eslint-disable': 'off',
+    },
   },
   {
     files: ['**/*.js', '**/*.jsx'],

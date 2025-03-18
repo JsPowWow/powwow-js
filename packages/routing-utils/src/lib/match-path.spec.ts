@@ -1,6 +1,6 @@
 import { findMatchingRoute } from './match-path';
 import { expect } from 'vitest';
-import { noop } from '@powwow-js/nullable';
+import { noop } from '@powwow-js/core';
 
 describe('findMatchingRoute', () => {
   const routes = Object.keys({

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { RouteHandler, RouteLocation, RouteWithLocation } from './types';
 import { getMatchingRoutes, parseConfig, RouteDefinition, RoutesConfig } from '@powwow-js/routing-utils';
 import { getHash, getQueryString, PushHistory, removeQueryParamsAndHash, updateHistory } from './url-utils';

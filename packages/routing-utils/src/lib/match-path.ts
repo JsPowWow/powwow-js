@@ -1,5 +1,6 @@
-import { hasSome, isInstanceOf } from '@powwow-js/nullable';
+import { isInstanceOf } from '@powwow-js/nullable';
 import type { MatchingRoute, RouteMatchingResult, RoutePath } from './types';
+import { hasSome } from '@powwow-js/core';
 
 const toRegExp = (route: string): RegExp => {
   return new RegExp(

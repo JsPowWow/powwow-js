@@ -5,7 +5,7 @@
   },
   "version": "0.0.1",
   "dependencies": {
-    "@powwow-js/nullable": "^0.0.2"
+    "@powwow-js/core": "^0.0.7"
   },
   "main": "./index.js",
   "module": "./index.mjs",

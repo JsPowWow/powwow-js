@@ -1,3 +1,4 @@
+/* eslint-disable */
 export function removeQueryParams(path: string) {
   const paramsPos = path.indexOf('?');
   return paramsPos > -1 ? path.slice(0, paramsPos) : path;

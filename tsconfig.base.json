@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@powwow-js/core": ["packages/core/src/index.ts"],
       "@powwow-js/emitter": ["packages/emitter/src/index.ts"],
       "@powwow-js/fun-dom": ["packages/fun-dom/src/index.ts"],
       "@powwow-js/nullable": ["packages/nullable/src/index.ts"],

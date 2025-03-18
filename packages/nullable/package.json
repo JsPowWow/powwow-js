@@ -4,7 +4,9 @@
     "access": "public"
   },
   "version": "0.0.2",
-  "dependencies": {},
+  "dependencies": {
+    "@powwow-js/core": "^0.0.7"
+  },
   "main": "./index.js",
   "module": "./index.mjs",
   "typings": "./index.d.ts"

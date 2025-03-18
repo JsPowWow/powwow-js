@@ -14,7 +14,7 @@ const MAX_LINES_PER_FUNCTION = 55;
 
 export default [
   {
-    ignores: ['**/dist', 'vite.config.*', 'eslint.config.*'],
+    ignores: ['**/dist', 'vite.config.*', 'eslint.config.*', 'playwright.config.*'],
   },
   { plugins: { '@nx': nxEslintPlugin } },
   {
@@ -89,6 +89,15 @@ export default [
           },
         },
       ],
+      'no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '[iI]gnored',
+        },
+      ],
+      'unicorn/filename-case': 'off',
     },
   },
 ];

@@ -1,16 +1,10 @@
-export type Nil = null | undefined;
-
-export type Nullable<T> = T | Nil;
-
-export type ConstructorOf<T> = { prototype: T; new (...parameters: never[]): T };
+import type { Nil } from './core.types';
 
 export type RecordKey = string | number | symbol;
 
-export type Primitive = string | boolean | number | null | undefined;
+export type ValueOf<T> = T[keyof T];
 
 export type NullableValuesOf<T> = { [P in keyof T]: T[P] | Nil };
-
-export type ValueOf<T> = T[keyof T];
 
 export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 

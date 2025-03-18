@@ -1,6 +1,8 @@
-import { RouteDefinition } from '@powwow-js/routing-utils';
+import { type RouteDefinition } from '@powwow-js/routing-utils';
 
-export type RouteHandler = (options: { dispose: <T extends () => void>(cb: T) => void }) => Element | DocumentFragment;
+export type RouteHandler = (options: {
+  dispose: <T extends () => void>(callback: T) => void;
+}) => Element | DocumentFragment;
 
 export type RouteLocation = {
   pathname: string;

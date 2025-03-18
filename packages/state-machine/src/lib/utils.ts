@@ -1,6 +1,6 @@
 import type { StateMachineState, StateMachineTransitionAction, StateMachineTransitionActionEffect } from './types';
 import type { EventsMap, EventType } from '@powwow-js/emitter';
-import { hasSome, isSomeFunction } from '@powwow-js/nullable';
+import { hasSome, isSomeFunction } from '@powwow-js/core';
 
 export const logTransitionAction =
   (options?: { withContext?: boolean; withData?: boolean }) =>

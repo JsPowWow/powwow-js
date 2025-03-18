@@ -1,5 +1,5 @@
 import type { EventsMap, EventType } from '@powwow-js/emitter';
-import type { KeysWithType, RecordKey } from '@powwow-js/nullable';
+import type { KeysWithType, RecordKey } from '@powwow-js/core';
 
 export type StateMachineState = RecordKey;
 

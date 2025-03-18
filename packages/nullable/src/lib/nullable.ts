@@ -1,30 +1,4 @@
-import type { ConstructorOf, Nil, Nullable } from './types';
-
-export function isNil<T>(value: Nullable<T>): value is Nil {
-  return value === null || value === undefined;
-}
-
-export function hasSome<T>(value: unknown): value is NonNullable<T> {
-  return value !== null && value !== undefined;
-}
-
-export function isSomeFunction<SomeFunction extends (...parameters: unknown[]) => unknown>(
-  value: unknown
-): value is NonNullable<SomeFunction> {
-  return hasSome<SomeFunction>(value) && typeof value === 'function';
-}
-
-/**
- * @description Checks if provided value can be classified as a `String` primitive
- */
-export const isString = (source: Nullable<unknown>): source is string =>
-  typeof source === 'string' || source instanceof String;
-
-/**
- * @description Checks if provided value can be classified as a `Number` primitive
- */
-export const isNumber = (source: Nullable<unknown>): source is number =>
-  typeof source === 'number' || source instanceof Number;
+import type { ConstructorOf } from '@powwow-js/core';
 
 export function assertIsNonNullable<T>(value: unknown, ...messages: string[]): asserts value is NonNullable<T> {
   if (value === undefined || value === null) {
@@ -47,12 +21,6 @@ export const exhaustiveGuard = (_: never): never => {
   throw new Error(`Not expected value: "${String(_)}"`);
 };
 
-export const noop = (): void => {
-  return undefined;
-};
-
-export const identity = <T>(source: T): T => source;
-
 export function sleep(delay: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -60,3 +28,19 @@ export function sleep(delay: number): Promise<void> {
     }, delay);
   });
 }
+
+// ================= https://catchts.com/FP-style =================
+
+export const removeProperty = <TargetObject, Property extends keyof TargetObject>(
+  object: TargetObject,
+  property: Property
+): Omit<TargetObject, Property> => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { [property]: _, ...rest } = object;
+  return rest;
+};
+
+export const hasProperty = <TargetObject, Property extends string>(
+  object: TargetObject,
+  property: Property
+): object is TargetObject & Record<Property, unknown> => Object.prototype.hasOwnProperty.call(object, property);

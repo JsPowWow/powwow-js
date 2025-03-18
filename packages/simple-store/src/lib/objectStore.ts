@@ -1,4 +1,4 @@
-import type { RecordKey } from '@powwow-js/nullable';
+import type { RecordKey } from '@powwow-js/core';
 import type { IEventEmitter } from '@powwow-js/emitter';
 import { EventEmitter } from '@powwow-js/emitter';
 

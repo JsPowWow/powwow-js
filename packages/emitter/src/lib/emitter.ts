@@ -1,5 +1,5 @@
 import type { EventCallback, EventsCallback, EventData, EventsMap, EventType, IEventEmitter } from './types';
-import { isSomeFunction } from '@powwow-js/nullable';
+import { isSomeFunction } from '@powwow-js/core';
 import { EventsListeners } from './events-listeners';
 
 export class EventEmitter<Events extends EventsMap> implements IEventEmitter<Events> {

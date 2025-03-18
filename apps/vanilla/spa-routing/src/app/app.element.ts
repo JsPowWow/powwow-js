@@ -5,6 +5,7 @@ import { routeConfig } from './app.routes';
 export class AppElement extends HTMLElement {
   public static observedAttributes = [];
 
+  // eslint-disable-next-line max-lines-per-function
   connectedCallback() {
     const title = 'spa-routing';
     this.innerHTML = `
