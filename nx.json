@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "packageManager": "pnpm",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
@@ -68,9 +69,7 @@
     "projects": ["packages/*"],
     "version": {
       "generatorOptions": {
-        "fallbackCurrentVersionResolver": "disk",
-        "packageRoot": "dist/packages/{projectName}",
-        "currentVersionResolver": "git-tag"
+        "fallbackCurrentVersionResolver": "disk"
       },
       "preVersionCommand": "npx nx run-many -t build",
       "conventionalCommits": true
