@@ -1,3 +1,13 @@
+## 0.5.0 (2025-03-18)
+
+### 🚀 Features
+
+- **core:** add few function(s) utils ([b45a375](https://github.com/JsPowWow/powwow-js/commit/b45a375))
+
+### ❤️ Thank You
+
+- JsPowWow
+
 ## 0.4.0 (2025-03-18)
 
 ### 🚀 Features
