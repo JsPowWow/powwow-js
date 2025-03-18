@@ -57,8 +57,14 @@
     "git": {
       "commitMessage": "chore(release): {version}"
     },
+    "changelog": {
+      "automaticFromRef": true
+    },
     "projects": ["packages/*"],
     "version": {
+      "generatorOptions": {
+        "fallbackCurrentVersionResolver": "disk"
+      },
       "preVersionCommand": "npx nx run-many -t build",
       "conventionalCommits": true
     }
