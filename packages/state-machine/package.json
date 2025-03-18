@@ -3,10 +3,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.1",
   "dependencies": {
-    "@powwow-js/core": "^0.0.7",
-    "@powwow-js/emitter": "^0.0.1"
+    "@powwow-js/core": "workspace:*",
+    "@powwow-js/emitter": "workspace:*"
   },
   "main": "./index.js",
   "module": "./index.mjs",

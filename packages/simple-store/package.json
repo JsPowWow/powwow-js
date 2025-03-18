@@ -1,6 +1,5 @@
 {
   "name": "@powwow-js/simple-store",
-  "version": "0.0.1",
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -8,7 +7,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@powwow-js/core": "^0.0.7",
-    "@powwow-js/emitter": "^0.0.1"
+    "@powwow-js/core": "workspace:*",
+    "@powwow-js/emitter": "workspace:*"
   }
 }

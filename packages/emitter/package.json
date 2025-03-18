@@ -3,9 +3,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.1",
   "dependencies": {
-    "@powwow-js/core": "^0.0.7"
+    "@powwow-js/core": "workspace:*"
   },
   "main": "./index.js",
   "module": "./index.mjs",
