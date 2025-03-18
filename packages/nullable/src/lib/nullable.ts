@@ -30,17 +30,3 @@ export function sleep(delay: number): Promise<void> {
 }
 
 // ================= https://catchts.com/FP-style =================
-
-export const removeProperty = <TargetObject, Property extends keyof TargetObject>(
-  object: TargetObject,
-  property: Property
-): Omit<TargetObject, Property> => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { [property]: _, ...rest } = object;
-  return rest;
-};
-
-export const hasProperty = <TargetObject, Property extends string>(
-  object: TargetObject,
-  property: Property
-): object is TargetObject & Record<Property, unknown> => Object.prototype.hasOwnProperty.call(object, property);

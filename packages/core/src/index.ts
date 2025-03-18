@@ -10,3 +10,6 @@ export { default as isNumber } from './lib/guards/isNumber';
 
 export { default as identity } from './lib/fp/identity';
 export { default as noop } from './lib/fp/noop';
+
+export { default as hasProperty } from './lib/objects/hasProperty';
+export { default as removeProperty } from './lib/objects/removeProperty';
