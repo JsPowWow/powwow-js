@@ -10,7 +10,14 @@ export { default as isNumber } from './lib/guards/isNumber';
 
 export { default as identity } from './lib/fp/identity';
 export { default as noop } from './lib/fp/noop';
+export { default as stubTrue } from './lib/fp/stubTrue';
+export { default as stubFalse } from './lib/fp/stubFalse';
+export { default as stubNull } from './lib/fp/stubNull';
+export { default as toggle } from './lib/fp/toggle';
 
 export { default as hasProperty } from './lib/objects/hasProperty';
 export { default as removeProperty } from './lib/objects/removeProperty';
 export { default as isInstanceOf } from './lib/guards/isInstanceOf';
+
+export { default as sleep } from './lib/async/sleep';
+export { default as promiseResolver } from './lib/async/promiseResolver';

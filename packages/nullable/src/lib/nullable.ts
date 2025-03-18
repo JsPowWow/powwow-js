@@ -17,12 +17,4 @@ export const exhaustiveGuard = (_: never): never => {
   throw new Error(`Not expected value: "${String(_)}"`);
 };
 
-export function sleep(delay: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, delay);
-  });
-}
-
 // ================= https://catchts.com/FP-style =================
