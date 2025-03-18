@@ -1,4 +1,4 @@
-import { isInstanceOf } from '@powwow-js/nullable';
+import { isInstanceOf } from '@powwow-js/core';
 import type { MatchingRoute, RouteMatchingResult, RoutePath } from './types';
 import { hasSome } from '@powwow-js/core';
 

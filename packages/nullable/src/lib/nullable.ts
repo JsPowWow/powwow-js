@@ -13,10 +13,6 @@ export function assertIsInstanceOf<T>(elementType: ConstructorOf<T>, value: unkn
   }
 }
 
-export function isInstanceOf<T>(elementType: ConstructorOf<T>, value: unknown): value is T {
-  return value instanceof elementType;
-}
-
 export const exhaustiveGuard = (_: never): never => {
   throw new Error(`Not expected value: "${String(_)}"`);
 };

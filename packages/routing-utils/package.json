@@ -8,7 +8,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@powwow-js/core": "^0.0.7",
-    "@powwow-js/nullable": "^0.0.2"
+    "@powwow-js/core": "^0.0.7"
   }
 }

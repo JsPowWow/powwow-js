@@ -2,6 +2,8 @@ import type { Nil } from './core.types';
 
 export type RecordKey = string | number | symbol;
 
+export type ConstructorOf<T> = { prototype: T; new (...parameters: never[]): T };
+
 export type ValueOf<T> = T[keyof T];
 
 export type NullableValuesOf<T> = { [P in keyof T]: T[P] | Nil };

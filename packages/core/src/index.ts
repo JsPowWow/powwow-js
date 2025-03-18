@@ -13,3 +13,4 @@ export { default as noop } from './lib/fp/noop';
 
 export { default as hasProperty } from './lib/objects/hasProperty';
 export { default as removeProperty } from './lib/objects/removeProperty';
+export { default as isInstanceOf } from './lib/guards/isInstanceOf';
