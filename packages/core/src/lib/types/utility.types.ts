@@ -1,6 +1,4 @@
-import type { Nil } from './core.types';
-
-export type RecordKey = string | number | symbol;
+import type { Nil, RecordKey } from './core.types';
 
 export type ConstructorOf<T> = { prototype: T; new (...parameters: never[]): T };
 

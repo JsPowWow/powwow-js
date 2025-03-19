@@ -1,7 +1,7 @@
-export type UnknownUnaryFunction = (v: unknown) => unknown;
+export type UnaryFunction<I = unknown, O = unknown> = (v: I) => O;
+export type VariadicFunction<I = unknown, O = unknown> = (...parameters: I[]) => O;
 export type UnknownBinaryFunction = (a: unknown, b: unknown) => unknown;
 export type UnknownTernaryFunction = (a: unknown, b: unknown, c: unknown) => unknown;
-export type UnknownVariadicFunction<R = unknown> = (...parameters: unknown[]) => R;
 
 export type PromiseResolve<Result> = (value: PromiseLike<Result> | Result) => void;
 export type PromiseReject<Reason> = (reason: Reason) => void;

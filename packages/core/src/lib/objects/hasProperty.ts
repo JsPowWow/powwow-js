@@ -1,6 +1,10 @@
-export default function hasProperty<TargetObject, Property extends string>(
-  object: TargetObject,
-  property: Property
-): object is TargetObject & Record<Property, unknown> {
-  return Object.prototype.hasOwnProperty.call(object, property);
+import hasSome from './hasSome';
+import isValidRecordKey from './isValidRecordKey';
+import type { RecordKey } from '../types/core.types';
+
+export default function hasProperty<Property extends RecordKey, SourceObject>(
+  property: unknown,
+  source: SourceObject
+): source is SourceObject & Record<Property, unknown> {
+  return isValidRecordKey(property) && typeof source === 'object' && hasSome(source) && property in source;
 }

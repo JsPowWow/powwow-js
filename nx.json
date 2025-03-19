@@ -50,11 +50,6 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
-    },
-    "nx-release-publish": {
-      "options": {
-        "packageRoot": "dist/packages/{projectName}"
-      }
     }
   },
   "release": {
@@ -67,11 +62,6 @@
     },
     "projects": ["packages/*"],
     "version": {
-      "generatorOptions": {
-        "fallbackCurrentVersionResolver": "disk",
-        "packageRoot": "dist/packages/{projectName}",
-        "currentVersionResolver": "git-tag"
-      },
       "preVersionCommand": "npx nx run-many -t build"
     }
   },

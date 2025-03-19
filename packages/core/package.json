@@ -1,11 +1,14 @@
 {
   "name": "@powwow-js/core",
   "version": "0.5.0",
-  "type": "module",
-  "main": "./index.js",
-  "types": "./index.d.ts",
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "typings": "./index.d.ts",
+  "scripts": {
+    "validate:core": "nx run @powwow-js/core:typecheck && nx run @powwow-js/core:lint && nx run @powwow-js/core:test"
+  }
 }
