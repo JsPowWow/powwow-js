@@ -1,3 +1,13 @@
+## 0.7.0 (2025-03-19)
+
+### 🚀 Features
+
+- **core:** add few more FP utils ([f7f49cd](https://github.com/JsPowWow/powwow-js/commit/f7f49cd))
+
+### ❤️ Thank You
+
+- JsPowWow
+
 ## 0.6.3 (2025-03-18)
 
 This was a version bump only, there were no code changes.
