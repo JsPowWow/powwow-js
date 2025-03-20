@@ -9,9 +9,9 @@ describe('Maybe', () => {
 //   flow(preventDefault, getEventTarget, (target) => {
 //     Maybe.of(target)
 //       .flatMap(maybeInstanceOf(Element))
-//       .map(getClosestByDataAttribute('action'))
+//       .mapNullable(getClosestByDataAttribute('action'))
 //       .flatMap(maybeInstanceOf(HTMLElement))
-//       .map(getDataAttributeValue('action'))
+//       .mapNullable(getDataAttributeValue('action'))
 //       .flatMap(maybeKeyOf(actions))
 //       .unwrap((a) => actions[a](), noop);
 //   }),

@@ -1,4 +1,4 @@
-import type { Nil, RecordKey } from './core.types';
+import type { Nil, Nullable, RecordKey } from './core.types';
 
 export type ConstructorOf<T> = { prototype: T; new (...parameters: never[]): T };
 
@@ -11,6 +11,12 @@ export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 export type WithOptional<T, K extends keyof T> = Omit<T, K> & { [P in K]?: T[P] };
 
 export type DeepPartial<T> = T extends Record<RecordKey, unknown> ? { [P in keyof T]?: DeepPartial<T[P]> } : T;
+
+export type PartialShape<T extends object> = {
+  [P in keyof T]?: Nullable<T[P]>;
+};
+
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 /** @description Takes an object type and makes the hover overlay more readable */
 export type Prettify<T> = { [K in keyof T]: T[K] } & {};
