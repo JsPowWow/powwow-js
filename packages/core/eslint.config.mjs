@@ -52,6 +52,18 @@ export default [
     },
   },
   {
+    files: ['**/*spec.js', '**/*spec.ts'],
+    // Override or add rules here
+    rules: {
+      'no-magic-numbers': 'off',
+      '@typescript-eslint/consistent-type-assertions': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      'max-lines-per-function': 'off',
+      '@typescript-eslint/no-base-to-string': 'off',
+    },
+  },
+  {
     files: ['**/*.js', '**/*.jsx'],
     // Override or add rules here
     rules: {},

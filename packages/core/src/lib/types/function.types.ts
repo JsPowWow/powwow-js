@@ -25,7 +25,7 @@ export type LastReturnType<Fns extends VariadicFunction<never>[]> = Last<Fns> ex
   : never;
 
 export type BinaryFunction = <A = unknown, B = unknown, R = unknown>(a: A, b: B) => R;
-export type TernaryFunction = <A = unknown, B = unknown, C = unknown, R = unknown>(a: A, b: B, c: C) => R;
+export type TernaryFunction<A = unknown, B = unknown, C = unknown, R = unknown> = (a: A, b: B, c: C) => R;
 
 export type PromiseResolve<Result> = (value: PromiseLike<Result> | Result) => void;
 export type PromiseReject<Reason> = (reason: Reason) => void;

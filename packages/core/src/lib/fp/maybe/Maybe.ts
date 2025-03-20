@@ -3,26 +3,31 @@ import hasSome from '../../objects/hasSome';
 
 type MaybeWrapper<T> = { maybe: 'some'; value: NonNullable<T> } | { maybe: 'none' };
 
-export class Maybe<T> {
+export default class Maybe<T> {
+  // private static nothing: Maybe<null>;
   private constructor(private value: Nullable<T>) {}
 
-  public static some<T>(value: T): Maybe<NonNullable<T>> {
+  public static some = <T>(value: T): Maybe<NonNullable<T>> => {
     if (!hasSome(value)) {
       throw new Error('The provide value must not be a nullable.');
     }
     return new Maybe(value);
-  }
+  };
 
-  public static none<T>(): Maybe<T> {
-    return new Maybe<T>(null);
-  }
+  public static none = <T>(): Maybe<T> => {
+    return new Maybe<T>(null); // TODO AR nothing constant
+    // if (!this.nothing) {
+    //   this.nothing = new Maybe(null);
+    // }
+    // return this.nothing;
+  };
 
-  public static of<T>(value: Nullable<T>): Maybe<T> {
+  public static from = <T>(value: Nullable<T>): Maybe<T> => {
     return hasSome(value) ? Maybe.some(value) : Maybe.none<T>();
-  }
+  };
 
   public map<R>(f: (wrapped: NonNullable<T>) => R): Maybe<R> {
-    return hasSome(this.value) ? Maybe.of(f(this.value)) : Maybe.none<R>();
+    return hasSome(this.value) ? Maybe.from(f(this.value)) : Maybe.none<R>();
   }
 
   public flatMap<R>(f: (wrapped: NonNullable<T>) => Maybe<R>): Maybe<R> {
@@ -49,3 +54,5 @@ export class Maybe<T> {
     return hasSome(this.value) ? this.value : defaultValue;
   }
 }
+
+export const { from, some, none } = Maybe;
