@@ -1,3 +1,16 @@
+## 0.8.0 (2025-03-20)
+
+### 🚀 Features
+
+- **core:** add few more FP compose/pipe utils ([f9ddd90](https://github.com/JsPowWow/powwow-js/commit/f9ddd90))
+- **core:** add maybe functional monads/utils ([cf644d4](https://github.com/JsPowWow/powwow-js/commit/cf644d4))
+- **core:** add permutations todo examples ([d3e188e](https://github.com/JsPowWow/powwow-js/commit/d3e188e))
+- **nullable:** add few map/usingDefault value utils ([8b0ec04](https://github.com/JsPowWow/powwow-js/commit/8b0ec04))
+
+### ❤️ Thank You
+
+- JsPowWow
+
 ## 0.7.0 (2025-03-19)
 
 ### 🚀 Features
