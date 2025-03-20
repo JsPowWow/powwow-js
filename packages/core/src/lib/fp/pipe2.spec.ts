@@ -1,8 +1,8 @@
-import composeLeft from './composeLeft';
+import pipe2 from './pipe2';
 
-describe('composeLeft', () => {
+describe('pipe2', () => {
   it('should apply both functions in left-to-right order starting from the argument', () => {
-    const result = composeLeft(
+    const result = pipe2(
       5,
       (x) => `${x * 10}`,
       (s: string) => [...s]
@@ -12,7 +12,7 @@ describe('composeLeft', () => {
 
   describe('when the first function requires several arguments', () => {
     it('should apply the arguments and continue', () => {
-      const result = composeLeft(
+      const result = pipe2(
         (a: number, b: number) => a + b,
         (x) => `${x * 10}`
       )(2, 3);

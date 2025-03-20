@@ -7,6 +7,6 @@ export default function assertIsSomeFunction<
   F extends VariadicFunction<I, O> = VariadicFunction<I, O>
 >(value: unknown, ...messages: string[]): asserts value is F {
   if (!isSomeFunction(value)) {
-    throw new TypeError(`Not expected non-function value: ${JSON.stringify(value)} ; ${messages?.join(' ')}}`);
+    throw new TypeError(`Not expected non-function: "${JSON.stringify(value)}" ${messages?.join(' ')}}`);
   }
 }

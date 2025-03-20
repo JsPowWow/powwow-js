@@ -1,8 +1,8 @@
-import composeRight from './composeRight';
+import compose2 from './compose2';
 
-describe('composeRight', () => {
+describe('compose2', () => {
   it('should apply both functions in right-to-left order starting from the argument', () => {
-    const result = composeRight(
+    const result = compose2(
       (x: number) => `${x * 10}`,
       (x) => x + 1,
       5
@@ -12,7 +12,7 @@ describe('composeRight', () => {
 
   describe('when the last function requires several arguments', () => {
     it('should apply the arguments and continue', () => {
-      const result = composeRight(
+      const result = compose2(
         (x: number) => `${x * 10}`,
         (a: number, b: number) => a + b
       )(2, 3);

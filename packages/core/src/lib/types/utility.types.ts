@@ -17,3 +17,9 @@ export type Prettify<T> = { [K in keyof T]: T[K] } & {};
 
 /** @description Extract properties of T that are type of V */
 export type KeysWithType<T, V> = { [K in keyof T]-?: T[K] extends V ? K : never }[keyof T];
+
+/** @description Extract type of the `first element` of list */
+export type Head<T extends unknown[]> = T extends [infer H, ...unknown[]] ? H : never;
+
+/** @description Extract type of `last element` of list */
+export type Last<T extends unknown[]> = T extends [] ? never : T extends [...unknown[], infer L] ? L : never;

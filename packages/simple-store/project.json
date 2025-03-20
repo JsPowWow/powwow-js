@@ -1,5 +1,5 @@
 {
-  "name": "@powwow-js/simple-store",
+  "name": "simple-store",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/simple-store/src",
   "projectType": "library",
