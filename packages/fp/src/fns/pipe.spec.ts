@@ -1,8 +1,8 @@
-import pipe2 from './pipe2';
+import pipe from './pipe';
 
-describe('pipe2', () => {
+describe('pipe', () => {
   it('should apply both functions in left-to-right order starting from the argument', () => {
-    const result = pipe2(
+    const result = pipe(
       5,
       (x) => `${x * 10}`,
       (s: string) => [...s]
@@ -12,7 +12,7 @@ describe('pipe2', () => {
 
   describe('when the first function requires several arguments', () => {
     it('should apply the arguments and continue', () => {
-      const result = pipe2(
+      const result = pipe(
         (a: number, b: number) => a + b,
         (x) => `${x * 10}`
       )(2, 3);

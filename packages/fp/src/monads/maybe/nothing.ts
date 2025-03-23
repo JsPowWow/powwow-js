@@ -1,4 +1,4 @@
-export const nothingUid = Symbol.for('@powwow-js::nothing');
+const nothingUid = Symbol.for('@powwow-js::nothing');
 
 export type Nothing = {
   [nothingUid]: undefined;

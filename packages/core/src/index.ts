@@ -11,10 +11,8 @@ export { default as toggle } from './lib/fp/toggle';
 
 export { default as pipe } from './lib/fp/pipe';
 export { default as flow } from './lib/fp/flow';
-export { default as pipe2 } from './lib/fp/pipe2';
-export { default as compose2 } from './lib/fp/compose2';
-export { default as compose } from './lib/fp/compose';
-export { default as pipeC } from './lib/fp/pipeC';
+export { default as flowRight } from './lib/fp/flowRight';
+export { default as flowLeft } from './lib/fp/flowLeft';
 
 export { default as maybeInstanceOf } from './lib/fp/maybe/maybeInstanceOf';
 export { default as maybeRecordKey } from './lib/fp/maybe/maybeRecordKey';

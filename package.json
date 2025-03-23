@@ -37,6 +37,7 @@
     "eslint-plugin-playwright": "^1.6.2",
     "eslint-plugin-unicorn": "^57.0.0",
     "husky": "^8.0.0",
+    "jiti": "2.4.2",
     "jsdom": "~22.1.0",
     "jsonc-eslint-parser": "^2.4.0",
     "lint-staged": "^15.5.0",
@@ -54,5 +55,6 @@
   },
   "nx": {
     "includedScripts": []
-  }
+  },
+  "dependencies": {}
 }

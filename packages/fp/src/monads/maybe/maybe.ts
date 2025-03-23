@@ -1,10 +1,8 @@
-import hasSome from '../../../objects/hasSome';
 import type { Just } from './just';
-import { isJust } from './just';
-import just from './just';
+import just, { isJust } from './just';
 import type { Nothing } from './nothing';
-import { isNothing } from './nothing';
-import nothing from './nothing';
+import nothing, { isNothing } from './nothing';
+import { hasSome } from '@powwow-js/core';
 
 export type Maybe<Value> = Just<Value> | Nothing;
 

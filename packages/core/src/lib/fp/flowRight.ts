@@ -20,7 +20,7 @@ type Allowed<Fns extends VariadicFunction<never>[], Cache extends VariadicFuncti
     : never
   : never;
 
-export default function compose<
+export default function flowRight<
   F extends VariadicFunction<never>,
   Fns extends F[],
   Allow extends {
@@ -29,7 +29,7 @@ export default function compose<
   }[Allowed<Fns> extends never ? 0 : 1]
 >(...parameters: [...Fns]): (...data: Allow) => FirstReturnType<Fns>;
 
-export default function compose<F extends VariadicFunction, Fns extends F[], Allow extends unknown[]>(
+export default function flowRight<F extends VariadicFunction, Fns extends F[], Allow extends unknown[]>(
   ...parameters: [...Fns]
 ) {
   return (...data: Allow): unknown => {
@@ -41,6 +41,6 @@ export default function compose<F extends VariadicFunction, Fns extends F[], All
 // declare function bar(a: string, s: symbol): number;
 // declare function baz(a: number[]): string;
 //
-// const check = compose(foo, bar, baz)([1, 2, 3]); // [number]
-// const check2 = compose(bar, foo)(1); // expected error
+// const check = flowRight(foo, bar, baz)([1, 2, 3]); // [number]
+// const check2 = flowRight(bar, foo)(1); // expected error
 // console.log(check, check2);

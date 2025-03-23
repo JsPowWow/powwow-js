@@ -1,4 +1,4 @@
-import type { UnaryFunction } from '../types/function.types';
+import type { UnaryFunction } from '@powwow-js/core';
 
 /**
  * Makes a composition of functions from received arguments.
@@ -25,7 +25,7 @@ export type Decompose<Functions extends UnaryFunction[], Arguments extends unkno
 /**
  * (B -> C) . (A -> B) = A -> C
  */
-export default function compose2<A extends unknown[], B, C>(
+export default function compose<A extends unknown[], B, C>(
   f2: (v: B) => C,
   f1: (...parameters: A) => B
 ): (...parameters: A) => C;
@@ -33,7 +33,7 @@ export default function compose2<A extends unknown[], B, C>(
 /**
  * (B -> C) . (A -> B) = A -> C
  */
-export default function compose2<A extends unknown[], B, C>(
+export default function compose<A extends unknown[], B, C>(
   f: (v: B) => C,
   g: (...parameters: A) => B,
   ...parameters: A
@@ -42,7 +42,7 @@ export default function compose2<A extends unknown[], B, C>(
 /**
  * (B -> C) . (A -> B) = A -> C
  */
-export default function compose2<A extends unknown[], B, C>(
+export default function compose<A extends unknown[], B, C>(
   f: (v: B) => C,
   g: (...parameters: A) => B,
   ...initialArguments: A

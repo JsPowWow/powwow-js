@@ -17,6 +17,7 @@
     "paths": {
       "@powwow-js/core": ["packages/core/src/index.ts"],
       "@powwow-js/emitter": ["packages/emitter/src/index.ts"],
+      "@powwow-js/fp": ["packages/fp/src/index.ts"],
       "@powwow-js/fun-dom": ["packages/fun-dom/src/index.ts"],
       "@powwow-js/nullable": ["packages/nullable/src/index.ts"],
       "@powwow-js/routing-utils": ["packages/routing-utils/src/index.ts"],

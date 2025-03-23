@@ -2,7 +2,7 @@ import baseConfig from './eslint.base.config.mjs';
 
 export default [
   {
-    ignores: ['**/dist'],
+    ignores: ['**/dist', '**/vite.config.*.timestamp*', '**/vitest.config.*.timestamp*'],
   },
   ...baseConfig,
   {

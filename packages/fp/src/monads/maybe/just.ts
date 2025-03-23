@@ -1,6 +1,6 @@
 import type { Maybe } from './maybe';
 
-export const justUid = Symbol.for('@powwow-js::just');
+const justUid = Symbol.for('@powwow-js::just');
 
 export type Just<Value> = {
   [justUid]: Value;
@@ -20,6 +20,6 @@ export function isJust<Value>(value: unknown): value is Just<Value> {
   return Object.prototype.hasOwnProperty.call(value, justUid);
 }
 
-export function fold<Value>(monad: Maybe<Value>): Value | undefined {
+export function unwrap<Value>(monad: Maybe<Value>): Value | undefined {
   return isJust(monad) ? monad[justUid] : undefined;
 }

@@ -1,4 +1,4 @@
-import compose from './compose';
+import flowRight from './flowRight';
 
 const stringSplitBy =
   (by: string) =>
@@ -16,9 +16,9 @@ const say =
   (v: number[]): string =>
     `${what} ${v.join(' ')}`;
 
-describe('compose', () => {
+describe('flowRight', () => {
   it('should apply many functions in right-to-left order starting from the argument', () => {
-    const result = compose(
+    const result = flowRight(
       String,
       Number,
       (x: number) => `${x * 10}`,
@@ -29,7 +29,7 @@ describe('compose', () => {
 
   describe('when the last function requires several arguments', () => {
     it('should apply the arguments and continue', () => {
-      const result = compose(
+      const result = flowRight(
         Number,
         (x: number) => `${x * 10}`,
         (v: [number, number]) => v[0] + v[1]
@@ -38,8 +38,8 @@ describe('compose', () => {
     });
 
     it('should apply the array arguments and continue', () => {
-      // const checkIfTsError = compose(oneOrTwo, toTuple)(1); // expected error
-      const result = compose(stringSplitBy(','), tupleToString, toTuple, oneOrTwo, say('hi'))([1, 2, 3]); // [string]
+      // const checkIfTsError = flowRight(oneOrTwo, toTuple)(1); // expected error
+      const result = flowRight(stringSplitBy(','), tupleToString, toTuple, oneOrTwo, say('hi'))([1, 2, 3]); // [string]
       expect(result).toStrictEqual(['2', '2', '3']);
     });
   });

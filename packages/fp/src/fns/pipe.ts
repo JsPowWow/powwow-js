@@ -1,5 +1,5 @@
-import type { UnaryFunction } from '../types/function.types';
-import assertIsSomeFunction from '../assertions/assertIsSomeFunction';
+import type { UnaryFunction } from '@powwow-js/core';
+import { assertIsSomeFunction } from '@powwow-js/core';
 
 /**
  * Makes a pipeline of functions from received arguments.
@@ -26,7 +26,7 @@ export type DePipe<Functions extends UnaryFunction[], Arguments extends unknown[
 /**
  * (A -> B) . (B -> C) = A -> C
  */
-export default function pipe2<A extends unknown[], B, C>(
+export default function pipe<A extends unknown[], B, C>(
   f1: (...parameters: A) => B,
   f2: (v: B) => C
 ): (...parameters: A) => C;
@@ -34,14 +34,14 @@ export default function pipe2<A extends unknown[], B, C>(
 /**
  * (A -> B) . (B -> C) = A -> C
  */
-export default function pipe2<A extends unknown[], B, C>(
+export default function pipe<A extends unknown[], B, C>(
   ...parameters: [...args: A, f1: (...parameters: A) => B, f2: (v: B) => C]
 ): C;
 
 /**
  * (A -> B) . (B -> C) = A -> C
  */
-export default function pipe2<A extends unknown[], B, C>(
+export default function pipe<A extends unknown[], B, C>(
   ...initialArguments: [...parameters: A, f: (...parameters: A) => B, g: (v: B) => C]
 ): C | ((...parameters: A) => C) {
   if (initialArguments.length === 2) {

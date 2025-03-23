@@ -22,7 +22,7 @@ type Allowed<Fns extends AnyFunction[], Cache extends AnyFunction[] = []> = Fns 
     : never
   : never;
 
-export default function pipeC<
+export default function flowLeft<
   F extends AnyFunction,
   Fns extends F[],
   Allow extends {
@@ -31,7 +31,7 @@ export default function pipeC<
   }[Allowed<Fns> extends never ? 0 : 1]
 >(...parameters: [...Fns]): (...data: Allow) => LastReturnType<Fns>;
 
-export default function pipeC<F extends VariadicFunction, Fns extends F[], Allow extends unknown[]>(
+export default function flowLeft<F extends VariadicFunction, Fns extends F[], Allow extends unknown[]>(
   ...parameters: [...Fns]
 ) {
   return (...data: Allow): unknown => {
@@ -45,7 +45,7 @@ export default function pipeC<F extends VariadicFunction, Fns extends F[], Allow
 // declare function bar(x: number): string[];
 // declare function fin(x: string[]): symbol[];
 //
-// const check = pipeC(foo, baz, bar, fin)('hello'); // string[]
-// const check3 = pipeC(baz, bar)([2]); // string[]
-// const check2 = pipeC(baz, bar)('hello'); // expected error
+// const check = flowLeft(foo, baz, bar, fin)('hello'); // string[]
+// const check3 = flowLeft(baz, bar)([2]); // string[]
+// const check2 = flowLeft(baz, bar)('hello'); // expected error
 // console.log(check, check2, check3);
