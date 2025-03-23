@@ -22,7 +22,8 @@
       "@powwow-js/nullable": ["packages/nullable/src/index.ts"],
       "@powwow-js/routing-utils": ["packages/routing-utils/src/index.ts"],
       "@powwow-js/simple-store": ["packages/simple-store/src/index.ts"],
-      "@powwow-js/state-machine": ["packages/state-machine/src/index.ts"]
+      "@powwow-js/state-machine": ["packages/state-machine/src/index.ts"],
+      "@pw-internals/jsx-runtime": ["packages/pw-internals/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
