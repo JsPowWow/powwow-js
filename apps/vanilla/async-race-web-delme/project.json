@@ -1,0 +1,9 @@
+{
+  "name": "async-race-web-delme",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/vanilla/async-race-web-delme/src",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project async-race-web-delme --web",
+  "targets": {}
+}

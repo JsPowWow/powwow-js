@@ -1,6 +1,4 @@
+import { createComponent, renderDOM } from '@pw-internals/jsx-runtime';
 import { App } from './app';
-import { assertIsNonNullable } from '@powwow-js/core';
-const app = document.querySelector<HTMLDivElement>('#app');
 
-assertIsNonNullable(app);
-app.append(App);
+renderDOM('root', createComponent(App, { key: 'app' }));

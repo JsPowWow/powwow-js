@@ -1,16 +1,17 @@
-import { LikeComponent } from './components/Like';
+import { ClassComponent } from '@pw-internals/jsx-runtime';
+import { ToDoJSX } from './pages/testPage/ToDoJSX';
+import { ToDoHyper } from './pages/testPage/ToDoHyper';
 
-export const App = (
-  <main className='hello'>
-    <h1>{() => `Hello JSX!`}</h1>
-    <LikeComponent big />
-    <LikeComponent big={false} />
-    <div className='test'>
-      Hello, World!
-      <br />
-      <button onclick={(event: Event) => alert(`Hi ${event.type}`)} sasa='aaaaaaaa'>
-        Click Me!
-      </button>
-    </div>
-  </main>
-);
+export class App extends ClassComponent {
+  render = () => (
+    <main className='app'>
+      <ToDoHyper>
+        <hr key='k1' />
+        <div key='k2'>{`>>> children starts <<<`}</div>
+        <ToDoJSX key='kjhljkh' />
+        <div key='k3'>{`>>> children ends <<<`}</div>
+        <hr key='k4' />
+      </ToDoHyper>
+    </main>
+  );
+}

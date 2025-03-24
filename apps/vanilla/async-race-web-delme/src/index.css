@@ -1,0 +1,6 @@
+@import url('./normalize.css');
+
+p {
+  margin: 0;
+  padding: 0;
+}
