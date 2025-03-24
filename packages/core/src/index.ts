@@ -30,6 +30,7 @@ export { default as isRecordKey } from './lib/objects/isRecordKey';
 export { default as isPlainObject } from './lib/objects/isPlainObject';
 export { default as hasOwnProperty } from './lib/objects/hasOwnProperty';
 export { default as hasProperty } from './lib/objects/hasProperty';
+export { default as objectsKeysMap } from './lib/objects/objectsKeysMap';
 export { default as removeProperty } from './lib/objects/removeProperty';
 export { default as hasStringMessage } from './lib/objects/hasStringMessage';
 
