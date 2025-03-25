@@ -1,2 +1,3 @@
 export * from './lib/objectStore';
-export * from './lib/primitive-store';
+export * from './lib/primitiveStore';
+export * from './lib/withUsingState';

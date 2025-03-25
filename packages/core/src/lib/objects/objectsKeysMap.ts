@@ -2,19 +2,37 @@ import isNil from './isNil';
 import isNumber from './isNumber';
 import isString from './isString';
 
-type ObjectsKeyMap = { getKeyOf: (source: object) => string; compositeKey: (...keys: object[]) => string };
+type ObjectsKeyMap = {
+  getKeyOf: (source: object) => string;
+  /**
+   * @param {object[]} keys
+   * @example
+   * Use the composite key in a regular Map:
+   *
+   * const map = new Map();
+   *
+   * const setValue = (o1, o2, o3, v) => {
+   *   return map.set(compositeKey(o1, o2, o3), v);
+   * };
+   *
+   * const getValue = (o1, o2, o3) => {
+   *   return map.get(compositeKey(o1, o2, o3));
+   * };
+   */
+  compositeKey: (...keys: object[]) => string;
+};
 
 export default function objectsKeyMap(): ObjectsKeyMap {
   const ids = new WeakMap<object, bigint>();
   let nextId = 1n;
 
+  /** @description Generate a mask with a single bit set in the `id`-th place */
   const getBitMask = (o: object): bigint => {
     let id = ids.get(o);
     if (id === undefined) {
       id = nextId++;
       ids.set(o, id);
     }
-    // Generate a mask with a single bit set in the `id`-th place
     return 1n << id;
   };
 

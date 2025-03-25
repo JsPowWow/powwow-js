@@ -1,5 +1,8 @@
 import type { Head, Last } from './utility.types';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyFunction = (...parameters: any) => any;
+
 export type UnaryFunction<Parameter = unknown, R = unknown> = (v: Parameter) => R;
 
 export type VariadicFunction<Parameters = unknown, R = unknown> = (...parameters: Parameters[]) => R;

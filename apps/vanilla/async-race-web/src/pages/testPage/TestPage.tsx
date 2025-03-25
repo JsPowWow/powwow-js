@@ -1,4 +1,4 @@
-import { Counter } from '../../components/Counter';
+import { ControlledCounter } from './ControlledCounter';
 import { PrimitiveStore } from '@powwow-js/simple-store';
 
 // const getUpdateDiff = (
@@ -38,7 +38,7 @@ export const TestPage = () => {
       {/*<h2>{2 + 2}</h2>*/}
       {/*<LikeComponent big />*/}
       {/*<LikeComponent big={false} />*/}
-      <Counter counter={counter.value} onChange={handleOnChange} />
+      <ControlledCounter counter={counter.value} onChange={handleOnChange} />
       {/*<div className='test'>*/}
       {/*  Hello, World!*/}
       {/*  <br />*/}

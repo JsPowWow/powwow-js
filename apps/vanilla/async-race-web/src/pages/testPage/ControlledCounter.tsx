@@ -3,7 +3,7 @@ interface CounterProps {
   onChange: (value: number) => void;
 }
 
-export const Counter = ({ counter, onChange }: CounterProps) => {
+export const ControlledCounter = ({ counter, onChange }: CounterProps) => {
   return (
     <aside key='ccoUnter'>
       {counter}

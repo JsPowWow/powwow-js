@@ -70,7 +70,7 @@ export class ToDoJSX extends ClassComponent<unknown, ToDoState> {
 
   render() {
     return (
-      <div key={'todoJsx'} class='title-bar'>
+      <div key='todoJsx' class='title-bar'>
         <h3 key='jsxToDoHeader' class='title-bar-text'>
           JSX TODO
         </h3>

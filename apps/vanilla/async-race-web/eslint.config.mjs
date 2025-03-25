@@ -12,7 +12,9 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx'],
     // Override or add rules here
-    rules: {},
+    rules: {
+      'max-lines-per-function': 'off',
+    },
   },
   {
     files: ['**/*.js', '**/*.jsx'],
