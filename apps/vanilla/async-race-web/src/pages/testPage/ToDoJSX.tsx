@@ -1,5 +1,7 @@
-import { ClassComponent } from '@pw-internals/jsx-runtime';
 import { hasProperty } from '@powwow-js/core';
+import { vDom } from '@pw-internals/jsx-runtime';
+
+const { ClassComponent } = vDom;
 
 interface NewItemFormState {
   name: string;
@@ -68,8 +70,10 @@ export class ToDoJSX extends ClassComponent<unknown, ToDoState> {
 
   render() {
     return (
-      <div key={'todoJsx'}>
-        <h3 key='jsxToDoHeader'>JSX TODO</h3>
+      <div key={'todoJsx'} class='title-bar'>
+        <h3 key='jsxToDoHeader' class='title-bar-text'>
+          JSX TODO
+        </h3>
         {/*<TestPage key='ggg1' />*/}
         <NewItemForm
           key='form' // TODO AR

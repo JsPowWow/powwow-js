@@ -73,5 +73,6 @@ export abstract class ClassComponent<P = unknown, S = unknown> {
 }
 
 export const isClassComponentType = <P, S>(component: unknown): component is ClassComponentType<P, S> => {
+  // TODO AR per prototypeOf chain
   return hasSome<{ [classComponentTypeUid]: unknown }>(component) && Boolean(component[classComponentTypeUid]);
 };

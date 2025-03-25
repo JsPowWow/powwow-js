@@ -1,52 +1,30 @@
-import { assertIsNonNullable, isNumber, isSomeFunction, isString, VariadicFunction } from '@powwow-js/core';
-import { createComponent, createElement, createText, VDomNode } from './vdom';
-import { ClassComponentType, isClassComponentType } from './ClassComponent';
+import createVDomElement from './jsx-vdom/jsxPragmaVdom';
+import createElementNaive from './jsx-naive/jsxPragmaNaive';
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
-    type IntrinsicElements = Record<keyof HTMLElementTagNameMap, Record<string, any>>;
+    type IntrinsicElements = Record<keyof HTMLElementTagNameMap, Record<string, unknown>>;
   }
 }
 
+type JsxRuntimeMode = 'naive' | 'vDom';
+
+let currentMode: JsxRuntimeMode = 'vDom';
+
+const jsxRuntimeMode = (): JsxRuntimeMode => currentMode;
+
 export const jsx = {
-  component(
-    component: string | ClassComponentType,
-    props: (Record<string, string | number | boolean | VariadicFunction> & { key: string }) | undefined,
-    ...children: unknown[]
-  ): VDomNode {
-    if (!props) {
-      props = Object.assign({});
+  jsxRuntimeMode,
+  setJsxRuntimeMode: (mode: JsxRuntimeMode): JsxRuntimeMode => (currentMode = mode),
+  component: (...parameters: unknown[]): unknown => {
+    switch (jsxRuntimeMode()) {
+      case 'naive': {
+        return createElementNaive(...(parameters as Parameters<typeof createElementNaive>));
+      }
+      case 'vDom': {
+        return createVDomElement(...(parameters as Parameters<typeof createVDomElement>));
+      }
     }
-
-    assertIsNonNullable(props);
-
-    Object.assign(props, { children: children.flat(Infinity) });
-
-    if (isClassComponentType(component)) {
-      const vNode = createComponent(component, props);
-      assertIsNonNullable<VDomNode>(vNode);
-      return vNode;
-    }
-
-    if (isSomeFunction(component)) {
-      const vNode = component(props);
-      assertIsNonNullable<VDomNode>(vNode);
-      return vNode;
-    }
-
-    const elementChildren = Array.isArray(props['children']) ? props['children'] : [];
-
-    return createElement(
-      component,
-      props,
-      ...elementChildren.map((c) => {
-        switch (true) {
-          case isString(c) || isNumber(c): {
-            return createText(c);
-          }
-        }
-        return c;
-      })
-    );
   },
 };

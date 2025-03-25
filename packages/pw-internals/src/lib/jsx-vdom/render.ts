@@ -1,6 +1,6 @@
-import { VDOMAttributes, VDOMComponent, VDOMElement, VDomNode, VDOMText } from './vdom';
-import { ChildUpdater, VDomNodeUpdater } from './diffs';
-import { isNil } from '@powwow-js/core';
+import type { VDOMAttributes, VDOMComponent, VDOMElement, VDomNode, VDOMText } from './vdom';
+import type { ChildUpdater, VDomNodeUpdater } from './diffs';
+import { isNil, isString } from '@powwow-js/core';
 
 const adjustAttributes = (element: HTMLElement, props: VDOMAttributes | undefined): void => {
   if (isNil(props)) return;
@@ -9,7 +9,11 @@ const adjustAttributes = (element: HTMLElement, props: VDOMAttributes | undefine
     if (att === 'children') {
       continue;
     }
-    //element.setAttribute(att, diff.attributes.set[att]);
+    const attributeValue = props[att];
+    if (isString(attributeValue)) {
+      element.setAttribute(att, attributeValue);
+    }
+
     Object.assign(element, { [att]: props[att] });
   }
 };

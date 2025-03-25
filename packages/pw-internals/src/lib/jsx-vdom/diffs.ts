@@ -184,6 +184,6 @@ const childsDiff = (oldChilds: VDomNode[], newChilds: VDomNode[]): ChildUpdater[
   // insert all remaing new childs after the last update
   // eslint-disable-next-line unicorn/no-useless-undefined
   insertUntilKey(operations, remainingNewChilds, undefined);
-  console.log('childsDiff: return', { operations });
+
   return operations;
 };

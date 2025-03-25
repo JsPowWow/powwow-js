@@ -1,5 +1,6 @@
-import { ClassComponent, createComponent, createElement, createText } from '@pw-internals/jsx-runtime';
 import { hasProperty } from '@powwow-js/core';
+import { vDom } from '@pw-internals/jsx-runtime';
+const { createComponent, createElement, createText, ClassComponent } = vDom;
 
 interface NewItemFormState {
   name: string;
@@ -63,8 +64,6 @@ export class ToDoHyper extends ClassComponent<{ children: [] }, ToDoState> {
   }
 
   render() {
-    console.log('~~ PRP', this.props);
-
     return createElement(
       'div',
       { key: 'root' },

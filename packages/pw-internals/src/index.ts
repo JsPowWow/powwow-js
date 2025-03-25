@@ -1,6 +1,7 @@
 export * from './lib/jsx-runtime';
-export * from './lib/ClassComponent';
+
+export * as vDom from './lib/jsx-vdom/';
 
 // TODO AR revise
-export * from './lib/vdom';
-export * from './lib/render';
+//export * from './lib/jsx-vdom/vdom';
+//export * from './lib/jsx-vdom/render';
