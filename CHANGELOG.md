@@ -1,3 +1,13 @@
+## 0.9.3 (2025-03-28)
+
+### 🚀 Features
+
+- **core:** add a few more either monad static methods and tests ([1da4540](https://github.com/JsPowWow/powwow-js/commit/1da4540))
+
+### ❤️ Thank You
+
+- JsPowWow
+
 ## 0.9.2 (2025-03-28)
 
 ### 🚀 Features
