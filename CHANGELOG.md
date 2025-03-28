@@ -1,3 +1,13 @@
+## 0.9.1 (2025-03-28)
+
+### 🚀 Features
+
+- **core:** add a few either monad utils and tests ([63e10b8](https://github.com/JsPowWow/powwow-js/commit/63e10b8))
+
+### ❤️ Thank You
+
+- JsPowWow
+
 ## 0.9.0 (2025-03-28)
 
 ### 🚀 Features
