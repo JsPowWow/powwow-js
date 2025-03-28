@@ -1,3 +1,21 @@
+## 0.9.0 (2025-03-28)
+
+### 🚀 Features
+
+- **async-race-server:** add async-race-server mock/requests data ([f5dc3c5](https://github.com/JsPowWow/powwow-js/commit/f5dc3c5))
+- **async-race-web:** add async-race-web app initial(s) ([a4489c6](https://github.com/JsPowWow/powwow-js/commit/a4489c6))
+- **async-race-web:** add async-race-web / app to compare initial(s) ([15dd93b](https://github.com/JsPowWow/powwow-js/commit/15dd93b))
+- **async-race-web:** add 'naive' useState initial(s) ([19302c7](https://github.com/JsPowWow/powwow-js/commit/19302c7))
+- **fp:** add permutations todo examples ([c1af0e0](https://github.com/JsPowWow/powwow-js/commit/c1af0e0))
+- **pw-internals:** add pw-internals jsx-runtime initial(s) ([20a65c1](https://github.com/JsPowWow/powwow-js/commit/20a65c1))
+- **pw-internals:** improve pw-internals lib ([4e89e64](https://github.com/JsPowWow/powwow-js/commit/4e89e64))
+- **pw-internals:** add 'vDom'/'naive' jsx-runtime support ([c830289](https://github.com/JsPowWow/powwow-js/commit/c830289))
+- **pw-internals:** add 'minidom' jsx-runtime support and example(s) ([c1a77d6](https://github.com/JsPowWow/powwow-js/commit/c1a77d6))
+
+### ❤️ Thank You
+
+- JsPowWow
+
 ## 0.8.0 (2025-03-20)
 
 ### 🚀 Features
