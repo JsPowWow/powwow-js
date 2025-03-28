@@ -38,8 +38,8 @@ export class Either<Left, Right> {
   };
 
   public static UnwrapC =
-    <L, R>(either: Either<L, R>) =>
-    (left: (value: L) => L, right: (value: R) => R): L | R => {
+    <L, R>(left: (value: L) => L, right: (value: R) => R) =>
+    (either: Either<L, R>): L | R => {
       return isLeft(either.wrapper) ? left(either.wrapper.value) : right(either.wrapper.value);
     };
 

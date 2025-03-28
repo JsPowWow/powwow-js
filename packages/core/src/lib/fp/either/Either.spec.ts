@@ -15,9 +15,9 @@ describe('Either tests', () => {
     const r2 = v2.unwrap(identity, identity);
     expect(r2).toBeInstanceOf(TypeError);
 
-    const R1 = Either.UnwrapC(v1)(identity, identity);
+    const R1 = Either.UnwrapC(identity, identity)(v1);
     expect(R1).toBe(2);
-    const R2 = Either.UnwrapC(v2)(identity, identity);
+    const R2 = Either.UnwrapC(identity, identity)(v2);
     expect(R2).toBeInstanceOf(TypeError);
   });
 });
