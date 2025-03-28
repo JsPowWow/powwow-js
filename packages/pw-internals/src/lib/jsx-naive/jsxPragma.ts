@@ -2,8 +2,9 @@ import { isSomeFunction, isString } from '@powwow-js/core';
 
 type FunctionalComponent = (props: Record<string, unknown>) => unknown;
 
-const statefulElements = new Set<HTMLElement>();
+// const statefulElements = new Set<HTMLElement>();
 
+// eslint-disable-next-line max-lines-per-function
 export default function createElementNaive(
   component: string | FunctionalComponent,
   props: Record<string, unknown> | null,
@@ -41,19 +42,19 @@ export default function createElementNaive(
 
   element.append(...(elementChildren as Node[]));
 
-  const pwComponentKey = element.dataset['pwComponentKey'];
+  // const pwComponentKey = element.dataset['pwComponentKey'];
 
-  if (pwComponentKey) {
-    const previousStatefulElement = [...statefulElements.values()].find(
-      (element) => element.dataset['pwComponentKey'] === pwComponentKey
-    );
-    if (previousStatefulElement) {
-      previousStatefulElement.replaceWith(element);
-      statefulElements.delete(previousStatefulElement);
-    }
-
-    statefulElements.add(element);
-  }
+  // if (pwComponentKey) {
+  //   const previousStatefulElement = [...statefulElements.values()].find(
+  //     (element) => element.dataset['pwComponentKey'] === pwComponentKey
+  //   );
+  //   if (previousStatefulElement) {
+  //     previousStatefulElement.replaceWith(element);
+  //     statefulElements.delete(previousStatefulElement);
+  //   }
+  //
+  //   statefulElements.add(element);
+  // }
 
   return element;
 }

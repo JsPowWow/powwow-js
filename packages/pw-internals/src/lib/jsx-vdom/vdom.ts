@@ -1,5 +1,5 @@
 import type { ClassComponent } from './ClassComponent';
-import { removeProperty } from '@powwow-js/core';
+import { toRemovedProperty } from '@powwow-js/core';
 
 export type VDOMAttributes = Record<string, string | number | boolean | CallableFunction>;
 
@@ -32,7 +32,7 @@ export const createElement = (
   props: VDOMAttributes & { key: string },
   ...childeren: VDomNode[]
 ): VDOMElement => {
-  return { kind: 'element', tagname, key: props.key, props: removeProperty('key', props), childeren };
+  return { kind: 'element', tagname, key: props.key, props: toRemovedProperty('key', props), childeren };
 };
 
 export const createComponent = <P, S>(
@@ -43,7 +43,7 @@ export const createComponent = <P, S>(
     kind: 'component',
     component,
     key: props.key,
-    props: removeProperty('key', props),
+    props: toRemovedProperty('key', props),
   };
 };
 

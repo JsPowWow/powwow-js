@@ -12,7 +12,13 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['**/dist', '**/lib/jsx-vdom/*.ts'],
+    ignores: [
+      '**/dist',
+      '**/__deprecate/*.ts',
+      '**/lib/jsx-vdom/*.ts',
+      '**/lib/jsx-naive/*.ts',
+      '**/lib/jsx-mini/*.ts',
+    ],
   },
   ...baseConfig,
   ...compat.env({
@@ -49,6 +55,8 @@ export default [
       ],
       '@typescript-eslint/member-ordering': 'error',
       'unicorn/no-instanceof-builtins': ['error', { exclude: ['String', 'Number'] }],
+      'unicorn/prefer-add-event-listener': 'off',
+      'unicorn/prefer-global-this': 'off',
     },
   },
   {

@@ -48,7 +48,7 @@ export default [
         { accessibility: 'explicit', overrides: { constructors: 'off' } },
       ],
       '@typescript-eslint/member-ordering': 'error',
-      'unicorn/no-instanceof-builtins': ['error', { exclude: ['String', 'Number'] }],
+      'unicorn/no-instanceof-builtins': ['error', { exclude: ['String', 'Number', 'Boolean'] }],
     },
   },
   {

@@ -13,6 +13,8 @@ export { default as pipe } from './lib/fp/pipe';
 export { default as flow } from './lib/fp/flow';
 export { default as flowRight } from './lib/fp/flowRight';
 export { default as flowLeft } from './lib/fp/flowLeft';
+export * from './lib/fp/either/Either';
+export * from './lib/fp/maybe/Maybe';
 
 export { default as maybeInstanceOf } from './lib/fp/maybe/maybeInstanceOf';
 export { default as maybeRecordKey } from './lib/fp/maybe/maybeRecordKey';
@@ -23,6 +25,7 @@ export { default as isInstanceOf } from './lib/objects/isInstanceOf';
 export { default as isSomeFunction } from './lib/objects/isSomeFunction';
 export { default as isString } from './lib/objects/isString';
 export { default as isNumber } from './lib/objects/isNumber';
+export { default as isBoolean } from './lib/objects/isBoolean';
 export { default as isSymbol } from './lib/objects/isSymbol';
 export { default as isError } from './lib/objects/isError';
 export { default as isValidRecordKey } from './lib/objects/isValidRecordKey';
@@ -31,7 +34,7 @@ export { default as isPlainObject } from './lib/objects/isPlainObject';
 export { default as hasOwnProperty } from './lib/objects/hasOwnProperty';
 export { default as hasProperty } from './lib/objects/hasProperty';
 export { default as objectsKeysMap } from './lib/objects/objectsKeysMap';
-export { default as removeProperty } from './lib/objects/removeProperty';
+export { default as toRemovedProperty } from './lib/objects/toRemovedProperty';
 export { default as hasStringMessage } from './lib/objects/hasStringMessage';
 
 export { default as assertIsNonNullable } from './lib/assertions/assertIsNonNullable';

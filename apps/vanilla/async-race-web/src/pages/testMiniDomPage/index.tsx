@@ -1,9 +1,14 @@
-import { CountersView } from '../pages/testMiniDomPage/counters/CountersView';
+import { CountersView } from './counters/CountersView';
+import { MiniDom } from '@pw-internals/jsx-runtime';
+import { TicTacToeView } from './view/TicTacToeView';
 
-export function NaiveJsxApp() {
+export default function TestMiniDomPage() {
   return (
-    <main className='hello'>
-      <CountersView />
+    <main styles={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+      <MiniDom.Fragment>
+        <CountersView />
+        <TicTacToeView />
+      </MiniDom.Fragment>
       {/*<h1>{() => `Hello JSX!`}</h1>*/}
       {/*<LikeComponent big />*/}
       {/*<LikeComponent big={false} />*/}

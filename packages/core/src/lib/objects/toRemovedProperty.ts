@@ -1,4 +1,4 @@
-export default function removeProperty<SourceObject, Property extends keyof SourceObject>(
+export default function toRemovedProperty<SourceObject, Property extends keyof SourceObject>(
   property: Property,
   object: SourceObject
 ): Omit<SourceObject, Property> {
