@@ -46,6 +46,7 @@ export { default as promiseResolver } from './lib/async/promiseResolver';
 
 export { default as toErrorWithMessage } from './lib/errors/toErrorWithMessage';
 export { default as exhaustiveGuard } from './lib/errors/exhaustiveGuard';
+export { default as reThrow } from './lib/errors/reThrow';
 
 export { default as getRandomNumber } from './lib/random/getRandomNumber';
 export { default as shuffleArray } from './lib/random/shuffleArray';

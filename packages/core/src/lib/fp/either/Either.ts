@@ -1,4 +1,6 @@
 import toErrorWithMessage from '../../errors/toErrorWithMessage';
+import reThrow from '../../errors/reThrow';
+import identity from '../identity';
 
 type EitherWrapper<Left, Right> = { either: 'left'; value: Left } | { either: 'right'; value: Right };
 
@@ -37,11 +39,27 @@ export class Either<Left, Right> {
     return new Either<Left, Right>({ either: 'left', value });
   };
 
-  public static UnwrapC =
+  public static unwrapC =
     <L, R>(left: (value: L) => L, right: (value: R) => R) =>
     (either: Either<L, R>): L | R => {
-      return isLeft(either.wrapper) ? left(either.wrapper.value) : right(either.wrapper.value);
+      return either.unwrap(left, right);
     };
+
+  public static getOrElseC =
+    <V>(value: V) =>
+    <L, R>(either: Either<L, R>): V | R => {
+      return either.getOrElse(value);
+    };
+
+  public static getOrDefaultC =
+    <R>(defaultValue: R) =>
+    <L>(either: Either<L, R>): R => {
+      return either.getOrDefault(defaultValue);
+    };
+
+  public static getOrThrow = <L, R>(either: Either<L, R>): R => {
+    return either.getOrThrow();
+  };
 
   public isLeft(): this is Either<Left, never> {
     return this.wrapper.either === 'left';
@@ -75,12 +93,12 @@ export class Either<Left, Right> {
     return this;
   }
 
-  public unwrap<L, R>(left: (value: Left) => L, right: (value: Right) => R): L | R {
-    return isLeft(this.wrapper) ? left(this.wrapper.value) : right(this.wrapper.value);
-  }
-
   public match<L, R>(pattern: { left: (value: Left) => L; right: (value: Right) => R }): L | R {
     return isLeft(this.wrapper) ? pattern.left(this.wrapper.value) : pattern.right(this.wrapper.value);
+  }
+
+  public unwrap<L, R>(left: (value: Left) => L, right: (value: Right) => R): L | R {
+    return isLeft(this.wrapper) ? left(this.wrapper.value) : right(this.wrapper.value);
   }
 
   public getOrElse<V>(value: V): V | Right {
@@ -90,4 +108,8 @@ export class Either<Left, Right> {
   public getOrDefault(defaultValue: Right): Right {
     return isRight(this.wrapper) ? this.wrapper.value : defaultValue;
   }
+
+  public getOrThrow = (): Right => {
+    return this.unwrap(reThrow, identity);
+  };
 }
