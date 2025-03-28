@@ -37,24 +37,22 @@ if (a.constructor !== b.constructor) return false;
     }
 
     return true;
+
 }
 
 // true if both NaN, false otherwise
 return a !== a && b !== b;
 }
 
+/\*\*
 
-
-
-
-/**
-* Given two objects, returns the keys that have been added, removed or updated.
-* The comparison is shallow—only the first level of keys is compared.
-*
-* @param {object} oldObj the old object
-* @param {object} newObj the new object
-* @returns {{added: string[], removed: string[], updated: string[]}}
-  */
+- Given two objects, returns the keys that have been added, removed or updated.
+- The comparison is shallow—only the first level of keys is compared.
+-
+- @param {object} oldObj the old object
+- @param {object} newObj the new object
+- @returns {{added: string[], removed: string[], updated: string[]}}
+  \*/
   export function objectsDiff(oldObj, newObj) {
   const oldKeys = Object.keys(oldObj);
   const newKeys = Object.keys(newObj);
@@ -67,8 +65,6 @@ updated: newKeys.filter(
 ),
 };
 }
-
-
 
 export function isNotEmptyString(str) {
 return str !== '';

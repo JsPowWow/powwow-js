@@ -65,7 +65,16 @@
     "changelog": {
       "automaticFromRef": true
     },
-    "projects": ["packages/*"],
+    "projects": [
+      "packages/core",
+      "packages/core",
+      "packages/fp",
+      "packages/nullable",
+      "packages/emitter",
+      "packages/simple-store",
+      "packages/state-machine",
+      "packages/routing-utils"
+    ],
     "version": {
       "preVersionCommand": "npx nx run-many -t build"
     }
