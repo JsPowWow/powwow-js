@@ -1,14 +1,13 @@
 import createVDomElement from './jsx-vdom/jsxPragmaVdom';
 import NaiveDom from './jsx-naive/NaiveDom';
-import { MiniDom } from '../index';
-// import type { VirtualElement } from './jsx-mini/types';
+import { createVirtualElement } from './jsx-mini/vDom';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     type IntrinsicElements = Record<keyof HTMLElementTagNameMap, Record<string, unknown>>;
     // type Element = VirtualElement | ((props: Record<string, unknown>) => VirtualElement);
-    type Element = unknown;
+    // type Element = unknown;
   }
 }
 
@@ -30,7 +29,7 @@ export const jsx = {
         return createVDomElement(...(parameters as Parameters<typeof createVDomElement>));
       }
       case 'mini': {
-        return MiniDom.createElement(...(parameters as Parameters<typeof MiniDom.createElement>));
+        return createVirtualElement(...(parameters as Parameters<typeof createVirtualElement>));
       }
     }
   },

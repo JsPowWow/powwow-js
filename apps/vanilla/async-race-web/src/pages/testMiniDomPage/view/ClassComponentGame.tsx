@@ -1,8 +1,8 @@
-import { MiniDom } from '@pw-internals/jsx-runtime';
+import { Reely } from '@pw-internals/jsx-runtime';
 import { calculateWinner } from './utils';
 import { SquareType } from './types';
 
-class Square extends MiniDom.Component<unknown, { value: SquareType; onClick: () => void }> {
+class Square extends Reely.Component<unknown, { value: SquareType; onClick: () => void }> {
   public render() {
     return (
       <button onClick={this.props.onClick} className='square'>
@@ -14,7 +14,7 @@ class Square extends MiniDom.Component<unknown, { value: SquareType; onClick: ()
 
 type BoardProps = { squares: SquareType[]; onClick: (square: number) => void };
 
-class Board extends MiniDom.Component<unknown, BoardProps> {
+class Board extends Reely.Component<unknown, BoardProps> {
   renderSquare(i: number) {
     return (
       <Square
@@ -51,7 +51,7 @@ class Board extends MiniDom.Component<unknown, BoardProps> {
 
 type TicTacToeGameState = { stepNumber: number; xIsNext: boolean; history: { squares: SquareType[] }[] };
 
-class App extends MiniDom.Component<TicTacToeGameState> {
+class App extends Reely.Component<TicTacToeGameState> {
   state = {
     history: [
       {

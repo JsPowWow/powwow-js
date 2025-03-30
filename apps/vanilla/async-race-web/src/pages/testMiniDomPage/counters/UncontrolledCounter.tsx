@@ -1,5 +1,5 @@
 import { getRandomNumber } from '@powwow-js/core';
-import { MiniDom, NaiveDom } from '@pw-internals/jsx-runtime';
+import { Reely, NaiveDom } from '@pw-internals/jsx-runtime';
 
 interface Props {
   key: string;
@@ -8,17 +8,23 @@ interface Props {
 }
 
 const UncontrolledCounterComponent = ({ counter1Initial, counter2Initial }: Props) => {
-  const [counter1, setCounter1] = MiniDom.useState(counter1Initial);
-  const [counter2, setCounter2] = MiniDom.useState(counter2Initial);
+  const [counter1, setCounter1] = Reely.useState(counter1Initial);
+  const [counter2, setCounter2] = Reely.useState(counter2Initial);
+
+  Reely.useEffect(() => {
+    console.log('effect', counter1);
+    return () => {
+      console.log('effect::cleanup', counter1);
+    };
+  });
 
   return (
     <div class='window-body has-space' styles={{ display: 'flex', flexDirection: 'row' }}>
-      <div style='display: flex; align-items: center;'>
-        <button style='min-width: 80px' onclick={(_event: Event) => setCounter1(getRandomNumber(1, 100))}>
-          Rnd1
-        </button>
-        <div style='min-width: 25px; text-align: center;'>&nbsp;</div>
-      </div>
+      <button style='min-width: 80px' onclick={(_event: Event) => setCounter1(getRandomNumber(1, 100))}>
+        Rnd1
+      </button>
+      <div style='min-width: 25px; text-align: center;'>&nbsp;</div>
+
       <div style='display: flex; align-items: center;'>
         <button
           style='min-width: 80px'

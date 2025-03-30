@@ -57,6 +57,7 @@ export default [
       'unicorn/no-instanceof-builtins': ['error', { exclude: ['String', 'Number'] }],
       'unicorn/prefer-add-event-listener': 'off',
       'unicorn/prefer-global-this': 'off',
+      'unicorn/no-for-loop': 'off',
     },
   },
   {

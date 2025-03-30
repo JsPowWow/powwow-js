@@ -25,11 +25,19 @@ export interface FiberNode<S = any> extends VirtualElement {
   child?: FiberNode;
   return?: FiberNode;
   sibling?: FiberNode;
-  hooks?: {
-    state: S;
-    queue: S[];
-  }[];
+  hooks?: (StateHook<S> | EffectHook)[];
 }
 
 export type Updater<S> = (value: S) => void;
 export type UpdateStateAction<S> = S | ((previousState: S) => S);
+export type StateHook<S> = {
+  state: S;
+  queue: S[];
+};
+
+export type DependencyList = ReadonlyArray<unknown>;
+export type EffectCallback = () => void | (() => void);
+export type EffectHook = {
+  hookDeps: DependencyList | undefined;
+  hooksCleanups: ReturnType<EffectCallback>;
+};

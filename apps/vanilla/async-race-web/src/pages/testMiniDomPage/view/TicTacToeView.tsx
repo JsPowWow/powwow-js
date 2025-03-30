@@ -1,6 +1,6 @@
 import ClassComponentGame from './ClassComponentGame';
 import FunctionalComponentGame from './FunctionalComponentGame';
-import { MiniDom } from '@pw-internals/jsx-runtime';
+import { Reely } from '@pw-internals/jsx-runtime';
 import { WndTitleBar } from '../../../components/WndTitleBar';
 import { WndStatusBar } from '../../../components/WndStatusBar';
 import { WndView } from '../../../components/WndView';
@@ -18,7 +18,7 @@ export const TicTacToeView = () => {
           <p>
             Inspect the <code>Tic-Tac-Toe</code> game(s) available functionality
           </p>
-          <MiniDom.Fragment>
+          <Reely.Fragment>
             <GroupBox
               caption={
                 <p>
@@ -37,7 +37,7 @@ export const TicTacToeView = () => {
             >
               <FunctionalComponentGame />
             </GroupBox>
-          </MiniDom.Fragment>
+          </Reely.Fragment>
         </article>
       </WndBody>
       <WndStatusBar items={['Press F1 for help', 'Slide 1', 'CPU Usage: 35%']} />

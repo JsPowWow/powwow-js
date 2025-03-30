@@ -8,6 +8,7 @@ export const createVirtualTextElement = (text: string): VirtualElement => ({
     nodeValue: text,
   },
 });
+
 export const createVirtualElement = (
   type: VirtualElementType,
   props: Record<string, unknown> = {},
@@ -23,3 +24,6 @@ export const createVirtualElement = (
     },
   };
 };
+
+// Support React.Fragment syntax.
+export const Fragment = Symbol.for('react.fragment') as unknown as (props: unknown) => never;

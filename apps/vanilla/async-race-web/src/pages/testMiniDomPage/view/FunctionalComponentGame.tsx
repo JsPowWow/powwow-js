@@ -1,8 +1,8 @@
-import { MiniDom } from '@pw-internals/jsx-runtime';
+import { Reely } from '@pw-internals/jsx-runtime';
 import { SquareType } from './types';
 import { calculateWinner } from './utils';
 
-function Square({ value, onSquareClick }: { value: SquareType; onSquareClick: () => void }): JSX.Element {
+function Square({ value, onSquareClick }: { value: SquareType; onSquareClick: () => void }) {
   return (
     <button className='square' onClick={onSquareClick}>
       {value}
@@ -32,7 +32,7 @@ function Board({
   const status = winner ? 'Winner: ' + winner : 'Next player: ' + (xIsNext ? 'X' : 'O');
 
   return (
-    <MiniDom.Fragment>
+    <Reely.Fragment>
       <div className='status'>{status}</div>
       <div className='board-row'>
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
@@ -49,13 +49,13 @@ function Board({
         <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
       </div>
-    </MiniDom.Fragment>
+    </Reely.Fragment>
   );
 }
 
 export default function Game() {
-  const [history, setHistory] = MiniDom.useState([Array.from({ length: 9 }).fill(null)] as SquareType[][]);
-  const [currentMove, setCurrentMove] = MiniDom.useState(0);
+  const [history, setHistory] = Reely.useState([Array.from({ length: 9 }).fill(null)] as SquareType[][]);
+  const [currentMove, setCurrentMove] = Reely.useState(0);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
@@ -77,7 +77,7 @@ export default function Game() {
       </li>
     );
   });
-  console.log('dddd', currentSquares);
+
   return (
     <div className='game'>
       <div className='game-board'>

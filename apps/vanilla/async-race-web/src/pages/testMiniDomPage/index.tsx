@@ -1,14 +1,14 @@
 import { CountersView } from './counters/CountersView';
-import { MiniDom } from '@pw-internals/jsx-runtime';
+import { Reely } from '@pw-internals/jsx-runtime';
 import { TicTacToeView } from './view/TicTacToeView';
 
 export default function TestMiniDomPage() {
   return (
     <main styles={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-      <MiniDom.Fragment>
+      <Reely.Fragment>
         <CountersView />
         <TicTacToeView />
-      </MiniDom.Fragment>
+      </Reely.Fragment>
       {/*<h1>{() => `Hello JSX!`}</h1>*/}
       {/*<LikeComponent big />*/}
       {/*<LikeComponent big={false} />*/}

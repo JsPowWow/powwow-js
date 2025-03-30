@@ -1,4 +1,4 @@
-import { jsx as jsxRuntime, MiniDom, vDom } from '@pw-internals/jsx-runtime';
+import { jsx as jsxRuntime, Reely, vDom } from '@pw-internals/jsx-runtime';
 import { VDomJsxApp } from './app/vDomJsxApp';
 import { assertIsNonNullable, exhaustiveGuard } from '@powwow-js/core';
 import { NaiveJsxApp } from './app/NaiveJsxApp';
@@ -26,7 +26,7 @@ switch (renderMode) {
     break;
   }
   case 'mini': {
-    MiniDom.render(<TestMiniDomPage />, root);
+    Reely.render(<TestMiniDomPage />, root);
     break;
   }
   default: {

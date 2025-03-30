@@ -1,65 +1,27 @@
-import { isInstanceOf, isSomeFunction } from '@powwow-js/core';
+import { hasSome, isInstanceOf } from '@powwow-js/core';
 
-import type { ComponentFunction, FiberNode, FiberNodeDOM, Updater, UpdateStateAction, VirtualElement } from './types';
-import { Component, isComponentType } from './Component';
-import { isDefined, isPlainObject } from './utils';
-import { createVirtualElement, createVirtualTextElement, isVirtualElement } from './vDom';
+import { ComponentFunction, FiberNode, FiberNodeDOM, VirtualElement } from './types';
+import { isComponentType } from './Component';
+import { isDefined } from './utils';
+import { createVirtualTextElement, isVirtualElement, Fragment } from './vDom';
 import { createDOM, updateDOM } from './rDom';
-
-let wipRoot: FiberNode | null = null;
-let nextUnitOfWork: FiberNode | null = null;
-let currentRoot: FiberNode | null = null;
-let deletions: FiberNode[] = [];
-let wipFiber: FiberNode;
-let hookIndex = 0;
+import { useState } from './hooks/state';
+import { $$reely } from './renderContext';
 
 // Initial or reset.
-const render = (element: VirtualElement, container: Element): void => {
-  currentRoot = null;
-  wipRoot = {
+export const render = (element: VirtualElement, container: Element): void => {
+  $$reely.currentRoot = null;
+  $$reely.wipRoot = {
     type: 'div',
     dom: container,
     props: {
       children: [{ ...element }],
     },
-    alternate: currentRoot,
+    alternate: $$reely.currentRoot,
   };
-  nextUnitOfWork = wipRoot;
-  deletions = [];
+  $$reely.nextUnitOfWork = $$reely.wipRoot;
+  $$reely.deletions = [];
 };
-
-// Support React.Fragment syntax.
-const Fragment = Symbol.for('react.fragment') as unknown as (props: unknown) => never;
-
-// Enhanced requestIdleCallback.
-((global: Window): void => {
-  const id = 1;
-  const fps = 1e3 / 60;
-  let frameDeadline: number;
-  let pendingCallback: IdleRequestCallback;
-  const channel = new MessageChannel();
-  const timeRemaining = (): number => frameDeadline - globalThis.performance.now();
-
-  const deadline = {
-    didTimeout: false,
-    timeRemaining,
-  };
-
-  channel.port2.onmessage = (): void => {
-    if (typeof pendingCallback === 'function') {
-      pendingCallback(deadline);
-    }
-  };
-
-  global.requestIdleCallback = (callback: IdleRequestCallback) => {
-    global.requestAnimationFrame((frameTime) => {
-      frameDeadline = frameTime + fps;
-      pendingCallback = callback;
-      channel.port1.postMessage(null);
-    });
-    return id;
-  };
-})(window);
 
 // Note that we must complete the comparison of all fiber nodes before commitRoot.
 // The comparison of fiber nodes can be interrupted, but the commitRoot cannot be interrupted.
@@ -114,19 +76,19 @@ const commitRoot = () => {
     }
   };
 
-  for (const deletion of deletions) {
+  for (const deletion of $$reely.deletions) {
     if (deletion.dom) {
       const parentFiber = findParentFiber(deletion);
       commitDeletion(parentFiber?.dom, deletion.dom);
     }
   }
 
-  if (wipRoot !== null) {
-    commitWork(wipRoot.child);
-    currentRoot = wipRoot;
+  if (hasSome($$reely.wipRoot)) {
+    commitWork($$reely.wipRoot.child);
+    $$reely.currentRoot = $$reely.wipRoot;
   }
 
-  wipRoot = null;
+  $$reely.wipRoot = null;
 };
 
 // Reconcile the fiber nodes before and after, compare and record the differences.
@@ -167,7 +129,7 @@ const reconcileChildren = (fiberNode: FiberNode, elements: VirtualElement[] = []
       };
     }
     if (!isSameType && oldFiberNode) {
-      deletions.push(oldFiberNode);
+      $$reely.deletions.push(oldFiberNode);
     }
 
     if (oldFiberNode) {
@@ -192,9 +154,9 @@ const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
 
   switch (typeof type) {
     case 'function': {
-      wipFiber = fiberNode;
-      wipFiber.hooks = [];
-      hookIndex = 0;
+      $$reely.wipFiber = fiberNode;
+      $$reely.wipFiber.hooks = [];
+      $$reely.hookIndex = 0;
       let children: ReturnType<ComponentFunction>;
 
       if (isComponentType(type)) {
@@ -252,65 +214,14 @@ const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
   return null;
 };
 
-function useState<S>(initialState: S | (() => S)): [S, Updater<UpdateStateAction<S>>];
-function useState<S = undefined>(): [S | undefined, Updater<UpdateStateAction<S | undefined>>];
-function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateStateAction<S>>] {
-  const fiberNode: FiberNode<S> = wipFiber;
-  const hook: {
-    state: S;
-    queue: S[];
-  } = fiberNode?.alternate?.hooks
-    ? fiberNode.alternate.hooks[hookIndex]
-    : ({
-        state: initialState,
-        queue: [],
-      } as { state: S; queue: S[] });
-
-  while (hook.queue.length) {
-    let newState = hook.queue.shift();
-    if (isPlainObject(hook.state) && isPlainObject(newState)) {
-      newState = { ...hook.state, ...newState };
-    }
-    if (isDefined(newState)) {
-      hook.state = newState;
-    }
-  }
-
-  if (typeof fiberNode.hooks === 'undefined') {
-    fiberNode.hooks = [];
-  }
-
-  fiberNode.hooks.push(hook);
-  hookIndex += 1;
-
-  const setState = <SS extends S>(updater: UpdateStateAction<SS>): void => {
-    const newValue = (isSomeFunction(updater) ? updater(hook.state) : updater) as S;
-
-    hook.queue.push(newValue);
-    if (currentRoot) {
-      wipRoot = {
-        type: currentRoot.type,
-        dom: currentRoot.dom,
-        props: currentRoot.props,
-        alternate: currentRoot,
-      };
-      nextUnitOfWork = wipRoot;
-      deletions = [];
-      currentRoot = null;
-    }
-  };
-
-  return [hook.state, setState];
-}
-
 // Use requestIdleCallback to query whether there is currently a unit task
 // and determine whether the DOM needs to be updated.
 const workLoop: IdleRequestCallback = (deadline) => {
-  while (nextUnitOfWork && deadline.timeRemaining() > 1) {
-    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+  while ($$reely.nextUnitOfWork && deadline.timeRemaining() > 1) {
+    $$reely.nextUnitOfWork = performUnitOfWork($$reely.nextUnitOfWork);
   }
 
-  if (!nextUnitOfWork && wipRoot) {
+  if (!$$reely.nextUnitOfWork && $$reely.wipRoot) {
     commitRoot();
   }
 
@@ -321,11 +232,3 @@ const workLoop: IdleRequestCallback = (deadline) => {
 void (function main(): void {
   window.requestIdleCallback(workLoop);
 })();
-
-export default {
-  createElement: createVirtualElement,
-  render,
-  useState,
-  Component,
-  Fragment,
-};
