@@ -14,7 +14,7 @@ export function isSameDeps(deps: DependencyList, hookDeps: Nullable<DependencyLi
     }
 
     for (let i = 0; i < deps.length; ++i) {
-      if (deps[i] !== hookDeps[i]) {
+      if (!Object.is(deps[i], hookDeps[i])) {
         return false;
       }
     }

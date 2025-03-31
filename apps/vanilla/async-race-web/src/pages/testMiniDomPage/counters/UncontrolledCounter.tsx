@@ -18,6 +18,13 @@ const UncontrolledCounterComponent = ({ counter1Initial, counter2Initial }: Prop
     };
   });
 
+  Reely.useEffect(() => {
+    console.log('Counter::mount');
+  }, []);
+  Reely.useEffect(() => {
+    return () => console.log('Counters::unmount');
+  }, []);
+
   return (
     <div class='window-body has-space' styles={{ display: 'flex', flexDirection: 'row' }}>
       <button style='min-width: 80px' onclick={(_event: Event) => setCounter1(getRandomNumber(1, 100))}>

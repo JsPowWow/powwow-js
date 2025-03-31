@@ -16,9 +16,10 @@ export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateSta
         }
   ) as StateHook<S>;
 
+  const isBatching = hook.queue.length > 0;
   while (hook.queue.length > 0) {
     let newState = hook.queue.shift();
-    if (isPlainObject(hook.state) && isPlainObject(newState)) {
+    if (isBatching && isPlainObject(hook.state) && isPlainObject(newState)) {
       newState = { ...hook.state, ...newState };
     }
     if (hasSome(newState)) {

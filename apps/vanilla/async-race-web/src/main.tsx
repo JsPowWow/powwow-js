@@ -3,6 +3,8 @@ import { VDomJsxApp } from './app/vDomJsxApp';
 import { assertIsNonNullable, exhaustiveGuard } from '@powwow-js/core';
 import { NaiveJsxApp } from './app/NaiveJsxApp';
 import { GarageContainer } from './pages/garage/GarageContainer';
+import { CountersView } from './pages/testMiniDomPage/counters/CountersView';
+import { GarageSuspenseContainer } from './pages/garage/GarageSuspenseContainer';
 
 const renderMode = jsxRuntime.setJsxRuntimeMode('mini');
 const root = document.querySelector<HTMLDivElement>('#root');
@@ -27,7 +29,21 @@ switch (renderMode) {
   }
   case 'mini': {
     //Reely.render(<TestMiniDomPage />, root);
-    Reely.render(<GarageContainer />, root);
+    Reely.render(
+      <main>
+        {/*<CountersView /> TODO AR - fix double render ?*/}
+        <div>
+          <GarageSuspenseContainer />
+        </div>
+        <div>
+          <GarageContainer />
+        </div>
+        <div>
+          <CountersView />
+        </div>
+      </main>,
+      root
+    );
     break;
   }
   default: {

@@ -58,6 +58,7 @@ export default [
       'unicorn/prefer-add-event-listener': 'off',
       'unicorn/prefer-global-this': 'off',
       'unicorn/no-for-loop': 'off',
+      'unicorn/prevent-abbreviations': 'off',
     },
   },
   {

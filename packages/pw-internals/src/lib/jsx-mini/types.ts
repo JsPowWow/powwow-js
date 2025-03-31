@@ -43,3 +43,38 @@ export type EffectHook = {
   deps: DependencyList | undefined;
   cleanup: ReturnType<EffectCallback>;
 };
+
+export interface RefObject<T> {
+  current: T;
+}
+export type Ref<T> = RefCallback<T> | RefObject<T | null> | null;
+type RefCallback<T> = {
+  bivarianceHack(instance: T | null): void | (() => void);
+}['bivarianceHack'];
+
+// type ElementType<P = any, Tag extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements> =
+//   | { [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never }[Tag]
+//   | ComponentType<P>;
+// type ComponentRef<T extends ElementType> = ComponentPropsWithRef<T> extends RefAttributes<infer Method> ? Method
+//   : never;
+// type ComponentType<P = {}> = ComponentClass<P> | FunctionComponent<P>;
+//
+// interface ComponentClass<P = {}, S = ComponentState> extends StaticLifecycle<P, S> {
+//   new(props: P): Component<P, S>;
+//   propTypes?: any;
+//   displayName?: string | undefined;
+// }
+// interface FunctionComponent<P = {}> {
+//   (props: P): ReactNode | Promise<ReactNode>;
+//   displayName?: string | undefined;
+// }
+//
+//
+// type ComponentState = any;
+//
+// /**
+//  * A value which uniquely identifies a node among items in an array.
+//  *
+//  * @see {@link https://react.dev/learn/rendering-lists#keeping-list-items-in-order-with-key React Docs}
+//  */
+// type Key = string | number | bigint;

@@ -3,16 +3,25 @@ import { GarageDataType, getCars } from '../../api/api';
 import { Spinner } from '../../components/Spinner';
 
 export const GarageContainer = () => {
+  const [renderCount, rerender] = Reely.useState(0);
   const [cars, setCars] = Reely.useState<GarageDataType[]>([]);
   const [loading, setIsLoading] = Reely.useState(true);
 
+  const referencePrimitive = Reely.useRef(5);
+  const referenceData = Reely.useRef({ foo: 'bar' });
+  console.log(
+    `Garage Container render:${renderCount} ref1:${referencePrimitive.current}, ref2:`,
+    referenceData.current
+  );
+
   Reely.useEffect(() => {
-    console.log('Garage Container');
-    getCars().then((c) => {
-      setCars(c);
-      setIsLoading(false);
-    });
-  }, []);
+    if (cars.length === 0) {
+      setIsLoading(true);
+      getCars()
+        .then(setCars)
+        .finally(() => setIsLoading(false));
+    }
+  }, [cars]);
 
   // {/*{loading && 'Loading...'} TODO AR do not render falsy values*/}
 
@@ -22,6 +31,8 @@ export const GarageContainer = () => {
 
   return (
     <Reely.Fragment>
+      {!loading && <button onClick={() => rerender((r) => ++r)}>Rerender</button>}
+      {!loading && <button onClick={() => setCars([])}>Reload</button>}
       {cars.map((car) => {
         return <div>{`${car.id}, ${car.name}, ${car.color}`}</div>;
       })}

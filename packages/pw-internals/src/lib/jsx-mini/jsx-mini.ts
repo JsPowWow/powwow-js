@@ -6,7 +6,7 @@ import { createVirtualTextElement, Fragment, isVirtualElement } from './vDom';
 import { createDOM, updateDOM } from './rDom';
 import { useState } from './hooks/state';
 import { $$reely } from './renderContext';
-import { findChildFiber, findParentFiber } from './fiber';
+import { findChildFiber, findParentFiber, runCleanupEffects } from './fiber';
 
 // Initial or reset.
 export const render = (element: VirtualElement, container: Element): void => {
@@ -74,6 +74,7 @@ const commitRoot = () => {
         commitDeletion(parentFiber?.dom, childFiber.dom);
       }
     }
+    runCleanupEffects(deletion);
   }
 
   if (hasSome($$reely.wipRoot)) {
@@ -213,7 +214,19 @@ const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
 // and determine whether the DOM needs to be updated.
 const workLoop: IdleRequestCallback = (deadline) => {
   while ($$reely.nextUnitOfWork && deadline.timeRemaining() > 1) {
-    $$reely.nextUnitOfWork = performUnitOfWork($$reely.nextUnitOfWork);
+    try {
+      $$reely.nextUnitOfWork = performUnitOfWork($$reely.nextUnitOfWork);
+    } catch (err) {
+      if (isInstanceOf(Promise, err)) {
+        $$reely.nextUnitOfWork = null;
+        err.then(() => {
+          $$reely.wipRoot = $$reely.currentRoot;
+          $$reely.nextUnitOfWork = $$reely.wipRoot;
+          //$$reely.wipRoot.hooks = $$reely.currentRoot.hooks;
+          // TODO AR also need to set wipRoot.hooks ?
+        });
+      }
+    }
   }
 
   if (!$$reely.nextUnitOfWork && $$reely.wipRoot) {

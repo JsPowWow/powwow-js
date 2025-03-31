@@ -4,12 +4,10 @@ import { isSameDeps } from './utils';
 
 import { $$reely } from '../renderContext';
 
-export function useEffect(effect: EffectCallback, deps?: DependencyList): void;
-export function useEffect(effect: EffectCallback, deps: DependencyList): void;
-export function useEffect(effect: EffectCallback, deps?: DependencyList): void {
+const getOrInit = (): EffectHook => {
   const fiberNode: FiberNode = $$reely.wipFiber;
   const hookIndex = $$reely.hookIndex;
-  const hook: EffectHook = (
+  return (
     fiberNode?.alternate?.hooks
       ? fiberNode.alternate.hooks[hookIndex]
       : {
@@ -18,12 +16,21 @@ export function useEffect(effect: EffectCallback, deps?: DependencyList): void {
           cleanup: undefined,
         }
   ) as EffectHook;
+};
+
+export function useEffect(effect: EffectCallback, deps?: DependencyList): void;
+export function useEffect(effect: EffectCallback, deps: DependencyList): void;
+export function useEffect(effect: EffectCallback, deps?: DependencyList): void {
+  const fiberNode: FiberNode = $$reely.wipFiber;
+
+  const hook: EffectHook = getOrInit();
 
   if (fiberNode?.alternate?.hooks) {
     if (!deps || !isSameDeps(deps, hook.deps)) {
       if (isSomeFunction(hook.cleanup)) {
         hook.cleanup();
       }
+      hook.deps = deps;
       hook.cleanup = effect();
     }
   } else {

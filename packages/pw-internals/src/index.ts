@@ -8,6 +8,6 @@ export * from './lib/jsx-mini/types';
 
 export * as vDom from './lib/jsx-vdom/';
 
-// TODO AR revise
+// TODO AR revise reely, reely-dom
 //export * from './lib/jsx-vdom/vdom';
 //export * from './lib/jsx-vdom/render';

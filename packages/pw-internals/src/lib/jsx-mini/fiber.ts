@@ -1,5 +1,5 @@
 import { FiberNode } from '@pw-internals/jsx-runtime';
-import { Nullable } from '@powwow-js/core';
+import { hasSome, Nullable } from '@powwow-js/core';
 
 export const findChildFiber = (fiberNode?: FiberNode): Nullable<FiberNode> => {
   if (fiberNode) {
@@ -23,4 +23,12 @@ export const findParentFiber = (fiberNode?: FiberNode): Nullable<FiberNode> => {
   }
 
   return null;
+};
+
+export const runCleanupEffects = (fiberNode: FiberNode) => {
+  fiberNode.hooks?.forEach((hook) => {
+    if (hook.type === 'effect' && hasSome(hook.cleanup)) {
+      hook.cleanup();
+    }
+  });
 };
