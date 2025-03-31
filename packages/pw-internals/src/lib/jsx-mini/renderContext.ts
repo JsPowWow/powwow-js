@@ -1,5 +1,5 @@
-import { Nullable } from 'vitest';
-import { FiberNode } from '@pw-internals/jsx-runtime';
+import { Nullable } from '@powwow-js/core';
+import { FiberNode } from './types';
 
 export const $$reely = new (class ReelyExecCtx {
   wipRoot: Nullable<FiberNode>;

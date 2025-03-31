@@ -1,12 +1,12 @@
-import { hasSome, isInstanceOf } from '@powwow-js/core';
+import { hasSome, isInstanceOf, isSomeFunction } from '@powwow-js/core';
 
 import { ComponentFunction, FiberNode, FiberNodeDOM, VirtualElement } from './types';
 import { isComponentType } from './Component';
-import { isDefined } from './utils';
-import { createVirtualTextElement, isVirtualElement, Fragment } from './vDom';
+import { createVirtualTextElement, Fragment, isVirtualElement } from './vDom';
 import { createDOM, updateDOM } from './rDom';
 import { useState } from './hooks/state';
 import { $$reely } from './renderContext';
+import { findChildFiber, findParentFiber } from './fiber';
 
 // Initial or reset.
 export const render = (element: VirtualElement, container: Element): void => {
@@ -26,26 +26,14 @@ export const render = (element: VirtualElement, container: Element): void => {
 // Note that we must complete the comparison of all fiber nodes before commitRoot.
 // The comparison of fiber nodes can be interrupted, but the commitRoot cannot be interrupted.
 const commitRoot = () => {
-  const findParentFiber = (fiberNode?: FiberNode) => {
-    if (fiberNode) {
-      let parentFiber = fiberNode.return;
-      while (parentFiber && !parentFiber.dom) {
-        parentFiber = parentFiber.return;
-      }
-      return parentFiber;
-    }
-
-    return null;
-  };
-
   const commitDeletion = (parentDOM: FiberNodeDOM, DOM: NonNullable<FiberNodeDOM>) => {
-    if (isDefined(parentDOM)) {
+    if (hasSome(parentDOM)) {
       DOM.remove();
     }
   };
 
   const commitReplacement = (parentDOM: FiberNodeDOM, DOM: NonNullable<FiberNodeDOM>) => {
-    if (isDefined(parentDOM) && isInstanceOf(Element, parentDOM)) {
+    if (hasSome(parentDOM) && isInstanceOf(Element, parentDOM)) {
       parentDOM.append(DOM);
     }
   };
@@ -77,9 +65,14 @@ const commitRoot = () => {
   };
 
   for (const deletion of $$reely.deletions) {
+    const parentFiber = findParentFiber(deletion);
     if (deletion.dom) {
-      const parentFiber = findParentFiber(deletion);
       commitDeletion(parentFiber?.dom, deletion.dom);
+    } else if (isSomeFunction(deletion.type)) {
+      const childFiber = findChildFiber(deletion);
+      if (childFiber?.dom) {
+        commitDeletion(parentFiber?.dom, childFiber.dom);
+      }
     }
   }
 
@@ -118,6 +111,7 @@ const reconcileChildren = (fiberNode: FiberNode, elements: VirtualElement[] = []
         effectTag: 'UPDATE',
       };
     }
+
     if (!isSameType && Boolean(virtualElement)) {
       newFiber = {
         type: virtualElement.type,
@@ -128,6 +122,7 @@ const reconcileChildren = (fiberNode: FiberNode, elements: VirtualElement[] = []
         effectTag: 'REPLACEMENT',
       };
     }
+
     if (!isSameType && oldFiberNode) {
       $$reely.deletions.push(oldFiberNode);
     }

@@ -1,6 +1,5 @@
 import type { FiberNode, StateHook, Updater, UpdateStateAction } from '../types';
-import { isDefined, isPlainObject } from '../utils';
-import { isSomeFunction } from '@powwow-js/core';
+import { hasSome, isPlainObject, isSomeFunction } from '@powwow-js/core';
 
 import { $$reely } from '../renderContext';
 
@@ -22,7 +21,7 @@ export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateSta
     if (isPlainObject(hook.state) && isPlainObject(newState)) {
       newState = { ...hook.state, ...newState };
     }
-    if (isDefined(newState)) {
+    if (hasSome(newState)) {
       hook.state = newState;
     }
   }

@@ -13,21 +13,22 @@ export function useEffect(effect: EffectCallback, deps?: DependencyList): void {
     fiberNode?.alternate?.hooks
       ? fiberNode.alternate.hooks[hookIndex]
       : {
-          hookDeps: [],
-          hooksCleanups: [],
+          type: 'effect',
+          deps: [],
+          cleanup: undefined,
         }
   ) as EffectHook;
 
   if (fiberNode?.alternate?.hooks) {
-    if (!deps || !isSameDeps(deps, hook.hookDeps)) {
-      if (isSomeFunction(hook.hooksCleanups)) {
-        hook.hooksCleanups();
+    if (!deps || !isSameDeps(deps, hook.deps)) {
+      if (isSomeFunction(hook.cleanup)) {
+        hook.cleanup();
       }
-      hook.hooksCleanups = effect();
+      hook.cleanup = effect();
     }
   } else {
-    hook.hookDeps = deps;
-    hook.hooksCleanups = effect();
+    hook.deps = deps;
+    hook.cleanup = effect();
   }
 
   if (isNil(fiberNode.hooks)) {

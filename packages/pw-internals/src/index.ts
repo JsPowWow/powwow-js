@@ -2,7 +2,7 @@ export * from './lib/jsx-runtime';
 
 export { default as NaiveDom } from './lib/jsx-naive/NaiveDom';
 
-export * as Reely from './lib/jsx-mini';
+export { default as Reely } from './lib/jsx-mini';
 
 export * from './lib/jsx-mini/types';
 

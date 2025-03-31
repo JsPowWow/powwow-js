@@ -2,7 +2,7 @@ import { jsx as jsxRuntime, Reely, vDom } from '@pw-internals/jsx-runtime';
 import { VDomJsxApp } from './app/vDomJsxApp';
 import { assertIsNonNullable, exhaustiveGuard } from '@powwow-js/core';
 import { NaiveJsxApp } from './app/NaiveJsxApp';
-import TestMiniDomPage from './pages/testMiniDomPage';
+import { GarageContainer } from './pages/garage/GarageContainer';
 
 const renderMode = jsxRuntime.setJsxRuntimeMode('mini');
 const root = document.querySelector<HTMLDivElement>('#root');
@@ -26,7 +26,8 @@ switch (renderMode) {
     break;
   }
   case 'mini': {
-    Reely.render(<TestMiniDomPage />, root);
+    //Reely.render(<TestMiniDomPage />, root);
+    Reely.render(<GarageContainer />, root);
     break;
   }
   default: {

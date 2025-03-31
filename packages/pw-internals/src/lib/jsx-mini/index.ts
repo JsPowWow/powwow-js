@@ -1,5 +1,14 @@
-export { createVirtualElement as createElement, Fragment } from './vDom';
-export { useEffect } from './hooks/effect';
-export { useState } from './hooks/state';
-export { Component } from './Component';
-export { render } from './jsx-mini';
+import { createVirtualElement as createElement, Fragment } from './vDom';
+import { useEffect } from './hooks/effect';
+import { useState } from './hooks/state';
+import { Component } from './Component';
+import { render } from './jsx-mini';
+
+export default {
+  createElement,
+  Fragment,
+  Component,
+  render,
+  useState,
+  useEffect,
+};
