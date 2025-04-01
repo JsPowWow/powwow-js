@@ -2,9 +2,7 @@ import { jsx as jsxRuntime, Reely, vDom } from '@pw-internals/jsx-runtime';
 import { VDomJsxApp } from './app/vDomJsxApp';
 import { assertIsNonNullable, exhaustiveGuard } from '@powwow-js/core';
 import { NaiveJsxApp } from './app/NaiveJsxApp';
-import { GarageContainer } from './pages/garage/GarageContainer';
 import { CountersView } from './pages/testMiniDomPage/counters/CountersView';
-import { GarageSuspenseContainer } from './pages/garage/GarageSuspenseContainer';
 
 const renderMode = jsxRuntime.setJsxRuntimeMode('mini');
 const root = document.querySelector<HTMLDivElement>('#root');
@@ -32,15 +30,44 @@ switch (renderMode) {
     Reely.render(
       <main>
         {/*<CountersView /> TODO AR - fix double render ?*/}
-        <div>
-          <GarageSuspenseContainer />
+        {/*<Suspense>*/}
+        {/*  <GarageSuspenseContainer />*/}
+        {/*</Suspense>*/}
+        {/*<div id='garageContainer'>*/}
+        {/*  <GarageContainer />*/}
+        {/*</div>*/}
+        <div id='test-suspense'>
+          {/*Something NOT suspended below....*/}
+          <article id='counters'>
+            <CountersView />
+            <CountersView />
+            <CountersView />
+          </article>
+          {/*Something suspended will below....*/}
+          {/*<article id='counters'>*/}
+          {/*  soon...*/}
+          {/*  <article id='counters'>*/}
+          {/*    almost...*/}
+          {/*    <article id='counters'>*/}
+          {/*      HERE:*/}
+          {/*      /!*<Suspense>/!*<GarageSuspenseContainer />*!/</Suspense>*!/*/}
+          {/*    </article>*/}
+          {/*  </article>*/}
+          {/*</article>*/}
+          {/*~~~ HERE IS NOT SUSPENDED CONTINUES ~~~*/}
+          {/*<article id='counters'>*/}
+          {/*  <CountersView />*/}
+          {/*</article>*/}
+          {/*<div id='test-suspense2'>*/}
+          {/*  Something also suspended below....*/}
+          {/*  <Suspense>*/}
+          {/*    <GarageSuspenseContainer />*/}
+          {/*  </Suspense>*/}
+          {/*</div>*/}
         </div>
-        <div>
-          <GarageContainer />
-        </div>
-        <div>
-          <CountersView />
-        </div>
+        {/*<article id='suspenseWrapper'>*/}
+        {/*  <GarageSuspenseContainer />*/}
+        {/*</article>*/}
       </main>,
       root
     );

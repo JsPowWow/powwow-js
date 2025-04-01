@@ -88,4 +88,5 @@ export const path = {
   engine: '/engine',
 };
 
-export const getCars = () => sleep(3300).then(() => fetchAndValidateData(isGarageData)(path.garage, { method: 'GET' }));
+export const getCars = (..._fake: unknown[]) =>
+  sleep(3000).then(() => fetchAndValidateData(isGarageData)(path.garage, { method: 'GET' }));

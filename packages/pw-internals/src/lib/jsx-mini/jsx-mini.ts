@@ -143,10 +143,30 @@ const reconcileChildren = (fiberNode: FiberNode, elements: VirtualElement[] = []
   }
 };
 
+const getNextUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
+  if (fiberNode.child) {
+    return fiberNode.child;
+  }
+
+  let nextFiberNode: FiberNode | undefined = fiberNode;
+
+  while (nextFiberNode !== undefined) {
+    if (nextFiberNode.sibling) {
+      return nextFiberNode.sibling;
+    }
+
+    nextFiberNode = nextFiberNode.return;
+  }
+
+  return null;
+};
+
 // Execute each unit task and return to the next unit task.
 // Different processing according to the type of fiber node.
 const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
   const { type } = fiberNode;
+
+  let renderError;
 
   switch (typeof type) {
     case 'function': {
@@ -163,14 +183,20 @@ const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
         component.setState = setState;
         children = component.render.bind(component)() as VirtualElement;
       } else {
-        children = type(fiberNode.props);
+        try {
+          // TODO AR handle proper render error(s)
+          children = type(fiberNode.props);
+        } catch (error) {
+          children = '{{{{FALLBACK}}}}';
+          console.log('did catch on', fiberNode);
+          renderError = error;
+        }
       }
       reconcileChildren(fiberNode, [
         isVirtualElement(children) ? children : createVirtualTextElement(String(children)),
       ]);
       break;
     }
-
     case 'number':
     case 'string': {
       if (!fiberNode.dom) {
@@ -193,21 +219,11 @@ const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
     }
   }
 
-  if (fiberNode.child) {
-    return fiberNode.child;
+  if (renderError) {
+    throw renderError;
   }
 
-  let nextFiberNode: FiberNode | undefined = fiberNode;
-
-  while (nextFiberNode !== undefined) {
-    if (nextFiberNode.sibling) {
-      return nextFiberNode.sibling;
-    }
-
-    nextFiberNode = nextFiberNode.return;
-  }
-
-  return null;
+  return getNextUnitOfWork(fiberNode);
 };
 
 // Use requestIdleCallback to query whether there is currently a unit task
@@ -218,11 +234,12 @@ const workLoop: IdleRequestCallback = (deadline) => {
       $$reely.nextUnitOfWork = performUnitOfWork($$reely.nextUnitOfWork);
     } catch (err) {
       if (isInstanceOf(Promise, err)) {
-        $$reely.nextUnitOfWork = null;
+        $$reely.nextUnitOfWork = null; // getNextUnitOfWork($$reely.nextUnitOfWork); <=== TODO AR
         err.then(() => {
           $$reely.wipRoot = $$reely.currentRoot;
           $$reely.nextUnitOfWork = $$reely.wipRoot;
-          //$$reely.wipRoot.hooks = $$reely.currentRoot.hooks;
+          // $$reely.wipRoot.hooks = $$reely.currentRoot.hooks;
+          // $$reely.wipRoot.alternate = $$reely.currentRoot.child;
           // TODO AR also need to set wipRoot.hooks ?
         });
       }
