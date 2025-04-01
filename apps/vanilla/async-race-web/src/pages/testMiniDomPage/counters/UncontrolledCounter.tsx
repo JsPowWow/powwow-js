@@ -1,5 +1,5 @@
 import { getRandomNumber } from '@powwow-js/core';
-import { Reely, NaiveDom } from '@pw-internals/jsx-runtime';
+import { NaiveDom, Reely } from '@pw-internals/jsx-runtime';
 
 interface Props {
   key: string;

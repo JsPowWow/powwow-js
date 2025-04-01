@@ -125,6 +125,7 @@ const reconcileChildren = (fiberNode: FiberNode, elements: VirtualElement[] = []
     }
 
     if (!isSameType && oldFiberNode) {
+      console.log('PUSH deletion', { fiberNode, oldFiberNode, elements });
       $$reely.deletions.push(oldFiberNode);
     }
 
@@ -230,20 +231,21 @@ const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
 // and determine whether the DOM needs to be updated.
 const workLoop: IdleRequestCallback = (deadline) => {
   while ($$reely.nextUnitOfWork && deadline.timeRemaining() > 1) {
-    try {
-      $$reely.nextUnitOfWork = performUnitOfWork($$reely.nextUnitOfWork);
-    } catch (err) {
-      if (isInstanceOf(Promise, err)) {
-        $$reely.nextUnitOfWork = null; // getNextUnitOfWork($$reely.nextUnitOfWork); <=== TODO AR
-        err.then(() => {
-          $$reely.wipRoot = $$reely.currentRoot;
-          $$reely.nextUnitOfWork = $$reely.wipRoot;
-          // $$reely.wipRoot.hooks = $$reely.currentRoot.hooks;
-          // $$reely.wipRoot.alternate = $$reely.currentRoot.child;
-          // TODO AR also need to set wipRoot.hooks ?
-        });
-      }
-    }
+    $$reely.nextUnitOfWork = performUnitOfWork($$reely.nextUnitOfWork);
+    // try {
+    //   $$reely.nextUnitOfWork = performUnitOfWork($$reely.nextUnitOfWork);
+    // } catch (err) {
+    //   if (isInstanceOf(Promise, err) ) {
+    //     $$reely.nextUnitOfWork = null; // getNextUnitOfWork($$reely.nextUnitOfWork); <=== TODO AR
+    //     err.then(() => {
+    //       $$reely.wipRoot = $$reely.currentRoot;
+    //       $$reely.nextUnitOfWork = $$reely.wipRoot;
+    //       // $$reely.wipRoot.hooks = $$reely.currentRoot.hooks;
+    //       // $$reely.wipRoot.alternate = $$reely.currentRoot.child;
+    //       // TODO AR also need to set wipRoot.hooks ?
+    //     });
+    //   }
+    // }
   }
 
   if (!$$reely.nextUnitOfWork && $$reely.wipRoot) {

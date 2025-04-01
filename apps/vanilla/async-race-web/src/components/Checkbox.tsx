@@ -7,6 +7,7 @@ interface Props {
   selected: boolean;
   onChange?: (selected: boolean) => void;
 }
+
 export const Checkbox = ({ label, id, selected = false, onChange }: Props) => {
   return (
     <Reely.Fragment>

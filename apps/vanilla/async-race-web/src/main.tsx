@@ -39,9 +39,9 @@ switch (renderMode) {
         <div id='test-suspense'>
           {/*Something NOT suspended below....*/}
           <article id='counters'>
-            <CountersView />
-            <CountersView />
-            <CountersView />
+            <CountersView title='Counters Demo (1)' />
+            <CountersView title='Counters Demo (2)' />
+            <CountersView title='Counters Demo (3)' />
           </article>
           {/*Something suspended will below....*/}
           {/*<article id='counters'>*/}

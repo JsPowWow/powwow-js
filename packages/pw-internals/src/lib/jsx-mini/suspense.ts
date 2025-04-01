@@ -3,6 +3,8 @@ import { AnyAsyncFunction, exhaustiveGuard } from '@powwow-js/core';
 
 type FetchStatus = 'pending' | 'success' | 'error';
 
+// const symbol = Symbol('suspense::promise');
+
 export function wrapPromise<Fetcher extends AnyAsyncFunction>(fetcher: Fetcher) {
   let status: FetchStatus = 'pending';
   let result: Awaited<ReturnType<Fetcher>>;

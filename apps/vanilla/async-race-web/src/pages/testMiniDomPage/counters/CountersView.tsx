@@ -8,28 +8,30 @@ import { WndView } from '../../../components/WndView';
 import { Reely } from '@pw-internals/jsx-runtime';
 import { Checkbox } from '../../../components/Checkbox';
 
-export const CountersView = () => {
-  const [isMounted, setIsMounted] = Reely.useState(true);
+interface CountersViewProps {
+  title?: string;
+}
 
+export const CountersView = ({ title = 'Counters Demo' }: CountersViewProps) => {
+  const [isMounted, setIsMounted] = Reely.useState(true);
   return (
     <WndView styles={{ minWidth: '730px' }}>
-      <WndTitleBar caption='Counters Demo' />
+      <WndTitleBar caption={title} />
       <WndBody>
         <TabList>
           <TabListItem caption='Uncontrolled Counter' selected />
           <TabListItem caption='Controlled Counter' />
         </TabList>
-        <article role='tabpanel' id='uncontrolled-counter'>
+        <article role='tabpanel' id={`uncontrolled-counter-${title}`}>
           <p>
             Inspect the <code>Uncontrolled</code> counter(s) available functionality
           </p>
           <Checkbox
-            id='mount-counters-checkbox'
+            id={`counter-checkbox---${title}`}
             label='Show counters'
             selected={isMounted}
             onChange={(selected) => setIsMounted(selected)}
           />
-          {/*<> TODO AR infinite loop !!!*/}
           {isMounted ? (
             <div>
               <UncontrolledCounter counter1Initial={15} counter2Initial={30} />
@@ -38,8 +40,6 @@ export const CountersView = () => {
           ) : (
             <div />
           )}
-
-          {/*</div>*/}
         </article>
       </WndBody>
       <WndStatusBar items={['Press F1 for help', 'Slide 1', 'CPU Usage: 14%']} />
