@@ -1,3 +1,17 @@
+## 0.10.0 (2025-04-01)
+
+### 🚀 Features
+
+- **pw-internals:** add 'useEffect' hook ([16ea1ea](https://github.com/JsPowWow/powwow-js/commit/16ea1ea))
+- **pw-internals:** add 'deletions' to work within functional component fiber node ([64cd10f](https://github.com/JsPowWow/powwow-js/commit/64cd10f))
+- **pw-internals:** add 'useRef' hook and 'suspense' initial(s) ([64dcfc7](https://github.com/JsPowWow/powwow-js/commit/64dcfc7))
+- **pw-internals:** add 'suspense' workflow initial(s) ([227a8de](https://github.com/JsPowWow/powwow-js/commit/227a8de))
+- **pw-internals:** add 'suspense' workflow debug ([e131cba](https://github.com/JsPowWow/powwow-js/commit/e131cba))
+
+### ❤️ Thank You
+
+- JsPowWow
+
 ## 0.9.3 (2025-03-28)
 
 ### 🚀 Features
