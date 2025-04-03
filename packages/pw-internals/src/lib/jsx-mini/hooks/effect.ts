@@ -13,9 +13,28 @@ const getOrInit = (): EffectHook => {
       : {
           type: 'effect',
           deps: [],
-          cleanup: undefined,
+          cleanupEffect: undefined,
         }
   ) as EffectHook;
+};
+
+const update = (hook: EffectHook, effect: EffectCallback, deps: DependencyList | undefined): void => {
+  hook.deps = deps;
+  hook.effect = effect;
+  effectHooks.push(hook);
+  channel.port1.postMessage(null);
+};
+
+const channel = new MessageChannel();
+const effectHooks: EffectHook[] = [];
+
+channel.port2.onmessage = (): void => {
+  while (effectHooks.length > 0) {
+    const hook = effectHooks.shift();
+    if (hook) {
+      hook.cleanupEffect = hook.effect();
+    }
+  }
 };
 
 export function useEffect(effect: EffectCallback, deps?: DependencyList): void;
@@ -27,15 +46,13 @@ export function useEffect(effect: EffectCallback, deps?: DependencyList): void {
 
   if (fiberNode?.alternate?.hooks) {
     if (!deps || !isSameDeps(deps, hook.deps)) {
-      if (isSomeFunction(hook.cleanup)) {
-        hook.cleanup();
+      if (isSomeFunction(hook.cleanupEffect)) {
+        hook.cleanupEffect();
       }
-      hook.deps = deps;
-      hook.cleanup = effect();
+      update(hook, effect, deps);
     }
   } else {
-    hook.deps = deps;
-    hook.cleanup = effect();
+    update(hook, effect, deps);
   }
 
   if (isNil(fiberNode.hooks)) {

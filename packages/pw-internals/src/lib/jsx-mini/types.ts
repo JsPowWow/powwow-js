@@ -41,7 +41,8 @@ export type EffectCallback = () => void | (() => void);
 export type EffectHook = {
   type: 'effect';
   deps: DependencyList | undefined;
-  cleanup: ReturnType<EffectCallback>;
+  effect: EffectCallback;
+  cleanupEffect: ReturnType<EffectCallback>;
 };
 
 export interface RefObject<T> {

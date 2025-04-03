@@ -22,6 +22,7 @@ export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateSta
     if (isBatching && isPlainObject(hook.state) && isPlainObject(newState)) {
       newState = { ...hook.state, ...newState };
     }
+    // TODO AR remove it to a;;ow nullish state (?)
     if (hasSome(newState)) {
       hook.state = newState;
     }

@@ -42,6 +42,7 @@ export { default as assertIsInstanceOf } from './lib/assertions/assertIsInstance
 export { default as assertIsSomeFunction } from './lib/assertions/assertIsSomeFunction';
 
 export { default as sleep } from './lib/async/sleep';
+export { default as waitFor } from './lib/async/waitFor';
 export { default as promiseResolver } from './lib/async/promiseResolver';
 
 export { default as toErrorWithMessage } from './lib/errors/toErrorWithMessage';

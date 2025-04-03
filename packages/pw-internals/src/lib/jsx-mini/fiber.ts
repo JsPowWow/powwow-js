@@ -27,8 +27,8 @@ export const findParentFiber = (fiberNode?: FiberNode): Nullable<FiberNode> => {
 
 export const runCleanupEffects = (fiberNode: FiberNode) => {
   fiberNode.hooks?.forEach((hook) => {
-    if (hook.type === 'effect' && hasSome(hook.cleanup)) {
-      hook.cleanup();
+    if (hook.type === 'effect' && hasSome(hook.cleanupEffect)) {
+      hook.cleanupEffect();
     }
   });
 };
