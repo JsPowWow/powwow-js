@@ -25,7 +25,7 @@ export interface FiberNode<S = any> extends VirtualElement {
   child?: FiberNode;
   return?: FiberNode;
   sibling?: FiberNode;
-  hooks?: (StateHook<S> | EffectHook)[];
+  hooks?: (StateHook<S> | EffectHook | MemoHook<any>)[];
 }
 
 export type Updater<S> = (value: S) => void;
@@ -43,6 +43,12 @@ export type EffectHook = {
   deps: DependencyList | undefined;
   effect: EffectCallback;
   cleanupEffect: ReturnType<EffectCallback>;
+};
+
+export type MemoHook<T> = {
+  type: 'memo';
+  deps: DependencyList;
+  value: T;
 };
 
 export interface RefObject<T> {

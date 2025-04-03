@@ -30,6 +30,7 @@ export { default as isSymbol } from './lib/objects/isSymbol';
 export { default as isError } from './lib/objects/isError';
 export { default as isValidRecordKey } from './lib/objects/isValidRecordKey';
 export { default as isRecordKey } from './lib/objects/isRecordKey';
+export { default as isObjectTypeOf } from './lib/objects/isObjectTypeOf';
 export { default as isPlainObject } from './lib/objects/isPlainObject';
 export { default as hasOwnProperty } from './lib/objects/hasOwnProperty';
 export { default as hasProperty } from './lib/objects/hasProperty';

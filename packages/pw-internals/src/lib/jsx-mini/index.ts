@@ -5,6 +5,7 @@ import { useRef } from './hooks/ref';
 import { Component } from './Component';
 import { render } from './jsx-mini';
 import { wrapPromise } from './suspense';
+import { useMemo } from './hooks/memo';
 
 export default {
   createElement,
@@ -14,5 +15,6 @@ export default {
   useState,
   useEffect,
   useRef,
+  useMemo,
   wrapPromise,
 };

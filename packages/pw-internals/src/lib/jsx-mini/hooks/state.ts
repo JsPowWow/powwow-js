@@ -1,5 +1,5 @@
 import type { FiberNode, StateHook, Updater, UpdateStateAction } from '../types';
-import { hasSome, isPlainObject, isSomeFunction } from '@powwow-js/core';
+import { isPlainObject, isSomeFunction } from '@powwow-js/core';
 
 import { $$reely } from '../renderContext';
 
@@ -16,16 +16,13 @@ export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateSta
         }
   ) as StateHook<S>;
 
-  const isBatching = hook.queue.length > 0;
   while (hook.queue.length > 0) {
     let newState = hook.queue.shift();
-    if (isBatching && isPlainObject(hook.state) && isPlainObject(newState)) {
+
+    if (isPlainObject(hook.state) && isPlainObject(newState)) {
       newState = { ...hook.state, ...newState };
     }
-    // TODO AR remove it to a;;ow nullish state (?)
-    if (hasSome(newState)) {
-      hook.state = newState;
-    }
+    hook.state = newState as S;
   }
 
   if (fiberNode.hooks === undefined) {

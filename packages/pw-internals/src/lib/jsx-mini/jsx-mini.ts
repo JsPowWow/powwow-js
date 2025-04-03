@@ -125,7 +125,7 @@ const reconcileChildren = (fiberNode: FiberNode, elements: VirtualElement[] = []
     }
 
     if (!isSameType && oldFiberNode) {
-      console.log('PUSH deletion', { fiberNode, oldFiberNode, elements });
+      //console.log('PUSH deletion', { fiberNode, oldFiberNode, elements });
       $$reely.deletions.push(oldFiberNode);
     }
 
