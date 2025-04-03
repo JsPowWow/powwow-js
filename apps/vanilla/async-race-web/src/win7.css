@@ -2242,6 +2242,8 @@ a:hover {
 }
 
 .status-bar-field {
+  display: flex;
+  align-items: center;
   border-right: var(--window-border) #cfcfcf;
   flex-grow: 1;
   margin: 0;

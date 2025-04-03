@@ -1,29 +1,28 @@
 import { getRandomNumber } from '@powwow-js/core';
-import { NaiveDom, Reely } from '@pw-internals/jsx-runtime';
+import { Reely } from '@pw-internals/jsx-runtime';
 
 interface Props {
-  key: string;
   counter1Initial: number;
   counter2Initial: number;
 }
 
-const UncontrolledCounterComponent = ({ counter1Initial, counter2Initial }: Props) => {
+export const UncontrolledCounter = ({ counter1Initial, counter2Initial }: Props) => {
   const [counter1, setCounter1] = Reely.useState(counter1Initial);
   const [counter2, setCounter2] = Reely.useState(counter2Initial);
 
-  Reely.useEffect(() => {
-    console.log('effect', counter1);
-    return () => {
-      console.log('effect::cleanup', counter1);
-    };
-  });
-
-  Reely.useEffect(() => {
-    console.log('Counter::mount');
-  }, []);
-  Reely.useEffect(() => {
-    return () => console.log('Counters::unmount');
-  }, []);
+  // Reely.useEffect(() => {
+  //   console.log('effect', counter1);
+  //   return () => {
+  //     console.log('effect::cleanup', counter1);
+  //   };
+  // });
+  //
+  // Reely.useEffect(() => {
+  //   console.log('Counter::mount');
+  // }, []);
+  // Reely.useEffect(() => {
+  //   return () => console.log('Counters::unmount');
+  // }, []);
 
   return (
     <div class='window-body has-space' styles={{ display: 'flex', flexDirection: 'row' }}>
@@ -74,7 +73,4 @@ const UncontrolledCounterComponent = ({ counter1Initial, counter2Initial }: Prop
       </div>
     </div>
   );
-  //
 };
-
-export const UncontrolledCounter = NaiveDom.renderHooked(UncontrolledCounterComponent);

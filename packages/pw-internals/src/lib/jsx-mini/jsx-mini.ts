@@ -69,7 +69,7 @@ const commitRoot = () => {
     if (deletion.dom) {
       commitDeletion(parentFiber?.dom, deletion.dom);
     } else if (isSomeFunction(deletion.type)) {
-      const childFiber = findChildFiber(deletion);
+      const childFiber = findChildFiber(deletion); // TODO AR delete Fragment children somehow
       if (childFiber?.dom) {
         commitDeletion(parentFiber?.dom, childFiber.dom);
       }
@@ -189,7 +189,7 @@ const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
           children = type(fiberNode.props);
         } catch (error) {
           children = '{{{{FALLBACK}}}}';
-          console.log('did catch on', fiberNode);
+          // console.log('did catch on', fiberNode);
           renderError = error;
         }
       }

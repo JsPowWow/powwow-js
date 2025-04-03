@@ -1,4 +1,4 @@
-import { CountersView } from './counters/CountersView';
+import { CountersWindow } from '../../widgets/counters/CountersWindow';
 import { Reely } from '@pw-internals/jsx-runtime';
 import { TicTacToeView } from './view/TicTacToeView';
 
@@ -6,7 +6,7 @@ export default function TestMiniDomPage() {
   return (
     <main styles={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
       <Reely.Fragment>
-        <CountersView />
+        <CountersWindow />
         <TicTacToeView />
       </Reely.Fragment>
       {/*<h1>{() => `Hello JSX!`}</h1>*/}

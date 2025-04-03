@@ -1,6 +1,6 @@
 import { vDom } from '@pw-internals/jsx-runtime';
-import { ToDoJSX } from '../pages/testPage/ToDoJSX';
-import { ToDoHyper } from '../pages/testPage/ToDoHyper';
+import { ToDoJSX } from './ToDoJSX';
+import { ToDoHyper } from './ToDoHyper';
 import { NaiveJsxApp } from './NaiveJsxApp';
 
 export class VDomJsxApp extends vDom.ClassComponent {

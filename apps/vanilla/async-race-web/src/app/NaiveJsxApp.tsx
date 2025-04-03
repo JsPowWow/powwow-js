@@ -1,9 +1,7 @@
-import { CountersView } from '../pages/testMiniDomPage/counters/CountersView';
-
 export function NaiveJsxApp() {
   return (
     <main className='hello'>
-      <CountersView />
+      {/*<CountersWindow />*/}
       {/*<h1>{() => `Hello JSX!`}</h1>*/}
       {/*<LikeComponent big />*/}
       {/*<LikeComponent big={false} />*/}

@@ -31,6 +31,9 @@ export function useMemo<T>(factory: () => T, deps: DependencyList): T {
   if (isExisted && (!deps || !isSameDeps(deps, hook.deps))) {
     hook.value = factory();
     hook.deps = deps;
+  } else if (!isExisted) {
+    hook.value = factory();
+    hook.deps = deps;
   }
 
   if (isNil(fiberNode.hooks)) {

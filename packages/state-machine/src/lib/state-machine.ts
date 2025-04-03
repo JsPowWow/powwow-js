@@ -57,11 +57,15 @@ export class StateMachine<
     const destinationTransition = stateDefinition?.transitions?.[transition];
 
     if (!destinationTransition) {
-      return {
+      const result = {
         state: this.currentState,
         success: false,
-        message: `No transition(s) from "${String(this.currentState)}" by "${String(transition)}"`,
+        message: `No transition(s) found from "${String(this.currentState)}" by "${String(transition)}"`,
       };
+      if (this.definition.debug === true) {
+        console.warn(result);
+      }
+      return result;
     }
 
     const previousState = this.currentState;

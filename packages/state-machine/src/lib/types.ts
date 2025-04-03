@@ -24,6 +24,7 @@ export type StateMachineDefinition<
   Context extends NonNullable<unknown>
 > = {
   initialState: NoInfer<State>;
+  debug?: boolean;
   states: {
     [S in State]: {
       actions?: {

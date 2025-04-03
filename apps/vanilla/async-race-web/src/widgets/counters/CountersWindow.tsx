@@ -1,18 +1,18 @@
+import { WndTitleBar } from '../../components/WndTitleBar';
+import { WndStatusBar } from '../../components/WndStatusBar';
+import { WndBody } from '../../components/WndBody';
+import { TabListItem } from '../../components/TabListItem';
+import { TabList } from '../../components/TabList';
+import { WndView } from '../../components/WndView';
+import { Checkbox } from '../../components/Checkbox';
 import { UncontrolledCounter } from './UncontrolledCounter';
-import { WndTitleBar } from '../../../components/WndTitleBar';
-import { WndStatusBar } from '../../../components/WndStatusBar';
-import { WndBody } from '../../../components/WndBody';
-import { TabListItem } from '../../../components/TabListItem';
-import { TabList } from '../../../components/TabList';
-import { WndView } from '../../../components/WndView';
 import { Reely } from '@pw-internals/jsx-runtime';
-import { Checkbox } from '../../../components/Checkbox';
 
 interface CountersViewProps {
   title?: string;
 }
 
-export const CountersView = ({ title = 'Counters Demo' }: CountersViewProps) => {
+export const CountersWindow = ({ title = 'Counters Demo' }: CountersViewProps) => {
   const [isMounted, setIsMounted] = Reely.useState(true);
   return (
     <WndView styles={{ minWidth: '730px' }}>
@@ -27,7 +27,7 @@ export const CountersView = ({ title = 'Counters Demo' }: CountersViewProps) => 
             Inspect the <code>Uncontrolled</code> counter(s) available functionality
           </p>
           <Checkbox
-            id={`counter-checkbox---${title}`}
+            id={`uncontrolled-counter-mount-${title}`}
             label='Show counters'
             selected={isMounted}
             onChange={(selected) => setIsMounted(selected)}
