@@ -24,6 +24,12 @@ type TodoListData = {
 type TodoListDataContext = ObjectStore<TodoListData>;
 
 const emptyTodos: ToDoItem[] = [];
+const defaultTodos: ToDoItem[] = [
+  { id: 1, title: 'A', completed: false },
+  { id: 2, title: 'B', completed: false },
+  { id: 3, title: 'С', completed: true },
+  { id: 4, title: 'Btn', completed: true },
+];
 
 const updateTodos: StateMachineTransitionActionEffect<TodoListTransitions, TodoListState, TodoListDataContext> = ({
   owner,
@@ -63,8 +69,8 @@ export const useTodoListStore = (todos: ToDoItem[] | undefined = emptyTodos) => 
   const [rerender] = useRerender();
 
   const store = Reely.useMemo(() => {
-    console.log('useTodoListStore: create');
-    return new StateMachine(todoListLogic, new ObjectStore<TodoListData>({ todos: emptyTodos }));
+    //console.log('useTodoListStore: create');
+    return new StateMachine(todoListLogic, new ObjectStore<TodoListData>({ todos: defaultTodos }));
   }, []);
 
   Reely.useEffect(() => {
@@ -72,7 +78,7 @@ export const useTodoListStore = (todos: ToDoItem[] | undefined = emptyTodos) => 
     return () => {
       store.off('stateChanged', rerender);
     };
-    // or
+    // NOTE: or
     // store.context.on('changed', rerender);
     // return () => {
     //   store.context.off('changed', rerender);

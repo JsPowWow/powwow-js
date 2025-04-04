@@ -3,22 +3,22 @@ import { IndeterminateProgress } from '../../components/IndeterminateProgress';
 import { hasSome } from '@powwow-js/core';
 import { ProgressBar } from '../../components/ProgressBar';
 import { ToDoItem } from './types';
-import { TodoItem } from './TodoItem';
 import { WndStatusBar } from '../../components/WndStatusBar';
 import { Reely } from '@pw-internals/jsx-runtime';
 import { WndBody } from '../../components/WndBody';
 import { useTodoListStore } from './useTodoListStore';
 import { useRerender } from './useRerender';
+import { TodoListTableView } from './TodoListTableView';
+
+const dataFetcher = (key: unknown) => fetch(`https://jsonplaceholder.typicode.com/todos?uid=${key}`);
 
 export const TodoListAsync = () => {
   const [reload, times] = useRerender();
-  const { isLoading, data, error } = useFetchData<ToDoItem[]>(
-    `https://jsonplaceholder.typicode.com/todos?uid=${times}`
-  );
+  const { isLoading, data, error } = useFetchData<ToDoItem[]>(times, dataFetcher);
 
   const store = useTodoListStore(data);
 
-  console.log({ isLoading, data, error, store });
+  // console.log({ isLoading, data, error, store });
 
   const loadingStatusRenderer = Reely.useMemo(() => {
     return (
@@ -39,7 +39,7 @@ export const TodoListAsync = () => {
     <Reely.Fragment>
       {/*TODO AR menubar*/}
       <div>
-        <button onClick={handleReload}>Reload...</button>
+        <button onClick={handleReload}>Load...</button>
       </div>
 
       <WndBody
@@ -54,9 +54,10 @@ export const TodoListAsync = () => {
         }}
         className='has-scrollbar'
       >
-        {store.context.get().todos.map((todoItem) => (
-          <TodoItem item={todoItem} />
-        ))}
+        <TodoListTableView items={store.context.get().todos} />
+        {/*{store.context.get().todos.map((todoItem) => (*/}
+        {/*  <TodoItem item={todoItem} />*/}
+        {/*))}*/}
       </WndBody>
       <WndStatusBar
         styles={{ margin: '0px', width: '100%' }}

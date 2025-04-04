@@ -1,5 +1,5 @@
 import { Reely } from '@pw-internals/jsx-runtime';
-import { getRandomNumber, waitFor } from '@powwow-js/core';
+import { getRandomNumber, isInstanceOf, waitFor } from '@powwow-js/core';
 
 type FetchDataOutput<Data> =
   | {
@@ -18,29 +18,43 @@ type FetchDataOutput<Data> =
       data: undefined;
     };
 
-export const useFetchData = <D>(url: string): FetchDataOutput<D> => {
+export const useFetchData = <D, K = unknown>(
+  key: K,
+  fetcher: (parameters: K) => Promise<unknown>
+): FetchDataOutput<D> => {
   const [isLoading, setIsLoading] = Reely.useState(false);
-  const [data, setData] = Reely.useState();
+  const [data, setData] = Reely.useState<D>();
   const [error, setError] = Reely.useState();
 
+  const fetcherFunction = Reely.useRef(fetcher);
+  fetcherFunction.current = fetcher;
+
   Reely.useEffect(() => {
+    if (!key) {
+      return;
+    }
+
     let ignore = false;
 
     setIsLoading(true);
     setData(undefined);
     setError(undefined);
 
-    fetch(url)
+    fetcherFunction
+      .current(key)
       .then(waitFor(getRandomNumber(300, 2000)))
       .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error: failed to fetch, status: ${response.status}`);
+        if (isInstanceOf(Response, response)) {
+          if (!response.ok) {
+            throw new Error(`Error: failed to fetch, status: ${response.status}`);
+          }
+          return response.json();
         }
-        return response.json();
+        return response;
       })
-      .then((jsonData) => {
+      .then((response) => {
         if (!ignore) {
-          setData(jsonData);
+          setData(response as D);
           setError(undefined);
         }
       })
@@ -60,7 +74,7 @@ export const useFetchData = <D>(url: string): FetchDataOutput<D> => {
     return () => {
       ignore = true;
     };
-  }, [url]);
+  }, [key]);
 
   return {
     isLoading,

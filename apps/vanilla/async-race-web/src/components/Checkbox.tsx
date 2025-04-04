@@ -9,7 +9,7 @@ interface Props {
 
 export const Checkbox = ({ label, id, selected = false, onChange }: Props) => {
   return (
-    <div {...(id ? { id: `${id}-wrapper` } : undefined)}>
+    <div {...(id ? { id: `${id}-wrapper` } : undefined)} title={label}>
       <input
         type='checkbox'
         {...(id ? { id } : undefined)}

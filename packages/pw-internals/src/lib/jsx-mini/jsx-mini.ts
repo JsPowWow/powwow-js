@@ -23,11 +23,16 @@ export const render = (element: VirtualElement, container: Element): void => {
   $$reely.deletions = [];
 };
 
+// function getChildIndex(node) {
+//   return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
+// }
+
 // Note that we must complete the comparison of all fiber nodes before commitRoot.
 // The comparison of fiber nodes can be interrupted, but the commitRoot cannot be interrupted.
 const commitRoot = () => {
   const commitDeletion = (parentDOM: FiberNodeDOM, DOM: NonNullable<FiberNodeDOM>) => {
     if (hasSome(parentDOM)) {
+      // console.log('deleted', { DOM, parentDOM, index: getChildIndex(DOM), chnodes: DOM.parentNode.childNodes, ff });
       DOM.remove();
     }
   };
@@ -35,6 +40,7 @@ const commitRoot = () => {
   const commitReplacement = (parentDOM: FiberNodeDOM, DOM: NonNullable<FiberNodeDOM>) => {
     if (hasSome(parentDOM) && isInstanceOf(Element, parentDOM)) {
       parentDOM.append(DOM);
+      // console.log('appended', { DOM, parentDOM, index: getChildIndex(DOM), chnodes: DOM.parentNode.childNodes, ff });
     }
   };
 
@@ -125,7 +131,8 @@ const reconcileChildren = (fiberNode: FiberNode, elements: VirtualElement[] = []
     }
 
     if (!isSameType && oldFiberNode) {
-      //console.log('PUSH deletion', { fiberNode, oldFiberNode, elements });
+      // oldFiberNode.offset = getChildIndex(oldFiberNode.dom);
+      // console.log('PUSH deletion', { oldFiberNode, idx: getChildIndex(oldFiberNode.dom) });
       $$reely.deletions.push(oldFiberNode);
     }
 

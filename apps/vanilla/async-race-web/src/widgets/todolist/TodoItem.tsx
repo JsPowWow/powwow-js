@@ -6,5 +6,5 @@ interface Props {
 }
 
 export const TodoItem = ({ item }: Props) => {
-  return <Checkbox id={item.id} label={item.title} selected={item.completed} />;
+  return <Checkbox id={`todo-item-${item.id}`} label={item.title} selected={item.completed} />;
 };
