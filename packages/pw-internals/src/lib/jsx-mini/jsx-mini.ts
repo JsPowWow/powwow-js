@@ -75,7 +75,7 @@ const commitRoot = () => {
     if (deletion.dom) {
       commitDeletion(parentFiber?.dom, deletion.dom);
     } else if (isSomeFunction(deletion.type)) {
-      const childFiber = findChildFiber(deletion); // TODO AR delete Fragment children somehow
+      const childFiber = findChildFiber(deletion); // TODO AR its not enough: if it is Fragment - delete Fragment children instead
       if (childFiber?.dom) {
         commitDeletion(parentFiber?.dom, childFiber.dom);
       }

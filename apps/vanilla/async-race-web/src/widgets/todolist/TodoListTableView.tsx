@@ -25,6 +25,7 @@ export const TodoListTableView = ({ items }: Props) => {
       <thead>
         <tr>
           <th
+            style='z-index: 100'
             onclick={() => handleSortKeyChange('title')}
             class={cn(
               { highlighted: sortKey === 'title' },
@@ -35,6 +36,7 @@ export const TodoListTableView = ({ items }: Props) => {
             Name
           </th>
           <th
+            style='z-index: 100'
             onclick={() => handleSortKeyChange('id')}
             class={cn(
               { highlighted: sortKey === 'id' },
@@ -44,11 +46,12 @@ export const TodoListTableView = ({ items }: Props) => {
           >
             id
           </th>
-          <th style='width: 60px'></th>
+          <th style='z-index: 100; width: 60px'></th>
         </tr>
       </thead>
       <tbody>
         {todos.map((todoItem) => {
+          // TODO AR bugged on sort, delete/append wrong order
           // if (todoItem.title === 'Btn') {
           //   return (
           //     <span>

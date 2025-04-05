@@ -6,25 +6,26 @@ export type ArgumentArray = Array<Argument>;
 export type ReadonlyArgumentArray = ReadonlyArray<Argument>;
 export type Argument = Value | Mapping | ArgumentArray | ReadonlyArgumentArray;
 
-// classNames('foo', 'bar'); // => 'foo bar'
-// classNames('foo', { bar: true }); // => 'foo bar'
-// classNames({ 'foo-bar': true }); // => 'foo-bar'
-// classNames({ 'foo-bar': false }); // => ''
-// classNames({ foo: true }, { bar: true }); // => 'foo bar'
-// classNames({ foo: true, bar: true }); // => 'foo bar'
+// cn('foo', 'bar'); // => 'foo bar'
+// cn('foo', { bar: true }); // => 'foo bar'
+// cn({ 'foo-bar': true }); // => 'foo-bar'
+// cn({ 'foo-bar': false }); // => ''
+// cn({ foo: true }, { bar: true }); // => 'foo bar'
+// cn({ foo: true, bar: true }); // => 'foo bar'
 //
 // // lots of arguments of various types
-// classNames('foo', { bar: true, duck: false }, 'baz', { quux: true }); // => 'foo bar baz quux'
+// cn('foo', { bar: true, duck: false }, 'baz', { quux: true }); // => 'foo bar baz quux'
 //
 // // other falsy values are just ignored
-// classNames(null, false, 'bar', undefined, 0, { baz: null }, ''); // => 'bar'
+// cn(null, false, 'bar', undefined, 0, { baz: null }, ''); // => 'bar'
 
 // const arr = ['b', { c: true, d: false }];
-// classNames('a', arr); // => 'a b c'
+// cn('a', arr); // => 'a b c'
 
 // const buttonType = 'primary';
-// classNames({ [`btn-${buttonType}`]: true });
+// cn({ [`btn-${buttonType}`]: true });
 
+// TODO AR add them above as jsdoc examples, make it export default function
 export function cn(...parameters: ArgumentArray) {
   let classes = '';
 

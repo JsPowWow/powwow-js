@@ -9,6 +9,7 @@ interface Props {
 
 export const Checkbox = ({ label, id, selected = false, onChange }: Props) => {
   return (
+    // TODO AR if root is Fragment - deletion bugged, deletion first node only
     <div {...(id ? { id: `${id}-wrapper` } : undefined)} title={label}>
       <input
         type='checkbox'

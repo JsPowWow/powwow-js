@@ -12,14 +12,15 @@ export type SortOption<T> = {
 export interface SortProps<T> {
   data: T[];
   onSortChange(data: T[]): void;
-  sortOptions: any[];
+  sortOptions: SortOption<T>[];
 }
 
 /**
+ * TODO AR check/move to core (?)
  * First-order function that rearranges an indexed array of objects by the specified key,
  * extending functionality of `Array.sort()`.
  * based on a key of the object.
- * @param key the {keyof T} inddex of the object being sorted
+ * @param key the {keyof T} index of the object being sorted
  * @param ascending the {boolean} value specifying sort direction - Defaults to `true`
  * @type T - generic type - defaults to `Record<any, any>
  * @returns sorted array of {T} objects
@@ -46,6 +47,7 @@ export function useSort<T>({ data, onSortChange, sortOptions }: SortProps<T>) {
   const initialSortKey = sortOptions[0].value as ItemKey<T>;
   const [sortKey, setSortKey] = Reely.useState<ItemKey<T>>(initialSortKey);
 
+  // TODO AR implement useCallback and reuse here instead useRef trick
   const onSortChangeSaved = Reely.useRef(onSortChange);
   onSortChangeSaved.current = onSortChange;
 
