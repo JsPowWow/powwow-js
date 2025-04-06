@@ -21,15 +21,21 @@ export const TodoListAsync = () => {
 
   // console.log({ isLoading, data, error, store });
 
-  const handleItemSelectionChange: TodoListTableViewProps['onItemSelectionChange'] = ({ item, selected }) =>
-    store.send('updateTodo', {
-      ...item,
-      completed: selected,
-    });
+  const handleItemSelectionChange = Reely.useCallback<TodoListTableViewProps['onItemSelectionChange']>(
+    ({ item, selected }) =>
+      store.send('updateTodo', {
+        ...item,
+        completed: selected,
+      }),
+    [store]
+  );
 
-  const handleItemDelete: TodoListTableViewProps['onItemDelete'] = ({ item }) => {
-    store.send('deleteTodo', item);
-  };
+  const handleItemDelete = Reely.useCallback<TodoListTableViewProps['onItemDelete']>(
+    ({ item }) => {
+      store.send('deleteTodo', item);
+    },
+    [store]
+  );
 
   const loadingStatusRenderer = Reely.useMemo(() => {
     return (
