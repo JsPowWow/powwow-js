@@ -2,13 +2,14 @@ import { useFetchData } from './useFetchData';
 import { IndeterminateProgress } from '../../components/IndeterminateProgress';
 import { hasSome } from '@powwow-js/core';
 import { ProgressBar } from '../../components/ProgressBar';
-import { ToDoItem } from './types';
 import { WndStatusBar } from '../../components/WndStatusBar';
 import { Reely } from '@pw-internals/jsx-runtime';
 import { WndBody } from '../../components/WndBody';
-import { useTodoListStore } from './useTodoListStore';
+import { useTodoListStore } from './store/useTodoListStore';
 import { useRerender } from './useRerender';
-import { TodoListTableView } from './TodoListTableView';
+import { TodoListTableView, TodoListTableViewProps } from './TodoListTableView';
+import { ToDoItem } from './store/types';
+import { selectors } from './store/selectors';
 
 const dataFetcher = (key: unknown) => fetch(`https://jsonplaceholder.typicode.com/todos?uid=${key}`);
 
@@ -16,9 +17,19 @@ export const TodoListAsync = () => {
   const [reload, times] = useRerender();
   const { isLoading, data, error } = useFetchData<ToDoItem[]>(times, dataFetcher);
 
-  const store = useTodoListStore(data);
+  const { store, useSelector } = useTodoListStore(data);
 
   // console.log({ isLoading, data, error, store });
+
+  const handleItemSelectionChange: TodoListTableViewProps['onItemSelectionChange'] = ({ item, selected }) =>
+    store.send('updateTodo', {
+      ...item,
+      completed: selected,
+    });
+
+  const handleItemDelete: TodoListTableViewProps['onItemDelete'] = ({ item }) => {
+    store.send('deleteTodo', item);
+  };
 
   const loadingStatusRenderer = Reely.useMemo(() => {
     return (
@@ -34,6 +45,9 @@ export const TodoListAsync = () => {
     store.send('clear');
     reload();
   };
+
+  const totalItems = useSelector(selectors.getTotalItems);
+  const totalSelected = useSelector(selectors.getTotalSelectedItems);
 
   return (
     <Reely.Fragment>
@@ -54,7 +68,11 @@ export const TodoListAsync = () => {
         }}
         className='has-scrollbar'
       >
-        <TodoListTableView items={store.context.get().todos} />
+        <TodoListTableView
+          items={store.context.get().todos}
+          onItemSelectionChange={handleItemSelectionChange}
+          onItemDelete={handleItemDelete}
+        />
         {/*{store.context.get().todos.map((todoItem) => (*/}
         {/*  <TodoItem item={todoItem} />*/}
         {/*))}*/}
@@ -62,7 +80,9 @@ export const TodoListAsync = () => {
       <WndStatusBar
         styles={{ margin: '0px', width: '100%' }}
         items={[
-          hasSome(error) ? error.message : `Total ${data?.length ?? 0}`,
+          hasSome(error) ? error.message : null,
+          `Total: ${totalItems}`,
+          `Total selected: ${totalSelected}`,
           isLoading ? <IndeterminateProgress styles={{ width: '100%', height: '8px' }} /> : loadingStatusRenderer,
         ].filter(Boolean)}
       />

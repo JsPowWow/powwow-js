@@ -1,14 +1,16 @@
-import { ToDoItem } from './types';
 import { TodoItem } from './TodoItem';
 import { cn } from './cn';
 import { useSort } from './useSort';
 import { Reely } from '@pw-internals/jsx-runtime';
+import { ToDoItem } from './store/types';
 
-interface Props {
+export interface TodoListTableViewProps {
   items: ToDoItem[];
+  onItemSelectionChange: ({ item, selected }: { item: ToDoItem; selected: boolean }) => void;
+  onItemDelete: ({ item }: { item: ToDoItem }) => void;
 }
 
-export const TodoListTableView = ({ items }: Props) => {
+export const TodoListTableView = ({ items, onItemSelectionChange, onItemDelete }: TodoListTableViewProps) => {
   const [todos, setTodos] = Reely.useState(items);
 
   const { sortKey, handleSortKeyChange, sortDirection } = useSort({
@@ -46,7 +48,7 @@ export const TodoListTableView = ({ items }: Props) => {
           >
             id
           </th>
-          <th style='z-index: 100; width: 60px'></th>
+          <th style='z-index: 100; width: 88px'></th>
         </tr>
       </thead>
       <tbody>
@@ -63,9 +65,11 @@ export const TodoListTableView = ({ items }: Props) => {
 
           return (
             <tr>
-              <td>{<TodoItem item={todoItem} />}</td>
+              <td>{<TodoItem item={todoItem} onSelectionChange={onItemSelectionChange} />}</td>
               <td>{todoItem.id}</td>
-              <td>...</td>
+              <td>
+                <button onclick={() => onItemDelete({ item: todoItem })}>❌</button>
+              </td>
             </tr>
             // <TodoItem item={todoItem} />
           );
