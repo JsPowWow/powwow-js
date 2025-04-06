@@ -6,6 +6,7 @@ import { Component } from './Component';
 import { render } from './jsx-mini';
 import { wrapPromise } from './suspense';
 import { useMemo } from './hooks/memo';
+import { useCallback } from './hooks/callback';
 
 export default {
   createElement,
@@ -16,5 +17,6 @@ export default {
   useEffect,
   useRef,
   useMemo,
+  useCallback,
   wrapPromise,
 };
