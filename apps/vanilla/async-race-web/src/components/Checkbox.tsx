@@ -1,4 +1,5 @@
 import { hasProperty, isSomeFunction } from '@powwow-js/core';
+import { Reely } from '@pw-internals/jsx-runtime';
 
 interface Props {
   id?: string;
@@ -7,17 +8,22 @@ interface Props {
   onChange?: (selected: boolean) => void;
 }
 
-export const Checkbox = ({ label, id, selected = false, onChange }: Props) => {
+export const Checkbox = ({ label, id, selected, onChange }: Props) => {
+  const [checked, setChecked] = Reely.useState(selected);
   return (
-    // TODO AR if root is Fragment - deletion bugged, deletion first node only
+    // TODO AR if i.e. root is Fragment - deletion bugged, deletion first node only
     <div {...(id ? { id: `${id}-wrapper` } : undefined)} title={label}>
       <input
         type='checkbox'
         {...(id ? { id } : undefined)}
-        checked={selected}
+        checked={checked}
         onChange={(event: Event) => {
-          if (isSomeFunction(onChange) && hasProperty('checked', event.target)) {
-            onChange(event.target.checked);
+          if (hasProperty('checked', event.target)) {
+            const isChecked = Boolean(event.target.checked);
+            setChecked(isChecked);
+            if (isSomeFunction(onChange)) {
+              onChange(isChecked);
+            }
           }
         }}
       />

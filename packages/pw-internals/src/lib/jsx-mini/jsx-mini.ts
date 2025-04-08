@@ -5,7 +5,7 @@ import { isComponentType } from './Component';
 import { createVirtualTextElement, Fragment, isVirtualElement } from './vDom';
 import { createDOM, updateDOM } from './rDom';
 import { useState } from './hooks/state';
-import { $$reely } from './renderContext';
+import { $$reely } from './executionContext';
 import { findChildFiber, findParentFiber, runCleanupEffects } from './fiber';
 
 // Initial or reset.

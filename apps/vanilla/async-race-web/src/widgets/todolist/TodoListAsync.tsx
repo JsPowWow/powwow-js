@@ -1,6 +1,6 @@
 import { useFetchData } from './useFetchData';
 import { IndeterminateProgress } from '../../components/IndeterminateProgress';
-import { hasSome } from '@powwow-js/core';
+import { hasSome, noop } from '@powwow-js/core';
 import { ProgressBar } from '../../components/ProgressBar';
 import { WndStatusBar } from '../../components/WndStatusBar';
 import { Reely } from '@pw-internals/jsx-runtime';
@@ -10,16 +10,28 @@ import { useRerender } from './useRerender';
 import { TodoListTableView, TodoListTableViewProps } from './TodoListTableView';
 import { ToDoItem } from './store/types';
 import { selectors } from './store/selectors';
+import { TodoListProvider } from './store/TodoListProvider';
+
+const defaultTodos: ToDoItem[] = [
+  { id: 1, title: 'A', completed: false },
+  { id: 2, title: 'B', completed: false },
+  { id: 3, title: 'С', completed: true },
+  // { id: 4, title: 'Btn', completed: true },
+];
+
+const otherTodos: ToDoItem[] = [
+  { id: 1, title: 'AA', completed: false },
+  { id: 2, title: 'BB', completed: false },
+  { id: 3, title: 'СC', completed: true },
+  // { id: 4, title: 'Btn', completed: true },
+];
 
 const dataFetcher = (key: unknown) => fetch(`https://jsonplaceholder.typicode.com/todos?uid=${key}`);
 
 export const TodoListAsync = () => {
   const [reload, times] = useRerender();
-  const { isLoading, data, error } = useFetchData<ToDoItem[]>(times, dataFetcher);
-
-  const { store, useSelector } = useTodoListStore(data);
-
-  // console.log({ isLoading, data, error, store });
+  const { isLoading, data = defaultTodos, error } = useFetchData<ToDoItem[]>(times, dataFetcher);
+  const store = useTodoListStore(data);
 
   const handleItemSelectionChange = Reely.useCallback<TodoListTableViewProps['onItemSelectionChange']>(
     ({ item, selected }) =>
@@ -52,8 +64,8 @@ export const TodoListAsync = () => {
     );
   }, [error]);
 
-  const totalItems = useSelector(selectors.getTotalItems);
-  const totalSelected = useSelector(selectors.getTotalSelectedItems);
+  const totalItems = store.context.select(selectors.getTotalItems);
+  const totalSelected = store.context.select(selectors.getTotalSelectedItems);
 
   return (
     <Reely.Fragment>
@@ -74,11 +86,17 @@ export const TodoListAsync = () => {
         }}
         className='has-scrollbar'
       >
-        <TodoListTableView
-          items={store.context.get().todos}
-          onItemSelectionChange={handleItemSelectionChange}
-          onItemDelete={handleItemDelete}
-        />
+        <TodoListProvider items={otherTodos}>
+          <TodoListTableView onItemSelectionChange={noop} onItemDelete={noop} id='otherTodos' />
+        </TodoListProvider>
+
+        <TodoListProvider items={store.context.get().todos}>
+          <TodoListTableView
+            onItemSelectionChange={handleItemSelectionChange}
+            onItemDelete={handleItemDelete}
+            id='todos'
+          />
+        </TodoListProvider>
         {/*{store.context.get().todos.map((todoItem) => (*/}
         {/*  <TodoItem item={todoItem} />*/}
         {/*))}*/}

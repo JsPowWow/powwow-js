@@ -3,14 +3,17 @@ import { cn } from './cn';
 import { useSort } from './useSort';
 import { Reely } from '@pw-internals/jsx-runtime';
 import { ToDoItem } from './store/types';
+import { TodoListStoreContext } from './store/TodoListProvider';
 
 export interface TodoListTableViewProps {
-  items: ToDoItem[];
+  // items: ToDoItem[];
+  id: string;
   onItemSelectionChange: ({ item, selected }: { item: ToDoItem; selected: boolean }) => void;
   onItemDelete: ({ item }: { item: ToDoItem }) => void;
 }
 
-export const TodoListTableView = ({ items, onItemSelectionChange, onItemDelete }: TodoListTableViewProps) => {
+export const TodoListTableView = ({ id, onItemSelectionChange, onItemDelete }: TodoListTableViewProps) => {
+  const { items } = Reely.useContext(TodoListStoreContext);
   const [todos, setTodos] = Reely.useState(items);
 
   const { sortKey, handleSortKeyChange, sortDirection } = useSort({
@@ -65,7 +68,7 @@ export const TodoListTableView = ({ items, onItemSelectionChange, onItemDelete }
 
           return (
             <tr>
-              <td>{<TodoItem item={todoItem} onSelectionChange={onItemSelectionChange} />}</td>
+              <td>{<TodoItem id={id} item={todoItem} onSelectionChange={onItemSelectionChange} />}</td>
               <td>{todoItem.id}</td>
               <td>
                 <button onclick={() => onItemDelete({ item: todoItem })}>❌</button>

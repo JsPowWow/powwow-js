@@ -2,7 +2,7 @@ import type { DependencyList, EffectCallback, EffectHook, FiberNode } from '../t
 import { isNil, isSomeFunction } from '@powwow-js/core';
 import { isSameDeps } from './utils';
 
-import { $$reely } from '../renderContext';
+import { $$reely } from '../executionContext';
 
 const getOrInit = (): EffectHook => {
   const fiberNode: FiberNode = $$reely.wipFiber;

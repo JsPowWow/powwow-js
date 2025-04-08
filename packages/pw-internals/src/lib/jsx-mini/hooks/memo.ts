@@ -1,5 +1,5 @@
 import type { DependencyList, FiberNode, MemoHook } from '../types';
-import { $$reely } from '../renderContext';
+import { $$reely } from '../executionContext';
 import { hasProperty, isNil } from '@powwow-js/core';
 import { isSameDeps } from './utils';
 

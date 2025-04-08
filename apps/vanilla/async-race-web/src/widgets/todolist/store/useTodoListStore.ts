@@ -5,45 +5,38 @@ import { useRerender } from '../useRerender';
 import { todoListLogic } from './logic';
 import { emptyTodos } from './reducers';
 import { ToDoItem, TodoListData } from './types';
+import { Nullable } from '@powwow-js/core';
 
-const defaultTodos: ToDoItem[] = [
-  { id: 1, title: 'A', completed: false },
-  { id: 2, title: 'B', completed: false },
-  { id: 3, title: 'С', completed: true },
-  // { id: 4, title: 'Btn', completed: true },
-];
+const store = new StateMachine(todoListLogic, new ObjectStore<TodoListData>({ todos: emptyTodos }));
 
 export const useTodoListStore = (todos: ToDoItem[] | undefined = emptyTodos) => {
   const [rerender] = useRerender();
 
-  const store = Reely.useMemo(() => {
-    //console.log('useTodoListStore: create');
-    return new StateMachine(todoListLogic, new ObjectStore<TodoListData>({ todos: defaultTodos }));
-  }, []);
+  // const store = Reely.useMemo(() => {
+  //   //console.log('useTodoListStore: create');
+  //   return new StateMachine(todoListLogic, new ObjectStore<TodoListData>({ todos: defaultTodos }));
+  // }, []);
 
   Reely.useEffect(() => {
-    store.on('stateChanged', rerender);
-    return () => {
-      store.off('stateChanged', rerender);
-    };
     // NOTE: or
-    // store.context.on('changed', rerender);
+    // store.on('stateChanged', rerender);
     // return () => {
-    //   store.context.off('changed', rerender);
+    //   store.off('stateChanged', rerender);
     // };
-  }, [store]);
+    store.context.on('changed', rerender);
+    return () => {
+      store.context.off('changed', rerender);
+    };
+  }, []);
 
-  const previousTodos = Reely.useRef(todos);
+  const previousTodos = Reely.useRef<Nullable<ToDoItem[]>>(null);
 
   Reely.useEffect(() => {
     if (todos !== previousTodos.current) {
-      // console.log('useTodoListStore: resets by', todos);
+      previousTodos.current = todos;
       store.send('setTodos', { items: todos });
     }
-  }, [store, todos]);
+  }, [todos]);
 
-  return {
-    store,
-    useSelector: <R>(selector: (s: TodoListData) => R) => store.context.select(selector),
-  };
+  return store;
 };

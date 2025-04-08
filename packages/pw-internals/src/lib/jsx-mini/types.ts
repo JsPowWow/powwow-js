@@ -18,14 +18,14 @@ export interface VirtualElement {
 
 export type FiberNodeDOM = Element | Text | null | undefined;
 
-export interface FiberNode<S = any> extends VirtualElement {
-  alternate: FiberNode<S> | null;
+export interface FiberNode extends VirtualElement {
+  alternate: FiberNode | null;
   dom?: FiberNodeDOM;
   effectTag?: string;
   child?: FiberNode;
   return?: FiberNode;
   sibling?: FiberNode;
-  hooks?: (StateHook<S> | EffectHook | MemoHook<any>)[];
+  hooks?: (StateHook<unknown> | EffectHook | MemoHook<unknown> | ContextHook<unknown>)[];
 }
 
 export type Updater<S> = (value: S) => void;
@@ -50,6 +50,16 @@ export type MemoHook<T> = {
   deps: DependencyList;
   value: T;
 };
+
+export type ContextHook<T> = {
+  type: 'context';
+  value: T;
+};
+
+export interface ValueContext<T> {
+  Provider: (props: { value: T }) => VirtualElement;
+  defaultValue: T;
+}
 
 export interface RefObject<T> {
   current: T;

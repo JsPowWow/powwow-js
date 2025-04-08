@@ -1,12 +1,12 @@
 import type { FiberNode, StateHook, Updater, UpdateStateAction } from '../types';
 import { isPlainObject, isSomeFunction } from '@powwow-js/core';
 
-import { $$reely } from '../renderContext';
+import { $$reely } from '../executionContext';
 
 export function useState<S>(initialState: S | (() => S)): [S, Updater<UpdateStateAction<S>>];
 export function useState<S = undefined>(): [S | undefined, Updater<UpdateStateAction<S | undefined>>];
 export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateStateAction<S>>] {
-  const fiberNode: FiberNode<S> = $$reely.wipFiber as FiberNode<S>;
+  const fiberNode: FiberNode = $$reely.wipFiber;
   const hook: StateHook<S> = (
     fiberNode?.alternate?.hooks
       ? fiberNode.alternate.hooks[$$reely.hookIndex]
