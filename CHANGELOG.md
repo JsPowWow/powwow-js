@@ -1,3 +1,23 @@
+## 0.11.0 (2025-04-08)
+
+### 🚀 Features
+
+- **async-race-web:** delete unused app(s) ([f67f91f](https://github.com/JsPowWow/powwow-js/commit/f67f91f))
+- **async-race-web:** add todolist app initial(s) ([ef3807e](https://github.com/JsPowWow/powwow-js/commit/ef3807e))
+- **async-race-web:** add todolist app TableView ([9647956](https://github.com/JsPowWow/powwow-js/commit/9647956))
+- **async-race-web:** add `cn` proto initials ([5780375](https://github.com/JsPowWow/powwow-js/commit/5780375))
+- **async-race-web:** add `selection` and `deletions` ([71bb979](https://github.com/JsPowWow/powwow-js/commit/71bb979))
+- **async-race-web:** add `useCallback` hook usage(s) ([b1e869f](https://github.com/JsPowWow/powwow-js/commit/b1e869f))
+- **pw-internals:** add 'useEffect' effect pending running ([2f9354b](https://github.com/JsPowWow/powwow-js/commit/2f9354b))
+- **pw-internals:** add 'useMemo' hook ([9555c2a](https://github.com/JsPowWow/powwow-js/commit/9555c2a))
+- **pw-internals:** add 'useCallback' hook ([8f55941](https://github.com/JsPowWow/powwow-js/commit/8f55941))
+- **pw-internals:** add 'context' hook and examples ([8fcf24f](https://github.com/JsPowWow/powwow-js/commit/8fcf24f))
+- **simple-store:** add value `selector` api ([bcb5851](https://github.com/JsPowWow/powwow-js/commit/bcb5851))
+
+### ❤️ Thank You
+
+- JsPowWow
+
 ## 0.10.0 (2025-04-01)
 
 ### 🚀 Features
