@@ -37,6 +37,11 @@ export const TodoListAsync = () => {
     [store]
   );
 
+  const handleReload = () => {
+    store.send('clear');
+    reload();
+  };
+
   const loadingStatusRenderer = Reely.useMemo(() => {
     return (
       <ProgressBar
@@ -46,11 +51,6 @@ export const TodoListAsync = () => {
       />
     );
   }, [error]);
-
-  const handleReload = () => {
-    store.send('clear');
-    reload();
-  };
 
   const totalItems = useSelector(selectors.getTotalItems);
   const totalSelected = useSelector(selectors.getTotalSelectedItems);
@@ -88,7 +88,7 @@ export const TodoListAsync = () => {
         items={[
           hasSome(error) ? error.message : null,
           `Total: ${totalItems}`,
-          `Total selected: ${totalSelected}`,
+          `Total ✔️: ${totalSelected}`,
           isLoading ? <IndeterminateProgress styles={{ width: '100%', height: '8px' }} /> : loadingStatusRenderer,
         ].filter(Boolean)}
       />

@@ -5,7 +5,6 @@ import { useRerender } from '../useRerender';
 import { todoListLogic } from './logic';
 import { emptyTodos } from './reducers';
 import { ToDoItem, TodoListData } from './types';
-import { withSelector } from './withSelector';
 
 const defaultTodos: ToDoItem[] = [
   { id: 1, title: 'A', completed: false },
@@ -45,6 +44,6 @@ export const useTodoListStore = (todos: ToDoItem[] | undefined = emptyTodos) => 
 
   return {
     store,
-    useSelector: <R>(selector: (s: TodoListData) => R) => withSelector(store.context.get(), selector),
+    useSelector: <R>(selector: (s: TodoListData) => R) => store.context.select(selector),
   };
 };

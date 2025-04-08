@@ -1,6 +1,7 @@
 import type { RecordKey } from '@powwow-js/core';
 import type { IEventEmitter } from '@powwow-js/emitter';
 import { EventEmitter } from '@powwow-js/emitter';
+import withSelector from './withSelector';
 
 export class ObjectStore<T extends Record<RecordKey, unknown>>
   implements Pick<IEventEmitter<{ changed: T }>, 'on' | 'off'>
@@ -26,6 +27,10 @@ export class ObjectStore<T extends Record<RecordKey, unknown>>
 
   public get(): T {
     return this.storeValue;
+  }
+
+  public select<R>(selector: (s: T) => R): R {
+    return withSelector(this.storeValue, selector);
   }
 
   public on<P extends Parameters<typeof this.emitter.on>>(...parameters: P): void {
