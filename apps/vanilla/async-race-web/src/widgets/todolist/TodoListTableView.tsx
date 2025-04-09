@@ -1,7 +1,7 @@
 import { TodoItem } from './TodoItem';
 import { cn } from './cn';
 import { useSort } from './useSort';
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { ToDoItem } from './store/types';
 import { TodoListStoreContext } from './store/TodoListProvider';
 

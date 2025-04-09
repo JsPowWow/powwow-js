@@ -1,4 +1,4 @@
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { getRandomNumber, isInstanceOf, waitFor } from '@powwow-js/core';
 
 type FetchDataOutput<Data> =

@@ -1,4 +1,4 @@
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { isSomeFunction, RecordKey } from '@powwow-js/core';
 
 //import { compareObjectsByKey } from './utils';

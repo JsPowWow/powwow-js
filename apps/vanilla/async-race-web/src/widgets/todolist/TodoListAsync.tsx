@@ -3,7 +3,7 @@ import { IndeterminateProgress } from '../../components/IndeterminateProgress';
 import { hasSome, noop } from '@powwow-js/core';
 import { ProgressBar } from '../../components/ProgressBar';
 import { WndStatusBar } from '../../components/WndStatusBar';
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { WndBody } from '../../components/WndBody';
 import { useTodoListStore } from './store/useTodoListStore';
 import { useRerender } from './useRerender';

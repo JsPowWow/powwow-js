@@ -1,4 +1,4 @@
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { GarageDataType, getCars } from '../../api/api';
 import { Spinner } from '../../components/Spinner';
 

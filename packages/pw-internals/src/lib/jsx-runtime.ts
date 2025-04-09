@@ -1,6 +1,6 @@
 import createVDomElement from './jsx-vdom/jsxPragmaVdom';
 import NaiveDom from './jsx-naive/NaiveDom';
-import { createVirtualElement } from './jsx-mini/vDom';
+import { createVirtualElement } from '@powwow-js/reely';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-type JsxRuntimeMode = 'naive' | 'vDom' | 'mini';
+type JsxRuntimeMode = 'naive' | 'vDom' | 'reely';
 
 let currentMode: JsxRuntimeMode = 'vDom';
 
@@ -28,7 +28,7 @@ export const jsx = {
       case 'vDom': {
         return createVDomElement(...(parameters as Parameters<typeof createVDomElement>));
       }
-      case 'mini': {
+      case 'reely': {
         return createVirtualElement(...(parameters as Parameters<typeof createVirtualElement>));
       }
     }

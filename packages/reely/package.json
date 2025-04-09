@@ -1,0 +1,10 @@
+{
+  "name": "@powwow-js/reely",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "@powwow-js/core": "^0.5.0"
+  }
+}

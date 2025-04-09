@@ -1,5 +1,5 @@
 import { CountersWindow } from '../../widgets/counters/CountersWindow';
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { TicTacToeView } from './view/TicTacToeView';
 
 export default function TestMiniDomPage() {

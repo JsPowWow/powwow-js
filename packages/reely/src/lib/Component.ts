@@ -1,9 +1,9 @@
 import { hasSome } from '@powwow-js/core';
 
-const classComponentTypeUid = Symbol.for('@pw-internals::Component');
+const classComponentTypeUid = Symbol.for('@reely::Component');
 
 export abstract class Component<S = unknown, P = unknown> {
-  public static [classComponentTypeUid] = '@pw-internals::ClassComponent';
+  public static [classComponentTypeUid] = '@reely::ClassComponent';
 
   props: P;
 

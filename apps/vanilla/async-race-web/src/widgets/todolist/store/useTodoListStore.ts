@@ -1,4 +1,4 @@
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { StateMachine } from '@powwow-js/state-machine';
 import { ObjectStore } from '@powwow-js/simple-store';
 import { useRerender } from '../useRerender';

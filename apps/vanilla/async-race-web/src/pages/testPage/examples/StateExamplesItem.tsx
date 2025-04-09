@@ -1,5 +1,5 @@
 import { UncontrolledCounter } from '../../../widgets/counters/UncontrolledCounter';
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { Checkbox } from '../../../components/Checkbox';
 import { CountersWindow } from '../../../widgets/counters/CountersWindow';
 

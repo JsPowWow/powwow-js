@@ -1,4 +1,4 @@
-import { FiberNode } from '@pw-internals/jsx-runtime';
+import { FiberNode } from './types';
 import { hasSome, Nullable } from '@powwow-js/core';
 
 export const findChildFiber = (fiberNode?: FiberNode): Nullable<FiberNode> => {

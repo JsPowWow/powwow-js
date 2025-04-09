@@ -67,13 +67,13 @@
     },
     "projects": [
       "packages/core",
-      "packages/core",
       "packages/fp",
       "packages/nullable",
       "packages/emitter",
       "packages/simple-store",
       "packages/state-machine",
-      "packages/routing-utils"
+      "packages/routing-utils",
+      "packages/reely"
     ],
     "version": {
       "preVersionCommand": "npx nx run-many -t build"

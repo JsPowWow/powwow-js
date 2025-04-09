@@ -1,5 +1,5 @@
 import { getRandomNumber } from '@powwow-js/core';
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 
 interface Props {
   counter1Initial: number;

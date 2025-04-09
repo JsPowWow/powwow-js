@@ -1,6 +1,6 @@
 import ClassComponentGame from './ClassComponentGame';
 import FunctionalComponentGame from './FunctionalComponentGame';
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { WndTitleBar } from '../../../components/WndTitleBar';
 import { WndStatusBar } from '../../../components/WndStatusBar';
 import { WndView } from '../../../components/WndView';

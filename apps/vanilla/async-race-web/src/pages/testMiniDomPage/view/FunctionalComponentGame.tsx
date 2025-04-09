@@ -1,4 +1,4 @@
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { SquareType } from './types';
 import { calculateWinner } from './utils';
 

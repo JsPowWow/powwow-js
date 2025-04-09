@@ -1,4 +1,4 @@
-import { ValueContext } from '@pw-internals/jsx-runtime';
+import { ValueContext } from './types';
 
 export function createContext<T>(defaultValue: T): ValueContext<T> {
   const context = {

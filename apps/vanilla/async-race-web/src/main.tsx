@@ -1,10 +1,11 @@
-import { jsx as jsxRuntime, Reely, vDom } from '@pw-internals/jsx-runtime';
+import { jsx as jsxRuntime, vDom } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 import { VDomJsxApp } from './app/vDomJsxApp';
 import { assertIsNonNullable, exhaustiveGuard } from '@powwow-js/core';
 import { NaiveJsxApp } from './app/NaiveJsxApp';
 import { TestPage } from './pages/testPage';
 
-const renderMode = jsxRuntime.setJsxRuntimeMode('mini');
+const renderMode = jsxRuntime.setJsxRuntimeMode('reely');
 const root = document.querySelector<HTMLDivElement>('#root');
 assertIsNonNullable(root);
 
@@ -25,7 +26,7 @@ switch (renderMode) {
     vDom.renderDOM('root', vDom.createComponent(VDomJsxApp, { key: 'app' }));
     break;
   }
-  case 'mini': {
+  case 'reely': {
     //Reely.render(<TestMiniDomPage />, root);
     Reely.render(
       <main>

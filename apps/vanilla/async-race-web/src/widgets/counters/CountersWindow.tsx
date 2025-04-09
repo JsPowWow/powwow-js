@@ -6,7 +6,7 @@ import { TabList } from '../../components/TabList';
 import { WndView } from '../../components/WndView';
 import { Checkbox } from '../../components/Checkbox';
 import { UncontrolledCounter } from './UncontrolledCounter';
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 
 interface CountersViewProps {
   title?: string;

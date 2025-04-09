@@ -1,4 +1,4 @@
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 
 export const useRerender = (initial?: number) => {
   const [times, rerender] = Reely.useState(initial);

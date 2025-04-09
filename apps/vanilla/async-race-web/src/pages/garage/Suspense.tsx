@@ -1,4 +1,4 @@
-import { Reely } from '@pw-internals/jsx-runtime';
+import Reely from '@powwow-js/reely';
 
 export class Suspense extends Reely.Component<unknown, { children: [] }> {
   // public fallback() {
