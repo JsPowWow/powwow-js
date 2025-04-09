@@ -12,7 +12,7 @@ function isRight<Left, Right>(value: EitherWrapper<Left, Right>): value is Eithe
   return value.either === 'right';
 }
 
-export class Either<Left, Right> {
+export default class Either<Left, Right> {
   private readonly wrapper: EitherWrapper<Left, Right>;
 
   private constructor(wrapper: EitherWrapper<Left, Right>) {

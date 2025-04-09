@@ -1,5 +1,7 @@
-import Reely from '@powwow-js/reely';
 import { getRandomNumber, isInstanceOf, waitFor } from '@powwow-js/core';
+import { useEffect } from '../effect';
+import { useRef } from '../ref';
+import { useState } from '../state';
 
 type FetchDataOutput<Data> =
   | {
@@ -22,14 +24,14 @@ export const useFetchData = <D, K = unknown>(
   key: K,
   fetcher: (parameters: K) => Promise<unknown>
 ): FetchDataOutput<D> => {
-  const [isLoading, setIsLoading] = Reely.useState(false);
-  const [data, setData] = Reely.useState<D>();
-  const [error, setError] = Reely.useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<D>();
+  const [error, setError] = useState();
 
-  const fetcherFunction = Reely.useRef(fetcher);
+  const fetcherFunction = useRef(fetcher);
   fetcherFunction.current = fetcher;
 
-  Reely.useEffect(() => {
+  useEffect(() => {
     if (!key) {
       return;
     }

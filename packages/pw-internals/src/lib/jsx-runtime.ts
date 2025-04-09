@@ -2,14 +2,14 @@ import createVDomElement from './jsx-vdom/jsxPragmaVdom';
 import NaiveDom from './jsx-naive/NaiveDom';
 import { createVirtualElement } from '@powwow-js/reely';
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    type IntrinsicElements = Record<keyof HTMLElementTagNameMap, Record<string, unknown>>;
-    // type Element = VirtualElement | ((props: Record<string, unknown>) => VirtualElement);
-    // type Element = unknown;
-  }
-}
+// declare global {
+//   // eslint-disable-next-line @typescript-eslint/no-namespace
+//   namespace JSX {
+//     type IntrinsicElements = Record<keyof HTMLElementTagNameMap, Record<string, unknown>>;
+//     // type Element = VirtualElement | ((props: Record<string, unknown>) => VirtualElement);
+//     // type Element = unknown;
+//   }
+// }
 
 type JsxRuntimeMode = 'naive' | 'vDom' | 'reely';
 

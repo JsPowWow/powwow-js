@@ -1,4 +1,4 @@
-import type { RouteDefinition, RoutesConfig } from './types';
+import type { RouteDefinition, RoutesConfig } from '@powwow-js/routing-utils';
 
 const setParametersKeys = (parametersKey: string[]): Record<string, string> =>
   Object.fromEntries(parametersKey.map((key) => [key, '']));
@@ -9,8 +9,8 @@ export function parseConfig<Handler extends CallableFunction>(
   routeData: RoutesConfig<Handler>,
   basePath = '',
   nestedLevel = 0
-): Record<string, RouteDefinition<Handler>> {
-  const result: Record<string, RouteDefinition<Handler>> = {};
+): Record<string, RouteDefinition<Handler> & { isSubRoute: boolean; nestedLevel: number }> {
+  const result: Record<string, RouteDefinition<Handler> & { isSubRoute: boolean; nestedLevel: number }> = {};
 
   routeData.forEach((routeInfo) => {
     const pathname = `${basePath}${routeInfo.pathname}`;

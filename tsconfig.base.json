@@ -21,6 +21,7 @@
       "@powwow-js/fun-dom": ["packages/fun-dom/src/index.ts"],
       "@powwow-js/nullable": ["packages/nullable/src/index.ts"],
       "@powwow-js/reely": ["packages/reely/src/index.ts"],
+      "@powwow-js/reely/jsx-runtime": ["packages/reely/src/lib/jsx-runtime.ts"],
       "@powwow-js/routing-utils": ["packages/routing-utils/src/index.ts"],
       "@powwow-js/simple-store": ["packages/simple-store/src/index.ts"],
       "@powwow-js/state-machine": ["packages/state-machine/src/index.ts"],

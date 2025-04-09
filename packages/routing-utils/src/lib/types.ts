@@ -11,12 +11,13 @@ export type RoutePath = RegExp | string;
 export type RouteDefinition<Handler extends CallableFunction> = {
   handler: Handler;
   params: Record<string, string>;
-  isSubRoute: boolean;
-  nestedLevel: number;
 };
 
-export type RoutesConfig<Handler extends CallableFunction> = {
-  pathname: string;
+export type RouteConfig<Handler extends CallableFunction, P extends string = string> = {
+  pathname: P;
   handler: Handler;
   children?: RoutesConfig<Handler>;
-}[];
+};
+
+// TODO AR del this
+export type RoutesConfig<Handler extends CallableFunction, P extends string = string> = RouteConfig<Handler, P>[];

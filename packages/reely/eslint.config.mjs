@@ -12,7 +12,7 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['**/dist', '**/lib/*.ts'],
+    ignores: ['**/dist', '**/lib/*.ts', '**/lib/hooks/custom/*.ts'],
   },
   ...baseConfig,
   ...compat.env({

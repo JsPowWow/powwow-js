@@ -13,11 +13,13 @@ export { default as pipe } from './lib/fp/pipe';
 export { default as flow } from './lib/fp/flow';
 export { default as flowRight } from './lib/fp/flowRight';
 export { default as flowLeft } from './lib/fp/flowLeft';
-export * from './lib/fp/either/Either';
-export * from './lib/fp/maybe/Maybe';
+
+export { default as Either } from './lib/fp/either/Either';
 
 export { default as maybeInstanceOf } from './lib/fp/maybe/maybeInstanceOf';
 export { default as maybeRecordKey } from './lib/fp/maybe/maybeRecordKey';
+export { default as Maybe } from './lib/fp/maybe/Maybe';
+export { from, some, none } from './lib/fp/maybe/Maybe';
 
 export { default as isNil } from './lib/objects/isNil';
 export { default as hasSome } from './lib/objects/hasSome';

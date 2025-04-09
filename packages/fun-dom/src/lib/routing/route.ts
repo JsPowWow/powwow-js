@@ -1,7 +1,8 @@
 /* eslint-disable */
 import { RouteHandler, RouteLocation, RouteWithLocation } from './types';
-import { getMatchingRoutes, parseConfig, RouteDefinition, RoutesConfig } from '@powwow-js/routing-utils';
+import { getMatchingRoutes, RouteDefinition, RoutesConfig } from '@powwow-js/routing-utils';
 import { getHash, getQueryString, PushHistory, removeQueryParamsAndHash, updateHistory } from './url-utils';
+import { parseConfig } from './route-config';
 
 const BrowserRouteType = 'BrowserRoute';
 const HashRouteType = 'HashRoute';
@@ -9,7 +10,7 @@ const HashRouteType = 'HashRoute';
 export type RouteType = typeof BrowserRouteType | typeof HashRouteType;
 
 class RouterManagement<Handler extends RouteHandler> {
-  #routes: Record<string, RouteDefinition<Handler>> = {};
+  #routes: Record<string, RouteDefinition<Handler> & { isSubRoute: boolean; nestedLevel: number }> = {};
   #disposeCb: Record<string, () => void> = {};
   routeType: RouteType = BrowserRouteType;
   #location: RouteLocation = {
@@ -23,7 +24,7 @@ class RouterManagement<Handler extends RouteHandler> {
     this.dispose = this.dispose.bind(this);
   }
 
-  #getRoute(searchedPathname: string): RouteWithLocation<Handler> {
+  #getRoute(searchedPathname: string): RouteWithLocation<Handler> & { isSubRoute: boolean; nestedLevel: number } {
     console.log(`getRoute for ${searchedPathname}`, this.#routes);
     const matchingRoutes = getMatchingRoutes(Object.keys(this.#routes), removeQueryParamsAndHash(searchedPathname));
     console.log('', matchingRoutes);
@@ -39,7 +40,10 @@ class RouterManagement<Handler extends RouteHandler> {
     };
   }
 
-  #directRoute(routeRenderEle: Element[], routeData: RouteWithLocation<Handler>) {
+  #directRoute(
+    routeRenderEle: Element[],
+    routeData: RouteWithLocation<Handler> & { isSubRoute: boolean; nestedLevel: number }
+  ) {
     const { nestedLevel, handler } = routeData;
     const routeEle = routeRenderEle[nestedLevel];
     if (routeEle) {
@@ -48,7 +52,10 @@ class RouterManagement<Handler extends RouteHandler> {
     }
   }
 
-  #directNestedRoute(searchPathname: string, routeData: RouteWithLocation<Handler>) {
+  #directNestedRoute(
+    searchPathname: string,
+    routeData: RouteWithLocation<Handler> & { isSubRoute: boolean; nestedLevel: number }
+  ) {
     const { nestedLevel, pathname } = routeData;
 
     const renderRouteEle = Array.from(document.querySelectorAll('[data-vanilla-route-ele="router-wrap"]'));

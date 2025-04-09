@@ -1,0 +1,9 @@
+{
+  "name": "reely-chat",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/vanilla/fun-chat/reely-chat/src",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project reely-chat --web",
+  "targets": {}
+}

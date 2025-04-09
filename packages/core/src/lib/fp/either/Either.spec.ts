@@ -1,4 +1,4 @@
-import { Either } from './Either';
+import Either from './Either';
 import identity from '../identity';
 import type { Mock } from 'vitest';
 
