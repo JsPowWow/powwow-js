@@ -200,6 +200,7 @@ const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
           renderError = error;
         }
       }
+
       reconcileChildren(fiberNode, [
         isVirtualElement(children) ? children : createVirtualTextElement(String(children)),
       ]);
@@ -219,6 +220,7 @@ const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
       }
       break;
     }
+
     default: {
       if (fiberNode.props !== undefined) {
         reconcileChildren(fiberNode, fiberNode.props.children);

@@ -1,10 +1,11 @@
 interface Props<T> {
   caption: string;
+  styles?: Partial<CSSStyleDeclaration>;
   children?: T[];
 }
-export const GroupBox = <T,>({ caption = '', children = [] }: Props<T>) => {
+export const GroupBox = <T,>({ caption = '', children = [], ...rest }: Props<T>) => {
   return (
-    <fieldset>
+    <fieldset {...rest}>
       <legend>{caption}</legend>
       {children}
       {/*<div class="field-row">*/}

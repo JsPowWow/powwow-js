@@ -44,26 +44,24 @@ export const RouterContextProvider = <P extends string = string>({
 
   const [pathName, setPathName] = useState<string>(currentPathName);
 
-  const navigate = useCallback(
-    (event: string | Event) => {
-      let newPathName: Nullable<string>;
-      if (isInstanceOf(Event, event)) {
-        event.preventDefault();
-        if (hasProperty('href', event.target)) {
-          const href = event.target.href;
-          newPathName = isString(href) ? new URL(href).pathname : null;
-        }
-      } else if (isString(event)) {
-        newPathName = event;
-      }
+  const navigate = useCallback((event: string | Event) => {
+    let newPathName: Nullable<string>;
 
-      if (newPathName && newPathName !== pathName) {
-        setPathName(newPathName);
-        globalThis.history.pushState({}, newPathName, newPathName);
+    if (isInstanceOf(Event, event)) {
+      event.preventDefault();
+      if (hasProperty('href', event.target)) {
+        const href = event.target.href;
+        newPathName = isString(href) ? new URL(href).pathname : null;
       }
-    },
-    [pathName]
-  );
+    } else if (isString(event)) {
+      newPathName = event;
+    }
+
+    if (newPathName) {
+      setPathName(newPathName);
+      globalThis.history.pushState({}, newPathName, newPathName);
+    }
+  }, []);
 
   const handlePopStateChange = useCallback((_popstate: PopStateEvent) => {
     const path = currentPathName();
@@ -74,7 +72,7 @@ export const RouterContextProvider = <P extends string = string>({
     navigate(path);
   }, []);
 
-  const getRouteConfig = useCallback(
+  const getRouteData = useCallback(
     (pathname: Nullable<string>): RouteConfig<PageRouteHandler, P> =>
       Maybe.from(routes.find((routeConfig) => routeConfig.pathname === pathname)).getOrDefault(fallback),
     []
@@ -89,7 +87,7 @@ export const RouterContextProvider = <P extends string = string>({
   }, []);
 
   const contextValue = useMemo<RouteContext>(
-    () => ({ pathName, pathNames, navigate, getRouteData: getRouteConfig, fallback: fallback.pathname }),
+    () => ({ pathName, pathNames, navigate, getRouteData, fallback: fallback.pathname }),
     [pathName]
   );
 

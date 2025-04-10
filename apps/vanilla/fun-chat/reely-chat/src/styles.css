@@ -1,1 +1,34 @@
-/* You can add global styles to this file, and also import other style files */
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  height: 100svh;
+  width: 50svw;
+  min-width: 1000px;
+
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 1024px) {
+  .main {
+    width: 95svw;
+    min-width: 375px;
+  }
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-width: 380px;
+}
+
+@media screen and (width < 460px) {
+  body,
+  input,
+  button {
+    font-size: 0.8rem;
+  }
+}

@@ -1848,7 +1848,7 @@ a:hover {
   z-index: 999;
 }
 
-.window[role='dialog']:target {
+.window[role='dialog'].show {
   opacity: 1;
   visibility: visible;
 }

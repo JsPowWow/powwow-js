@@ -1,8 +1,8 @@
 import { Spinner } from '../shared/components/Spinner';
-import { useLoadPage } from '../shared/routing/PageLoader';
+import { usePageLoader } from '../shared/routing/PageLoader';
 
 export const PageRenderer = () => {
-  const { Page, isLoading } = useLoadPage();
+  const { Page, isLoading } = usePageLoader();
 
   return Page ?? <Spinner show={isLoading} />;
 };

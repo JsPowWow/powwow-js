@@ -8,7 +8,7 @@ import { useRouter } from '../shared/routing/Router';
 export const AppWindow = ({ children }: { children?: unknown[] }) => {
   const { navigate } = useRouter();
   return (
-    <WndView>
+    <WndView styles={{ width: '100%', height: '95vh', display: 'flex', flexDirection: 'column' }}>
       <WndTitleBar caption='🥸 Reely Chat Demo' />
       <WndMenuBar
         items={[
@@ -65,7 +65,9 @@ export const AppWindow = ({ children }: { children?: unknown[] }) => {
           },
         ]}
       />
-      <WndBody className='has-space'>{children}</WndBody>
+      <WndBody className='has-space' styles={{ height: '100%' }}>
+        {children}
+      </WndBody>
       <WndStatusBar items={['Press F1 for help', 'Slide 1', 'CPU Usage: 35%']} />
     </WndView>
   );

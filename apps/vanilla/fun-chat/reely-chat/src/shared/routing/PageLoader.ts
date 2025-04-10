@@ -4,7 +4,7 @@ import { useRouter } from './Router';
 
 const pagesCache = new Map<string, unknown>();
 
-export const useLoadPage = () => {
+export const usePageLoader = () => {
   const { pathName, pathNames, fallback, navigate, getRouteData } = useRouter();
   const {
     isLoading,

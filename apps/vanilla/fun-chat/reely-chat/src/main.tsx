@@ -6,7 +6,7 @@ const root = document.querySelector<HTMLDivElement>('#root');
 assertIsNonNullable(root);
 
 Reely.render(
-  <main>
+  <main className='main'>
     <App />
   </main>,
   root

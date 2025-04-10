@@ -1,35 +1,68 @@
 import { RouteConfig } from '@powwow-js/routing-utils';
 import { PageRouteHandler } from '../shared/routing/types';
+import { ComponentFunction } from '@powwow-js/reely';
 
 export type Route = RouteConfig<PageRouteHandler, PathName>;
 
-export type PathName = '/login' | '/chat' | '/about' | '/help' | '/404';
+export type PathName = '/' | '/login' | '/chat' | '/about' | '/help' | '/404';
 
 export const route404 = {
   pathname: '/404',
-  handler: () => import('../pages/not-found').then(getPage),
+  handler: notFoundPage,
 } satisfies Route;
 
 export const routes = [
   {
+    pathname: '/',
+    handler: () => {
+      // TODO
+      return loginPage();
+    },
+  },
+  {
     pathname: '/login',
-    handler: () => import('../pages/login').then(getPage),
+    handler: loginPage,
   },
   {
     pathname: '/chat',
-    handler: () => import('../pages/chat').then(getPage),
+    handler: chatPage,
   },
   {
     pathname: '/about',
-    handler: () => import('../pages/about').then(getPage),
+    handler: aboutPage,
   },
   {
     pathname: '/help',
-    handler: () => import('../pages/help').then(getPage),
+    handler: helpPage,
   },
   route404,
 ] satisfies Route[];
 
-function getPage({ default: Page }: { default: unknown }) {
-  return Page;
+async function loginPage() {
+  const Page = await import('../pages/login').then(getPage);
+  return <Page />;
+}
+
+async function chatPage() {
+  const Page = await import('../pages/chat').then(getPage);
+  return <Page />;
+}
+
+async function aboutPage() {
+  const Page = await import('../pages/about').then(getPage);
+  return <Page />;
+}
+
+async function helpPage() {
+  const Page = await import('../pages/help').then(getPage);
+  return <Page />;
+}
+
+async function notFoundPage() {
+  const Page = await import('../pages/not-found').then(getPage);
+  return <Page />;
+}
+
+function getPage({ default: Page }: { default: unknown }): ComponentFunction {
+  return Page as ComponentFunction;
 }
