@@ -5,16 +5,12 @@ interface Props {
 
 export const SpinnerComponent = ({ show }: Props) => {
   return (
-    <div id='111'>
-      <div id='222'>
-        <div id='333'>
-          {show ? (
-            <span class={`loader ${show ? 'animate' : ''}`} aria-label='Spinning'></span>
-          ) : (
-            <div id='fallback'></div>
-          )}
-        </div>
-      </div>
+    <div>
+      {show ? (
+        <span class={`loader ${show ? 'animate' : ''}`} aria-label='Spinning'></span>
+      ) : (
+        <span id='fallback'></span>
+      )}
     </div>
   );
 };

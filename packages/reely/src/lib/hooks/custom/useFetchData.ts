@@ -1,4 +1,4 @@
-import { getRandomNumber, isInstanceOf, waitFor } from '@powwow-js/core';
+import { isInstanceOf } from '@powwow-js/core';
 import { useEffect } from '../effect';
 import { useRef } from '../ref';
 import { useState } from '../state';
@@ -44,7 +44,7 @@ export const useFetchData = <D, K = unknown>(
 
     fetcherFunction
       .current(key)
-      .then(waitFor(getRandomNumber(300, 2000)))
+      // .then(waitFor(getRandomNumber(300, 2000)))
       .then((response) => {
         if (isInstanceOf(Response, response)) {
           if (!response.ok) {

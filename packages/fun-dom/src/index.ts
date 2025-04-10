@@ -1,7 +1,7 @@
 export * from './lib/routing/route';
 export * from './lib/routing/types';
 export * from './lib/routing/url-utils';
-
+export { cn } from './lib/cn';
 // TODO AR
 
 // export const preventDefault = (event: Event): Event => (event.preventDefault(), event);

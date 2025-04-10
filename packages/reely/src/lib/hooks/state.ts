@@ -11,7 +11,7 @@ export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateSta
     fiberNode?.alternate?.hooks
       ? fiberNode.alternate.hooks[$$reely.hookIndex]
       : {
-          state: initialState,
+          state: isSomeFunction(initialState) ? initialState() : initialState,
           queue: [],
         }
   ) as StateHook<S>;

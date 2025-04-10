@@ -1,5 +1,5 @@
 import { TodoItem } from './TodoItem';
-import { cn } from './cn';
+import { cn } from '@powwow-js/fun-dom';
 import { useSort } from './useSort';
 import Reely from '@powwow-js/reely';
 import { ToDoItem } from './store/types';

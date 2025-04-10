@@ -14,7 +14,7 @@ export default [
     // Override or add rules here
     rules: {
       'max-lines-per-function': 'off',
-      'unicorn/no-useless-undefined': 'off'
+      'unicorn/no-useless-undefined': 'off',
     },
   },
   {

@@ -1,9 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const hasOwn = {}.hasOwnProperty;
 
 export type Value = string | boolean | undefined | null;
 export type Mapping = Record<string, unknown>;
-export type ArgumentArray = Array<Argument>;
-export type ReadonlyArgumentArray = ReadonlyArray<Argument>;
+export type ArgumentArray = Argument[];
+export type ReadonlyArgumentArray = readonly Argument[];
 export type Argument = Value | Mapping | ArgumentArray | ReadonlyArgumentArray;
 
 // cn('foo', 'bar'); // => 'foo bar'
@@ -26,7 +27,7 @@ export type Argument = Value | Mapping | ArgumentArray | ReadonlyArgumentArray;
 // cn({ [`btn-${buttonType}`]: true });
 
 // TODO AR add them above as jsdoc examples, make it export default function
-export function cn(...parameters: ArgumentArray) {
+export function cn(...parameters: ArgumentArray): string {
   let classes = '';
 
   for (const argument of parameters) {
@@ -38,7 +39,7 @@ export function cn(...parameters: ArgumentArray) {
   return classes;
 }
 
-function parseValue(value: unknown) {
+function parseValue(value: unknown): string {
   if (typeof value === 'string') {
     return value;
   }
@@ -48,14 +49,17 @@ function parseValue(value: unknown) {
   }
 
   if (Array.isArray(value)) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return cn(...value);
   }
 
   if (value && value.toString !== Object.prototype.toString && !value.toString.toString().includes('[native code]')) {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     return value.toString();
   }
 
   let classes = '';
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const valueObject: Record<string, unknown> = (value ?? {}) as Record<string, unknown>;
   for (const key in valueObject) {
     if (hasOwn.call(valueObject, key) && valueObject[key]) {
@@ -66,7 +70,7 @@ function parseValue(value: unknown) {
   return classes;
 }
 
-function appendClass(value: string, newClass: string) {
+function appendClass(value: string, newClass: string): string {
   if (!newClass) {
     return value;
   }

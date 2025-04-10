@@ -1,8 +1,14 @@
-import { useGetCurrentPage } from './routes';
-import { Spinner } from '../components/Spinner';
+import { PageRenderer } from '../pages/PageRenderer';
+import { AppWindow } from './AppWindow';
+import { PathName, route404, routes } from './routes';
+import { RouterContextProvider } from '../shared/routing/Router';
 
 export const App = () => {
-  const { Page, isLoading } = useGetCurrentPage();
-
-  return Page ?? <Spinner show={isLoading} />;
+  return (
+    <RouterContextProvider<PathName> routes={routes} fallback={route404}>
+      <AppWindow>
+        <PageRenderer />
+      </AppWindow>
+    </RouterContextProvider>
+  );
 };
