@@ -18,9 +18,11 @@ export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateSta
 
   while (hook.queue.length > 0) {
     let newState = hook.queue.shift();
-
     if (isPlainObject(hook.state) && isPlainObject(newState)) {
       newState = { ...hook.state, ...newState };
+    }
+    if (Array.isArray(hook.state) && Array.isArray(newState)) {
+      newState = [...hook.state, ...newState] as S;
     }
     hook.state = newState as S;
   }
@@ -36,6 +38,8 @@ export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateSta
     const newValue = (isSomeFunction(updater) ? updater(hook.state) : updater) as S;
 
     hook.queue.push(newValue);
+    console.log('setState', hook.queue.length, newValue);
+
     if ($$reely.currentRoot) {
       $$reely.wipRoot = {
         type: $$reely.currentRoot.type,

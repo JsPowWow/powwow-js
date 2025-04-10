@@ -18,7 +18,6 @@ const LoginPage = () => {
       setErrors((errors) => [...errors, 'Username is required to be min 4 chars']);
     }
     if (!password || password.length < 4) {
-      // TODO AR - not works, replace first error !
       setErrors((errors) => [...errors, 'Password is required to be min 4 chars']);
     }
   };
@@ -57,7 +56,7 @@ const LoginPage = () => {
                 placeholder='Password'
                 styles={{ width: '100%' }}
               />
-              {errors.length > 0 && <label style='color: red;'>{errors.join('/n')}</label>}
+              {errors.length > 0 && <label style='color: red;'>{errors.join('\n')}</label>}
             </div>
           </GroupBox>
         </WndBody>
