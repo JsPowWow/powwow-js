@@ -1,0 +1,20 @@
+{
+  "name": "fun-chat-server",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/vanilla/fun-chat/fun-chat-server/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:swc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/vanilla/fun-chat/fun-chat-server",
+        "tsConfig": "apps/vanilla/fun-chat/fun-chat-server/tsconfig.lib.json",
+        "packageJson": "apps/vanilla/fun-chat/fun-chat-server/package.json",
+        "main": "apps/vanilla/fun-chat/fun-chat-server/src/index.ts",
+        "assets": ["apps/vanilla/fun-chat/fun-chat-server/*.md"]
+      }
+    }
+  }
+}

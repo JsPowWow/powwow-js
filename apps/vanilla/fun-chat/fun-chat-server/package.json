@@ -1,0 +1,33 @@
+{
+  "name": "rs-chat-api",
+  "version": "1.0.1",
+  "description": "Api for RSSchool websocket task",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "test::server": "jest --clearCache && jest --runInBand --verbose --forceExit --detectOpenHandles ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolling-scopes-school/fun-chat-server.git"
+  },
+  "keywords": [
+    "rsschool",
+    "api",
+    "websocket"
+  ],
+  "author": "MikAleinik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rolling-scopes-school/fun-chat-server/issues"
+  },
+  "homepage": "https://github.com/rolling-scopes-school/fun-chat-server#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "dotenv": "^16.3.1",
+    "ws": "^8.14.1"
+  },
+  "devDependencies": {}
+}
