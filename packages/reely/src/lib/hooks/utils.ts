@@ -1,5 +1,5 @@
 import type { DependencyList } from '../types';
-import type { Nullable } from 'vitest';
+import type { Nullable } from '@powwow-js/core';
 
 export function isSameDeps(deps: DependencyList, hookDeps: Nullable<DependencyList>): boolean {
   if (!deps && !hookDeps) {

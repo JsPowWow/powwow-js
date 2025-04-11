@@ -12,7 +12,7 @@
 }
 
 .desktop {
-  background: no-repeat center url("./assets/win7bg.png");
+  background: no-repeat center url('./assets/win7bg.png');
 }
 
 @media screen and (max-width: 1024px) {

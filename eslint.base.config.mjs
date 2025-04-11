@@ -14,7 +14,7 @@ const MAX_LINES_PER_FUNCTION = 55;
 
 export default [
   {
-    ignores: ['**/dist', 'vite.config.*', 'eslint.config.*', 'playwright.config.*'],
+    ignores: ['**/dist', 'vite.config.*', 'eslint.config.*', 'playwright.config.*', 'jest.config.*', 'jest.preset.*'],
   },
   { plugins: { '@nx': nxEslintPlugin } },
   {
