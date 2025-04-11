@@ -25,7 +25,9 @@ module.exports = class Logger {
     }
     const type = message.type.toLowerCase() === 'error' ? chalk.red(message.type) : chalk.green(message.type);
     console.log(
-      `${this.#getDate()} ${chalk.bold.underline.white('Connection')} ${type} ${chalk.underline.white('id:')} ${chalk.white(message.id)}`
+      `${this.#getDate()} ${chalk.bold.underline.white('Connection')} ${type} ${chalk.underline.white(
+        'id:'
+      )} ${chalk.white(message.id)}`
     );
   }
   /**

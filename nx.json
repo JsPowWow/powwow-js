@@ -80,14 +80,15 @@
     },
     "projects": [
       "packages/core",
-      "packages/fp",
-      "packages/nullable",
       "packages/emitter",
-      "packages/simple-store",
-      "packages/state-machine",
-      "packages/routing-utils",
+      "packages/fp",
+      "packages/fun-dom",
+      "packages/nullable",
       "packages/reely",
-      "packages/reely-hook"
+      "packages/reely-hook",
+      "packages/routing-utils",
+      "packages/simple-store",
+      "packages/state-machine"
     ],
     "version": {
       "preVersionCommand": "npx nx run-many -t build"
