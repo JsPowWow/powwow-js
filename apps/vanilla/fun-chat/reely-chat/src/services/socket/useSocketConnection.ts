@@ -1,6 +1,6 @@
 import Reely, { useCallback } from '@powwow-js/reely';
-import { socketConnection } from './socketConnection';
 import { useRerender } from '@powwow-js/reely-hook';
+import { socketConnection } from './index';
 
 export const useSocketConnection = () => {
   const [rerender] = useRerender();

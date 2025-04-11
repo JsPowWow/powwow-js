@@ -3,10 +3,10 @@ import { WndTitleBar } from '../shared/components/WndTitleBar';
 import { WndBody } from '../shared/components/WndBody';
 import { WndStatusBar } from '../shared/components/WndStatusBar';
 import { WndMenuBar } from '../shared/components/WndMenuBar';
-import { useRouter } from '../shared/routing/Router';
+import { useRouter } from '../shared/routing/useRouter';
 import { CurrentPageInfoStatus } from '../widgets/CurrentPageInfoStatus';
 import { SocketConnectionStatus } from '../widgets/SocketConnectionStatus';
-import { useSocketConnection } from '../state/socket/useSocketConnection';
+import { useSocketConnection } from '../services/socket/useSocketConnection';
 
 export const AppWindow = ({ children }: { children?: unknown[] }) => {
   const { navigate } = useRouter();

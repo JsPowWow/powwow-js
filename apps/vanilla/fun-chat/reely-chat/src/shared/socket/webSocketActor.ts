@@ -1,4 +1,4 @@
-import { enqueue, logWithContext, StateMachine, StateMachineDefinition } from '@powwow-js/state-machine';
+import { enqueue, StateMachine, StateMachineDefinition } from '@powwow-js/state-machine';
 import { ObjectStore } from '@powwow-js/simple-store';
 import { Nullable } from '@powwow-js/core';
 import { closeCurrentSocket, connect, listenForClose, saveError, saveSocket } from './effects';
@@ -13,6 +13,7 @@ export type ConnectionStateTransitions = {
 };
 
 export type ConnectionStateContext = {
+  url: string;
   socket: Nullable<WebSocket>;
   error: Nullable<Error>;
 };
@@ -51,7 +52,7 @@ const socketConnectionLogic: StateMachineDefinition<ConnectionState, ConnectionS
     },
     online: {
       actions: {
-        onEnter: enqueue(saveSocket, listenForClose, logWithContext),
+        onEnter: enqueue(saveSocket, listenForClose),
       },
       transitions: {
         connectionError: {
@@ -64,7 +65,7 @@ const socketConnectionLogic: StateMachineDefinition<ConnectionState, ConnectionS
     },
     failed: {
       actions: {
-        onEnter: enqueue(saveError, logWithContext),
+        onEnter: enqueue(saveError),
       },
       transitions: {
         connect: {
@@ -78,7 +79,16 @@ const socketConnectionLogic: StateMachineDefinition<ConnectionState, ConnectionS
   },
 };
 
-export const socketConnection = new StateMachine(
-  socketConnectionLogic,
-  new ObjectStore<ConnectionStateContext>({ socket: null, error: null })
-);
+export type WebSocketActor = StateMachine<
+  ConnectionState,
+  ConnectionStateTransitions,
+  ObjectStore<ConnectionStateContext>
+>;
+
+const createSocketConnection = (url: string): WebSocketActor =>
+  new StateMachine(
+    socketConnectionLogic,
+    new ObjectStore<ConnectionStateContext>({ socket: null, error: null, url: url })
+  );
+
+export default createSocketConnection;

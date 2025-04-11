@@ -1,5 +1,5 @@
-import { useSocketConnection } from '../state/socket/useSocketConnection';
-import { ConnectionState } from '../state/socket/socketConnection';
+import { useSocketConnection } from '../services/socket/useSocketConnection';
+import { ConnectionState } from '../shared/socket/webSocketActor';
 
 const stateMap = {
   connecting: '🟡',
@@ -10,5 +10,5 @@ const stateMap = {
 
 export const SocketConnectionStatus = () => {
   const { state } = useSocketConnection();
-  return ` ${state} ${stateMap[state]}`;
+  return `${state} ${stateMap[state]}`;
 };

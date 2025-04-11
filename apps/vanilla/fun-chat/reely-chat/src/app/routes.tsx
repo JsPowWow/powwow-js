@@ -1,6 +1,6 @@
 import { RouteConfig } from '@powwow-js/routing-utils';
-import { PageRouteHandler } from '../shared/routing/types';
 import { ComponentFunction } from '@powwow-js/reely';
+import { PageRouteHandler } from '../shared/routing/useRouter';
 
 export type Route = RouteConfig<PageRouteHandler, PathName>;
 

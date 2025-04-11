@@ -1,7 +1,7 @@
 import { matchAction, StateMachineTransitionActionEffect } from '@powwow-js/state-machine';
 import { Maybe } from '@powwow-js/core';
-import { ConnectionContext, ConnectionState, ConnectionStateTransitions } from './socketConnection';
-import createSocket from '../../shared/createSocket';
+import { ConnectionContext, ConnectionState, ConnectionStateTransitions } from './webSocketActor';
+import createSocket from './createSocket';
 
 type SocketConnectionActionEffect = StateMachineTransitionActionEffect<
   ConnectionStateTransitions,
@@ -17,11 +17,8 @@ export const closeCurrentSocket: SocketConnectionActionEffect = ({ owner }) => {
   owner.context.set({ socket: null });
 };
 
-// TODO AR get url from settings
-const chatUrl: string = import.meta.env.VITE_MIK_API_URL;
-
 export const connect: SocketConnectionActionEffect = ({ owner }) => {
-  createSocket(chatUrl).then((result) =>
+  createSocket(owner.context.get().url).then((result) =>
     result.unwrap(
       ({ error }) => owner.send('connectionError', error),
       ({ socket }) => owner.send('connectionSuccess', socket)

@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from '@powwow-js/reely';
 import { RouteConfig } from '@powwow-js/routing-utils';
-import { PageRouteHandler } from './types';
 import { hasProperty, isInstanceOf, isString, Maybe, noop, Nullable } from '@powwow-js/core';
+
+export type PageRouteHandler = () => Promise<unknown>;
 
 interface RouteContext<P extends string = string> {
   pathName: string;

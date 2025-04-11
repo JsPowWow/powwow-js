@@ -1,5 +1,5 @@
 import { Either, Nullable, toErrorWithMessage } from '@powwow-js/core';
-import { ILogger } from './Logger';
+import { ILogger } from '../Logger';
 
 export type SocketConnectionResult = Either<
   { success: false; error: Error; timestamp: number; event: unknown },

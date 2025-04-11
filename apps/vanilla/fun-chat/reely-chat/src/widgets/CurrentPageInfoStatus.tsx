@@ -1,4 +1,4 @@
-import { useRouter } from '../shared/routing/Router';
+import { useRouter } from '../shared/routing/useRouter';
 
 export const CurrentPageInfoStatus = () => {
   const { pathName } = useRouter();
