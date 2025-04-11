@@ -1,3 +1,21 @@
+## 0.12.0 (2025-04-11)
+
+### 🚀 Features
+
+- **fun-chat-server:** add 'local' fun-chat-server app ([1ca8de5](https://github.com/JsPowWow/powwow-js/commit/1ca8de5))
+- **fun-chat-server:** add 'socket-connection' initial(s) ([2bd1659](https://github.com/JsPowWow/powwow-js/commit/2bd1659))
+- **reely:** add 'reely' library ([825e57c](https://github.com/JsPowWow/powwow-js/commit/825e57c))
+- **reely:** add array 'state' support ([59557d7](https://github.com/JsPowWow/powwow-js/commit/59557d7))
+- **reely:** fix 'imports' error ([3b13183](https://github.com/JsPowWow/powwow-js/commit/3b13183))
+- **reely-chat:** add 'reely-chat' app example ([3f0b709](https://github.com/JsPowWow/powwow-js/commit/3f0b709))
+- **reely-chat:** add 'reely-chat' routing's ([a778f40](https://github.com/JsPowWow/powwow-js/commit/a778f40))
+- **reely-chat:** add 'login page' initial(s) ([9c5348d](https://github.com/JsPowWow/powwow-js/commit/9c5348d))
+- **reely-chat:** add 'login page' tuning ([7c5ca6b](https://github.com/JsPowWow/powwow-js/commit/7c5ca6b))
+
+### ❤️ Thank You
+
+- JsPowWow
+
 ## 0.11.0 (2025-04-08)
 
 ### 🚀 Features
