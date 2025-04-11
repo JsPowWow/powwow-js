@@ -1,9 +1,9 @@
 import { TodoItem } from './TodoItem';
 import { cn } from '@powwow-js/fun-dom';
-import { useSort } from './useSort';
 import Reely from '@powwow-js/reely';
 import { ToDoItem } from './store/types';
 import { TodoListStoreContext } from './store/TodoListProvider';
+import { useSort } from '@powwow-js/reely-hook';
 
 export interface TodoListTableViewProps {
   // items: ToDoItem[];

@@ -1,6 +1,7 @@
-import { useEffect, useFetchData } from '@powwow-js/reely';
+import { useEffect } from '@powwow-js/reely';
 import { findMatchingRoute } from '@powwow-js/routing-utils';
 import { useRouter } from './Router';
+import { useFetchData } from '@powwow-js/reely-hook';
 
 const pagesCache = new Map<string, unknown>();
 

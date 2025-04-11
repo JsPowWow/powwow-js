@@ -1,5 +1,6 @@
 import Reely from '@powwow-js/reely';
-import { isSomeFunction, RecordKey } from '@powwow-js/core';
+import type { RecordKey } from '@powwow-js/core';
+import { isSomeFunction } from '@powwow-js/core';
 
 //import { compareObjectsByKey } from './utils';
 export type SortDirection = 'asc' | 'desc';
@@ -10,9 +11,16 @@ export type SortOption<T> = {
 };
 
 export interface SortProps<T> {
-  data: T[];
-  onSortChange(data: T[]): void;
   sortOptions: SortOption<T>[];
+  data: T[];
+  onSortChange: (data: T[]) => void;
+}
+
+export interface UseSortOutput<T> {
+  handleDirectionToggle: () => void;
+  handleSortKeyChange: (newSortKey: ItemKey<T>) => void;
+  sortDirection: 'asc' | 'desc';
+  sortKey: keyof T;
 }
 
 /**
@@ -30,7 +38,7 @@ export interface SortProps<T> {
  *    result: myArrayOfObjects = [{id: 3, name:'Lucy'},{id: 1, name:'Pam'},{id: 2, name:'Sue'}]
  */
 export function compareObjectsByKey<T = Record<RecordKey, unknown>>(key: keyof T, ascending = true) {
-  return function innerSort(objectA: T, objectB: T) {
+  return function innerSort(objectA: T, objectB: T): number {
     let sortValue: -1 | 0 | 1;
     if (objectA[key] < objectB[key]) {
       sortValue = objectA[key] > objectB[key] ? 1 : -1;
@@ -41,10 +49,11 @@ export function compareObjectsByKey<T = Record<RecordKey, unknown>>(key: keyof T
   };
 }
 
-export function useSort<T>({ data, onSortChange, sortOptions }: SortProps<T>) {
+export default function useSort<T>(props: SortProps<T>): UseSortOutput<T> {
+  const { data, onSortChange, sortOptions } = props;
   // Local state
   const [sortDirection, setSortDirection] = Reely.useState<SortDirection>('asc');
-  const initialSortKey = sortOptions[0].value as ItemKey<T>;
+  const initialSortKey = sortOptions[0].value;
   const [sortKey, setSortKey] = Reely.useState<ItemKey<T>>(initialSortKey);
 
   // TODO AR implement useCallback and reuse here instead useRef trick
@@ -70,7 +79,7 @@ export function useSort<T>({ data, onSortChange, sortOptions }: SortProps<T>) {
    * Handle changes to the sort key.
    * @param newSortKey
    */
-  const handleSortKeyChange = (newSortKey: ItemKey<T>) => {
+  const handleSortKeyChange = (newSortKey: ItemKey<T>): void => {
     if (sortKey === newSortKey) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -81,7 +90,7 @@ export function useSort<T>({ data, onSortChange, sortOptions }: SortProps<T>) {
   /**
    * Handle changes to the sort direction.
    */
-  const handleDirectionToggle = () => {
+  const handleDirectionToggle = (): void => {
     setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
   };
 

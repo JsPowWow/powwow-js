@@ -1,7 +1,7 @@
 import Reely from '@powwow-js/reely';
 import { StateMachine } from '@powwow-js/state-machine';
 import { ObjectStore } from '@powwow-js/simple-store';
-import { useRerender } from '../useRerender';
+import { useRerender } from '@powwow-js/reely-hook';
 import { todoListLogic } from './logic';
 import { emptyTodos } from './reducers';
 import { ToDoItem, TodoListData } from './types';

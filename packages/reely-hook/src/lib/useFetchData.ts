@@ -1,7 +1,7 @@
 import { isInstanceOf } from '@powwow-js/core';
-import { useEffect } from '../effect';
-import { useRef } from '../ref';
-import { useState } from '../state';
+import { useEffect } from '@powwow-js/reely';
+import { useRef } from '@powwow-js/reely';
+import { useState } from '@powwow-js/reely';
 
 type FetchDataOutput<Data> =
   | {
@@ -20,10 +20,10 @@ type FetchDataOutput<Data> =
       data: undefined;
     };
 
-export const useFetchData = <D, K = unknown>(
+export default function useFetchData<D, K = unknown>(
   key: K,
   fetcher: (parameters: K) => Promise<unknown>
-): FetchDataOutput<D> => {
+): FetchDataOutput<D> {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<D>();
   const [error, setError] = useState();
@@ -56,12 +56,14 @@ export const useFetchData = <D, K = unknown>(
       })
       .then((response) => {
         if (!ignore) {
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           setData(response as D);
           setError(undefined);
         }
       })
       .catch((error) => {
         if (!ignore) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           setError(error);
           setData(undefined);
         }
@@ -73,14 +75,15 @@ export const useFetchData = <D, K = unknown>(
       });
 
     // cleanup
-    return () => {
+    return (): void => {
       ignore = true;
     };
   }, [key]);
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return {
     isLoading,
     data,
     error,
   } as FetchDataOutput<D>;
-};
+}

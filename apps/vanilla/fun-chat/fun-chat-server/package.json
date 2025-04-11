@@ -7,7 +7,7 @@
     "start": "node ./src/index.js",
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix",
-    "test::server": "jest --clearCache && jest --runInBand --verbose --forceExit --detectOpenHandles ./test"
+    "test": "jest --clearCache && jest --runInBand --verbose --forceExit --detectOpenHandles ./test"
   },
   "repository": {
     "type": "git",

@@ -21,7 +21,6 @@ export { useMemo } from './lib/hooks/memo';
 export { useCallback } from './lib/hooks/callback';
 export { createContext } from './lib/Context';
 export { useContext } from './lib/hooks/context';
-export { useFetchData } from './lib/hooks/custom/useFetchData';
 
 export { jsx } from './lib/jsx-runtime';
 

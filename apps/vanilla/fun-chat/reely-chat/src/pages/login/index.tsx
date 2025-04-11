@@ -10,10 +10,16 @@ import {
   validateUserPasswordFormData,
   ValidationResult,
 } from '../../models/validation';
+import { SocketConnectionStatus } from '../../widgets/SocketConnectionStatus';
+import { useSocketConnection } from '../../state/socket/useSocketConnection';
 
 const NO_ERRORS = Object.freeze({ username: SUCCESS, password: SUCCESS });
+
 const LoginPage = () => {
   const [validation, setValidation] = useState<{ username: ValidationResult; password: ValidationResult }>(NO_ERRORS);
+
+  const { state } = useSocketConnection();
+  const isInputDisabled = state !== 'online';
 
   const clearErrors = () => setValidation(NO_ERRORS);
 
@@ -58,6 +64,7 @@ const LoginPage = () => {
                 type='text'
                 name='username'
                 placeholder='Username'
+                {...(isInputDisabled ? { disabled: isInputDisabled } : null)}
                 styles={{ width: '100%' }}
                 onInput={clearErrors}
               />
@@ -73,6 +80,7 @@ const LoginPage = () => {
                 autocomplete
                 name='password'
                 placeholder='Password'
+                {...(isInputDisabled ? { disabled: isInputDisabled } : null)}
                 styles={{ width: '100%' }}
                 onInput={clearErrors}
               />
@@ -83,8 +91,13 @@ const LoginPage = () => {
           </GroupBox>
         </WndBody>
         <footer style='display: flex; justify-content: center; gap:10px'>
-          <button type='submit'>Ok</button>
-          <button type='reset'>Clear</button>
+          <SocketConnectionStatus />
+          <button type='submit' {...(isInputDisabled ? { disabled: isInputDisabled } : null)}>
+            Ok
+          </button>
+          <button type='reset' {...(isInputDisabled ? { disabled: isInputDisabled } : null)}>
+            Clear
+          </button>
         </footer>
       </WndView>
     </form>

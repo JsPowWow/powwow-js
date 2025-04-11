@@ -86,7 +86,8 @@
       "packages/simple-store",
       "packages/state-machine",
       "packages/routing-utils",
-      "packages/reely"
+      "packages/reely",
+      "packages/reely-hook"
     ],
     "version": {
       "preVersionCommand": "npx nx run-many -t build"

@@ -5,9 +5,12 @@ import { WndStatusBar } from '../shared/components/WndStatusBar';
 import { WndMenuBar } from '../shared/components/WndMenuBar';
 import { useRouter } from '../shared/routing/Router';
 import { CurrentPageInfoStatus } from '../widgets/CurrentPageInfoStatus';
+import { SocketConnectionStatus } from '../widgets/SocketConnectionStatus';
+import { useSocketConnection } from '../state/socket/useSocketConnection';
 
 export const AppWindow = ({ children }: { children?: unknown[] }) => {
   const { navigate } = useRouter();
+  const { connect, disconnect } = useSocketConnection();
   return (
     <WndView styles={{ width: '100%', height: '95vh', display: 'flex', flexDirection: 'column' }}>
       <WndTitleBar caption='🥸 Reely Chat Demo' />
@@ -19,9 +22,12 @@ export const AppWindow = ({ children }: { children?: unknown[] }) => {
               <a href='/login' onClick={navigate}>
                 Login <span>Ctrl+L</span>
               </a>,
-              <a href='#menubar'>
-                Save <span>Ctrl+S</span>
-              </a>,
+              <label onclick={connect}>
+                Connect <span>Ctrl+N</span>
+              </label>,
+              <label onclick={disconnect}>
+                Disconnect <span>Ctrl+C</span>
+              </label>,
               {
                 divider: true,
                 content: (
@@ -69,7 +75,7 @@ export const AppWindow = ({ children }: { children?: unknown[] }) => {
       <WndBody className='has-space desktop' styles={{ height: '100%' }}>
         {children}
       </WndBody>
-      <WndStatusBar items={['Press F1 for help', <CurrentPageInfoStatus />, 'CPU Usage: 35%']} />
+      <WndStatusBar items={['Press F1 for help', <CurrentPageInfoStatus />, <SocketConnectionStatus />]} />
     </WndView>
   );
 };
