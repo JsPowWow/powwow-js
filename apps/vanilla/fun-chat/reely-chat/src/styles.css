@@ -11,6 +11,10 @@
   margin: 0 auto;
 }
 
+.desktop {
+  background: no-repeat center url("./assets/win7bg.png");
+}
+
 @media screen and (max-width: 1024px) {
   .main {
     width: 95svw;
@@ -31,4 +35,9 @@ body {
   button {
     font-size: 0.8rem;
   }
+}
+
+.form-error-label {
+  color: red;
+  min-height: 14px;
 }

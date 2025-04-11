@@ -10,9 +10,9 @@ export const WndTitleBar = ({ caption = '', minimize = true, maximize = true, cl
     <div class='title-bar'>
       <div class='title-bar-text'>{caption}</div>
       <div class='title-bar-controls'>
-        {minimize && <button aria-label='Minimize'></button>}
-        {maximize && <button aria-label='Maximize'></button>}
-        {close && <button aria-label='Close'></button>}
+        {minimize && <button aria-label='Minimize' type='button'></button>}
+        {maximize && <button aria-label='Maximize' type='button'></button>}
+        {close && <button aria-label='Close' type='button'></button>}
       </div>
     </div>
   );

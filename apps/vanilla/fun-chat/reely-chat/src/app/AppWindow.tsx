@@ -4,6 +4,7 @@ import { WndBody } from '../shared/components/WndBody';
 import { WndStatusBar } from '../shared/components/WndStatusBar';
 import { WndMenuBar } from '../shared/components/WndMenuBar';
 import { useRouter } from '../shared/routing/Router';
+import { CurrentPageInfoStatus } from '../widgets/CurrentPageInfoStatus';
 
 export const AppWindow = ({ children }: { children?: unknown[] }) => {
   const { navigate } = useRouter();
@@ -15,8 +16,8 @@ export const AppWindow = ({ children }: { children?: unknown[] }) => {
           {
             caption: 'File',
             menu: [
-              <a href='#menubar'>
-                Open <span>Ctrl+O</span>
+              <a href='/login' onClick={navigate}>
+                Login <span>Ctrl+L</span>
               </a>,
               <a href='#menubar'>
                 Save <span>Ctrl+S</span>
@@ -65,10 +66,10 @@ export const AppWindow = ({ children }: { children?: unknown[] }) => {
           },
         ]}
       />
-      <WndBody className='has-space' styles={{ height: '100%' }}>
+      <WndBody className='has-space desktop' styles={{ height: '100%' }}>
         {children}
       </WndBody>
-      <WndStatusBar items={['Press F1 for help', 'Slide 1', 'CPU Usage: 35%']} />
+      <WndStatusBar items={['Press F1 for help', <CurrentPageInfoStatus />, 'CPU Usage: 35%']} />
     </WndView>
   );
 };

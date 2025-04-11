@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from '@powwow-js/reely';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from '@powwow-js/reely';
 import { RouteConfig } from '@powwow-js/routing-utils';
 import { PageRouteHandler } from './types';
 import { hasProperty, isInstanceOf, isString, Maybe, noop, Nullable } from '@powwow-js/core';
@@ -18,7 +18,7 @@ const routingContextDefault = {
   fallback: '/',
   pathNames: [],
   navigate: noop,
-  getRouteData: () => ({
+  getRouteData: (_pathname: Nullable<string>) => ({
     pathname: '',
     children: [],
     handler: () => Promise.reject(new Error('RouterContext is not provided.')),
@@ -43,6 +43,8 @@ export const RouterContextProvider = <P extends string = string>({
   }, []);
 
   const [pathName, setPathName] = useState<string>(currentPathName);
+  const previousPathName = useRef(pathName);
+  previousPathName.current = pathName;
 
   const navigate = useCallback((event: string | Event) => {
     let newPathName: Nullable<string>;
@@ -57,7 +59,7 @@ export const RouterContextProvider = <P extends string = string>({
       newPathName = event;
     }
 
-    if (newPathName) {
+    if (newPathName && previousPathName.current !== newPathName) {
       setPathName(newPathName);
       globalThis.history.pushState({}, newPathName, newPathName);
     }

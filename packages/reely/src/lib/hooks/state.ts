@@ -22,7 +22,7 @@ export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateSta
       newState = { ...hook.state, ...newState };
     }
     if (Array.isArray(hook.state) && Array.isArray(newState)) {
-      newState = [...hook.state, ...newState] as S;
+      newState = (newState.length > 0 ? [...hook.state, ...newState] : newState) as S;
     }
     hook.state = newState as S;
   }
@@ -34,11 +34,10 @@ export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateSta
   fiberNode.hooks.push(hook);
   $$reely.hookIndex += 1;
 
-  const setState = <SS extends S>(updater: UpdateStateAction<SS>): void => {
-    const newValue = (isSomeFunction(updater) ? updater(hook.state) : updater) as S;
+  const setState = <State extends S>(updater: UpdateStateAction<State>): void => {
+    const newValue = transformState<S>(updater, hook.queue.at(-1));
 
     hook.queue.push(newValue);
-    console.log('setState', hook.queue.length, newValue);
 
     if ($$reely.currentRoot) {
       $$reely.wipRoot = {
@@ -54,4 +53,11 @@ export function useState<S>(initialState?: S | (() => S)): [S, Updater<UpdateSta
   };
 
   return [hook.state, setState];
+}
+
+function transformState<S>(state: unknown, prevState: unknown): S {
+  if (isSomeFunction(state)) {
+    return state(prevState) as S;
+  }
+  return state as S;
 }
