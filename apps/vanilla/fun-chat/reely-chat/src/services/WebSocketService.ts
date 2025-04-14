@@ -1,27 +1,19 @@
-interface WsEvent<Payload = object> {
-  id: string;
-  type: string;
-  payload: Payload | WsErrorPayload;
-}
+import { RecordKey } from '@powwow-js/core';
 
-export interface WsErrorPayload {
-  error: string;
-}
-
-export interface WsCallback<T = object> {
+export interface WsCallback<T = object, E = Record<RecordKey, unknown>> {
   onCall: (payload: T) => void;
-  onError?: () => void;
+  onError?: (error: E) => void;
 }
 
 export default abstract class WebSocketService {
   protected socket: WebSocket;
   protected readonly callbacks: Map<string, WsCallback<unknown>[]> = new Map();
-
+  private abortController: AbortController;
   private messages: string[] = [];
 
   protected constructor(socket: WebSocket) {
     this.socket = socket;
-    this.start();
+    this.abortController = new AbortController();
   }
 
   protected send<T>(type: string, payload: unknown, callback?: WsCallback<T>, isNotification = false): void {
@@ -58,37 +50,53 @@ export default abstract class WebSocketService {
     this.callbacks.set(id, [wsCallback]);
   }
 
-  private start() {
-    this.socket.addEventListener('message', ({ data }: MessageEvent<string>) => {
-      const { id, type, payload } = JSON.parse(data) as WsEvent;
-      const callbacks = this.callbacks.get(id) || this.callbacks.get(type);
-      if (!callbacks?.length) {
-        return;
-      }
-
-      callbacks.forEach((callback) => {
-        if (type === 'ERROR') {
-          // const { error } = payload as WsErrorPayload;
-          // this.notificationService.error('Error', error);
-          callback.onError?.();
+  public start() {
+    this.socket.addEventListener(
+      'message',
+      ({ data }: MessageEvent<string>) => {
+        const { id, type, payload } = JSON.parse(data);
+        const callbacks = this.callbacks.get(id) || this.callbacks.get(type);
+        if (!callbacks?.length) {
           return;
         }
 
-        callback.onCall(payload);
-      });
-    });
+        callbacks.forEach((callback) => {
+          if (type === 'ERROR') {
+            callback.onError?.(payload);
+            return;
+          }
 
-    this.socket.addEventListener('close', (event) => {
-      console.log('Connection closed:', event.reason);
-      // notificationService.globalError('Connection lost', `${event.reason}\nAttempting to reconnect...`);
-      // setTimeout(() => this.connect(), 5000);
-    });
+          callback.onCall(payload);
+        });
+      },
+      { signal: this.abortController.signal }
+    );
 
-    this.socket.addEventListener('error', (event) => {
-      console.log('Connection error:', event);
+    // this.socket.addEventListener(
+    //   'close',
+    //   (event) => {
+    //     console.log('Connection closed:', event.reason);
+    //     // notificationService.globalError('Connection lost', `${event.reason}\nAttempting to reconnect...`);
+    //     // setTimeout(() => this.connect(), 5000);
+    //   },
+    //   { signal: this.abortController.signal }
+    // );
 
-      // notificationService.globalError('Connection lost', `${event.reason}\nAttempting to reconnect...`);
-      // setTimeout(() => this.connect(), 5000);
-    });
+    // this.socket.addEventListener(
+    //   'error',
+    //   (event) => {
+    //     console.log('Connection error:', event);
+    //
+    //     // notificationService.globalError('Connection lost', `${event.reason}\nAttempting to reconnect...`);
+    //     // setTimeout(() => this.connect(), 5000);
+    //   },
+    //   { signal: this.abortController.signal }
+    // );
+
+    return this;
+  }
+
+  public dispose() {
+    this.abortController.abort();
   }
 }

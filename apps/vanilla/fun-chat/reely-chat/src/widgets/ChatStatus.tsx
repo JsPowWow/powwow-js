@@ -2,10 +2,9 @@ import { useChat } from '../scene/audience/useChat';
 import { ChatState } from '../scene/actors/chat/ChatActor';
 
 const stateMap = {
-  initialized: '🟡',
+  ready: '🟡',
   authorized: '🟢',
-  // failed: '🔴',
-  blank: '⚪️',
+  offline: '⚪️',
 } satisfies Record<ChatState, string>;
 
 interface ChatStatusProps {

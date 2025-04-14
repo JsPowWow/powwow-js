@@ -60,7 +60,9 @@ export const RouterContextProvider = <P extends string = string>({
       newPathName = event;
     }
 
-    if (newPathName && previousPathName.current !== newPathName) {
+    if (newPathName) {
+      //  && previousPathName.current !== newPathName WTF ?
+      // console.log('newPathName', newPathName);
       setPathName(newPathName);
       globalThis.history.pushState({}, newPathName, newPathName);
     }

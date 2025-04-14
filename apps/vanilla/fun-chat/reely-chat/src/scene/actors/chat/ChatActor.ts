@@ -1,89 +1,56 @@
 import { ObjectStore } from '@powwow-js/simple-store';
 import { ILogger } from '../../../shared/Logger';
-import {
-  createStateMachine,
-  enqueue,
-  IStateMachine,
-  StateMachineDefinition,
-  StateMachineTransitionExecutor,
-} from '@powwow-js/state-machine';
+import { createStateMachine, enqueue, IStateMachine, StateMachineDefinition } from '@powwow-js/state-machine';
 import { Nullable } from '@powwow-js/core';
 import { WebSocketActor } from '../webSocket/webSocketActor';
-import { listenSocketState, saveSocket } from './actionEffects';
+import { initializeChatApiService, saveSocket } from './actionEffects';
 import { WebSocketChatService } from '../../../services/WebSocketChatService';
+import { User } from '../../../models/user.model';
 
-export type ChatState = 'blank' | 'initialized' | 'authorized';
+export type ChatState = 'offline' | 'ready' | 'authorized';
 
 export type ChatStateTransitions = {
-  initialize: { socketActor: WebSocketActor };
-  connectionError: undefined;
-  login: { username: string; password: string };
-  logout: undefined;
+  setReady: { socketActor: WebSocketActor };
+  setOffline: undefined;
+  setAuthorized: User;
 };
 
-type ChatData = {
+type ChatContextData = {
   socketActor: Nullable<WebSocketActor>;
+  apiService: Nullable<WebSocketChatService>;
   logger?: ILogger;
 };
 
-export type ChatContext = ObjectStore<ChatData>;
-
-const doLogin: StateMachineTransitionExecutor<
-  ChatStateTransitions,
-  ChatState,
-  ChatState,
-  'login',
-  ChatContext
-> = async ({ context, data }) => {
-  return new Promise((resolve, reject) => {
-    const socket = context.get().socketActor?.context.get().socket;
-    if (socket) {
-      const service = new WebSocketChatService(socket);
-      console.log('~~ logining...');
-      service.login(
-        { login: data.username, password: data.password },
-        {
-          onCall: (payload) => {
-            console.log('~~ login OK', payload);
-            resolve({ target: 'authorized' });
-          },
-          onError: () => {
-            console.log('~~ login Error');
-            reject(new Error('Login attempt Error'));
-          },
-        }
-      );
-    }
-  });
-};
+export type ChatContext = ObjectStore<ChatContextData>;
 
 const chatLogic: StateMachineDefinition<ChatState, ChatStateTransitions, ChatContext> = {
-  initialState: 'blank',
+  initialState: 'offline',
   debug: true,
   states: {
-    blank: {
+    offline: {
       transitions: {
-        initialize: {
-          target: 'initialized',
+        setReady: {
+          target: 'ready',
         },
       },
     },
-    initialized: {
+    ready: {
       actions: {
-        onEnter: enqueue(saveSocket, listenSocketState),
+        onEnter: enqueue(saveSocket, initializeChatApiService),
       },
       transitions: {
-        login: doLogin,
-        connectionError: {
-          target: 'blank',
+        setOffline: {
+          target: 'offline',
+        },
+        setAuthorized: {
+          target: 'authorized',
         },
       },
     },
     authorized: {
       transitions: {
-        login: doLogin,
-        connectionError: {
-          target: 'blank',
+        setOffline: {
+          target: 'offline',
         },
       },
     },
@@ -93,7 +60,10 @@ const chatLogic: StateMachineDefinition<ChatState, ChatStateTransitions, ChatCon
 export type ChatActor = IStateMachine<ChatState, ChatStateTransitions, ChatContext>;
 
 const createChat = (options?: { logger: ILogger }): ChatActor => {
-  return createStateMachine(chatLogic, new ObjectStore<ChatData>({ socketActor: null, logger: options?.logger }));
+  return createStateMachine(
+    chatLogic,
+    new ObjectStore<ChatContextData>({ socketActor: null, apiService: null, logger: options?.logger })
+  );
 };
 
 export default createChat;

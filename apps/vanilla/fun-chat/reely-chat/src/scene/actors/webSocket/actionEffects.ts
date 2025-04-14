@@ -31,9 +31,9 @@ export const saveUrl: SocketConnectionActionEffect = (action) =>
   matchAction(action).when({ by: 'connect' }, ({ context, data: url }) => url && context.set({ url }));
 
 export const saveSocket: SocketConnectionActionEffect = (action) =>
-  matchAction(action).when({ by: 'connectionSuccess' }, ({ context, data: socket }) =>
-    context.set({ socket, error: null })
-  );
+  matchAction(action).when({ by: 'connectionSuccess' }, ({ context, data: socket }) => {
+    return context.set({ socket, error: null });
+  });
 
 export const saveError: SocketConnectionActionEffect = (action) =>
   matchAction(action).when({ by: 'connectionError' }, ({ context, data: error }) => context.set({ error }));

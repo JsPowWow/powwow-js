@@ -13,7 +13,7 @@ export interface WndMenuBarProps {
 
 export const WndMenuBar = ({ items = [] }: WndMenuBarProps) => {
   return (
-    <ul role='menubar' class='can-hover'>
+    <ul role='menubar'>
       {items.map((item) => {
         return (
           <li role='menuitem' tabindex='0' aria-haspopup='true'>
