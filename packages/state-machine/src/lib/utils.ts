@@ -103,8 +103,8 @@ type ActionEffectRunner<
   Transitions extends EventsMap,
   Context extends NonNullable<unknown>
 > = {
-  when: <T extends EventType<Transitions>>(
-    pattern: { by: T },
+  when: <T extends EventType<Transitions>, S extends State>(
+    pattern: { by?: T; to?: S },
     f: StateMachineTransitionActionEffect<Transitions, State, Context, State, T>
   ) => ActionEffectRunner<State, Transitions, Context>;
   invokeAction: (a: StateMachineTransitionAction<Transitions, State, Context, State>) => void;
@@ -115,17 +115,35 @@ export const runActionEffect = <
   Transitions extends EventsMap,
   Context extends NonNullable<unknown>
 >(): ActionEffectRunner<State, Transitions, Context> => {
-  const listeners = new Map<EventType<Transitions>, CallableFunction>();
+  const listeners = new Map<{ by?: EventType<Transitions>; to?: State }, CallableFunction>();
 
   const runner: ActionEffectRunner<State, Transitions, Context> = {
-    when: function ({ by }, f): typeof this {
-      listeners.set(by, f);
+    when: function (pattern, f): typeof this {
+      listeners.set(pattern, f);
       return this;
     },
     invokeAction: function (action: StateMachineTransitionAction<Transitions, State, Context, State>): void {
-      listeners.forEach((listener, transition) => {
-        if (isSomeFunction(listener) && action.by === transition) {
-          listener(action);
+      listeners.forEach((listener, pattern) => {
+        if (isSomeFunction(listener)) {
+          const hasBy = 'by' in pattern;
+          const matchedWithBy = hasBy && hasSome(action) && action.by === pattern.by;
+          const hasStateTo = 'to' in pattern;
+          const matchedWithTo = hasStateTo && hasSome(action) && action.to === pattern.to;
+          if (
+            hasSome<
+              StateMachineTransitionAction<
+                Transitions,
+                NonNullable<typeof pattern.to>,
+                Context,
+                NonNullable<typeof pattern.to>,
+                NonNullable<typeof pattern.by>
+              >
+            >(action) &&
+            (!hasBy || matchedWithBy) &&
+            (!hasStateTo || matchedWithTo)
+          ) {
+            listener(action);
+          }
         }
       });
     },

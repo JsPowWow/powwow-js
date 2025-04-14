@@ -100,9 +100,9 @@ export default class Either<Left, Right> {
     return isLeft(this.wrapper) ? pattern.left(this.wrapper.value) : pattern.right(this.wrapper.value);
   }
 
-  public unwrap<L, R>(left: (value: Left) => L, right: (value: Right) => R): L | R {
+  public unwrap = <L, R>(left: (value: Left) => L, right: (value: Right) => R): L | R => {
     return isLeft(this.wrapper) ? left(this.wrapper.value) : right(this.wrapper.value);
-  }
+  };
 
   public getOrElse<V>(value: V): V | Right {
     return isRight(this.wrapper) ? this.wrapper.value : value;
