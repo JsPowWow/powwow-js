@@ -1,15 +1,27 @@
-import WsEvent, { WsCallback } from '../../models/ws-event.model';
+interface WsEvent<Payload = object> {
+  id: string;
+  type: string;
+  payload: Payload | WsErrorPayload;
+}
+
+export interface WsErrorPayload {
+  error: string;
+}
+
+export interface WsCallback<T = object> {
+  onCall: (payload: T) => void;
+  onError?: () => void;
+}
 
 export default abstract class WebSocketService {
-  protected readonly baseUrl: string;
-  protected socket!: WebSocket;
+  protected socket: WebSocket;
   protected readonly callbacks: Map<string, WsCallback<unknown>[]> = new Map();
 
   private messages: string[] = [];
 
-  protected constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
-    this.connect();
+  protected constructor(socket: WebSocket) {
+    this.socket = socket;
+    this.start();
   }
 
   protected send<T>(type: string, payload: unknown, callback?: WsCallback<T>, isNotification = false): void {
@@ -46,15 +58,7 @@ export default abstract class WebSocketService {
     this.callbacks.set(id, [wsCallback]);
   }
 
-  private connect() {
-    this.socket = new WebSocket(this.baseUrl);
-    console.log('Connect');
-    this.socket.addEventListener('open', () => {
-      console.log('Connection established');
-      // notificationService.clearGlobal();
-      // notificationService.info('Connect', 'You are now connected to the server', 'short');
-    });
-
+  private start() {
     this.socket.addEventListener('message', ({ data }: MessageEvent<string>) => {
       const { id, type, payload } = JSON.parse(data) as WsEvent;
       const callbacks = this.callbacks.get(id) || this.callbacks.get(type);

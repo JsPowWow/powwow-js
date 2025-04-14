@@ -1,24 +1,26 @@
-import { enqueue, StateMachine, StateMachineDefinition } from '@powwow-js/state-machine';
+import { createStateMachine, enqueue, IStateMachine, StateMachineDefinition } from '@powwow-js/state-machine';
 import { ObjectStore } from '@powwow-js/simple-store';
 import { Nullable } from '@powwow-js/core';
-import { closeCurrentSocket, connect, listenForClose, saveError, saveSocket } from './effects';
+import { closeCurrentSocket, connect, listenForClose, saveError, saveSocket, saveUrl } from './actionEffects';
+import { ILogger } from '../../../shared/Logger';
 
 export type ConnectionState = 'offline' | 'connecting' | 'online' | 'failed';
 
 export type ConnectionStateTransitions = {
+  disconnect: undefined;
   connect: undefined;
   connectionSuccess: WebSocket;
   connectionError: Error;
-  disconnect: undefined;
 };
 
-export type ConnectionStateContext = {
+type ConnectionData = {
   url: string;
   socket: Nullable<WebSocket>;
   error: Nullable<Error>;
+  logger?: ILogger;
 };
 
-export type ConnectionContext = ObjectStore<ConnectionStateContext>;
+export type ConnectionContext = ObjectStore<ConnectionData>;
 
 const socketConnectionLogic: StateMachineDefinition<ConnectionState, ConnectionStateTransitions, ConnectionContext> = {
   initialState: 'offline',
@@ -36,7 +38,7 @@ const socketConnectionLogic: StateMachineDefinition<ConnectionState, ConnectionS
     },
     connecting: {
       actions: {
-        onEnter: enqueue(closeCurrentSocket, connect),
+        onEnter: enqueue(saveUrl, closeCurrentSocket, connect),
       },
       transitions: {
         connectionSuccess: {
@@ -79,16 +81,12 @@ const socketConnectionLogic: StateMachineDefinition<ConnectionState, ConnectionS
   },
 };
 
-export type WebSocketActor = StateMachine<
-  ConnectionState,
-  ConnectionStateTransitions,
-  ObjectStore<ConnectionStateContext>
->;
+export type WebSocketActor = IStateMachine<ConnectionState, ConnectionStateTransitions, ObjectStore<ConnectionData>>;
 
-const createSocketConnection = (url: string): WebSocketActor =>
-  new StateMachine(
+const createSocketConnection = (url: string, options?: { logger: ILogger }): WebSocketActor =>
+  createStateMachine(
     socketConnectionLogic,
-    new ObjectStore<ConnectionStateContext>({ socket: null, error: null, url: url })
+    new ObjectStore<ConnectionData>({ socket: null, error: null, url: url, logger: options?.logger })
   );
 
 export default createSocketConnection;

@@ -1,6 +1,6 @@
 import { isString, Nullable } from '@powwow-js/core';
 
-export type ValidationResult<T> =
+export type ValidationResult<T = string> =
   | {
       success: true;
       value: T;
@@ -10,7 +10,7 @@ export type ValidationResult<T> =
 const USERNAME_MIN_LENGTH = 4;
 const USERNAME_MAX_LENGTH = 12;
 
-export const validateUserNameFormData = (username: Nullable<FormDataEntryValue>): ValidationResult<string> => {
+export const validateUserNameFormData = (username: Nullable<FormDataEntryValue>): ValidationResult => {
   if (!username) {
     return { success: false, errorMessage: 'Username is required' };
   }
@@ -29,7 +29,7 @@ export const validateUserNameFormData = (username: Nullable<FormDataEntryValue>)
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 12;
 
-export const validateUserPasswordFormData = (password: Nullable<FormDataEntryValue>): ValidationResult<string> => {
+export const validateUserPasswordFormData = (password: Nullable<FormDataEntryValue>): ValidationResult => {
   if (!password) {
     return { success: false, errorMessage: 'Password is required' };
   }

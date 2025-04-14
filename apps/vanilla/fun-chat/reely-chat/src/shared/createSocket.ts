@@ -1,21 +1,13 @@
 import { Either, Nullable, toErrorWithMessage } from '@powwow-js/core';
-import { ILogger } from '../Logger';
+import { ILogger } from './Logger';
 
 export type SocketConnectionResult = Either<
   { success: false; error: Error; timestamp: number; event: unknown },
   { success: true; socket: WebSocket; timestamp: number; event: unknown }
 >;
 
-let log: Nullable<ILogger>;
-
-export const setCreateSocketLogger = <L extends Nullable<ILogger>, R = L extends NonNullable<L> ? L : undefined>(
-  logger: L
-): R => {
-  log = logger;
-  return log as R;
-};
-
-export default function createSocket(url: string): Promise<SocketConnectionResult> {
+export default function createSocket(url: string, options?: { logger?: ILogger }): Promise<SocketConnectionResult> {
+  const log: Nullable<ILogger> = options?.logger;
   return new Promise((resolve, _reject) => {
     try {
       const ws = new WebSocket(url);
@@ -31,7 +23,7 @@ export default function createSocket(url: string): Promise<SocketConnectionResul
       ws.addEventListener(
         'error',
         (event) => {
-          log?.warn('Connection error', url);
+          log?.error('Socket connection failed', url);
           resolve(
             Either.Left({ success: false, error: new Error('Connection failed.'), timestamp: performance.now(), event })
           );

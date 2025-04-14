@@ -2,14 +2,16 @@ import type { StateMachineState, StateMachineTransitionAction, StateMachineTrans
 import type { EventsMap, EventType } from '@powwow-js/emitter';
 import { hasSome, isSomeFunction } from '@powwow-js/core';
 
+// TODO AR split utils per files
+
 export const logTransitionAction =
   (options?: { withContext?: boolean; withData?: boolean }) =>
   <State extends StateMachineState, Transitions extends EventsMap, Context extends NonNullable<unknown>>(
     action: StateMachineTransitionAction<Transitions, State, Context>
   ): void => {
-    const { type, to, from, by, data, owner } = action;
+    const { type, to, from, by, data, context } = action;
     const dataString = options?.withData === true ? `${hasSome(data) ? JSON.stringify(data) : '<no-data>'}` : '';
-    const contextString = options?.withContext === true ? `with  ${JSON.stringify(owner.context)}` : '';
+    const contextString = options?.withContext === true ? `with  ${JSON.stringify(context)}` : '';
 
     switch (type) {
       case 'stateExit': {
@@ -53,24 +55,38 @@ type MatchActionHelper<
   Transitions extends EventsMap,
   Context extends NonNullable<unknown>
 > = {
-  when: <T extends EventType<Transitions>>(
-    pattern: { by: T },
-    f: StateMachineTransitionActionEffect<Transitions, State, Context, State, T>
+  when: <T extends EventType<Transitions>, S extends State>(
+    pattern: { by?: T; to?: S },
+    f: StateMachineTransitionActionEffect<Transitions, S, Context, S, T>
   ) => MatchActionHelper<State, Transitions, Context>;
 };
 
-export const matchAction = <
+export function matchAction<
   State extends StateMachineState,
   Transitions extends EventsMap,
   Context extends NonNullable<unknown>
 >(
   action: StateMachineTransitionAction<Transitions, State, Context, State>
-): MatchActionHelper<State, Transitions, Context> => {
+): MatchActionHelper<State, Transitions, Context> {
   const matcher: MatchActionHelper<State, Transitions, Context> = {
-    when: function ({ by }, f): typeof this {
+    when: function (pattern, f): typeof this {
+      const hasBy = 'by' in pattern;
+      const matchedWithBy = hasBy && hasSome(action) && action.by === pattern.by;
+      const hasStateTo = 'to' in pattern;
+      const matchedWithTo = hasStateTo && hasSome(action) && action.to === pattern.to;
+
       if (
-        hasSome<StateMachineTransitionAction<Transitions, State, Context, State, typeof by>>(action) &&
-        action.by === by
+        hasSome<
+          StateMachineTransitionAction<
+            Transitions,
+            NonNullable<typeof pattern.to>,
+            Context,
+            NonNullable<typeof pattern.to>,
+            NonNullable<typeof pattern.by>
+          >
+        >(action) &&
+        (!hasBy || matchedWithBy) &&
+        (!hasStateTo || matchedWithTo)
       ) {
         f(action);
       }
@@ -80,7 +96,7 @@ export const matchAction = <
 
   matcher.when = matcher.when.bind(matcher);
   return matcher;
-};
+}
 
 type ActionEffectRunner<
   State extends StateMachineState,

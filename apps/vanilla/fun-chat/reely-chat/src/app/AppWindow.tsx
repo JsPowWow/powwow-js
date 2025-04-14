@@ -6,7 +6,8 @@ import { WndMenuBar } from '../shared/components/WndMenuBar';
 import { useRouter } from '../shared/routing/useRouter';
 import { CurrentPageInfoStatus } from '../widgets/CurrentPageInfoStatus';
 import { SocketConnectionStatus } from '../widgets/SocketConnectionStatus';
-import { useSocketConnection } from '../services/socket/useSocketConnection';
+import { useSocketConnection } from '../scene/audience/useSocketConnection';
+import { ChatStatus } from '../widgets/ChatStatus';
 
 export const AppWindow = ({ children }: { children?: unknown[] }) => {
   const { navigate } = useRouter();
@@ -75,7 +76,9 @@ export const AppWindow = ({ children }: { children?: unknown[] }) => {
       <WndBody className='has-space desktop' styles={{ height: '100%' }}>
         {children}
       </WndBody>
-      <WndStatusBar items={['Press F1 for help', <CurrentPageInfoStatus />, <SocketConnectionStatus />]} />
+      <WndStatusBar
+        items={['Press F1 for help', <CurrentPageInfoStatus />, <SocketConnectionStatus />, <ChatStatus />]}
+      />
     </WndView>
   );
 };

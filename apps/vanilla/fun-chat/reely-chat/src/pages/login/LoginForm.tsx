@@ -6,24 +6,31 @@ import { assertIsInstanceOf } from '@powwow-js/core';
 import { useState } from '@powwow-js/reely';
 import { validateUserNameFormData, validateUserPasswordFormData, ValidationResult } from './validation';
 import { SocketConnectionStatus } from '../../widgets/SocketConnectionStatus';
-import { useSocketConnection } from '../../services/socket/useSocketConnection';
+import { useSocketConnection } from '../../scene/audience/useSocketConnection';
+import { ChatStatus } from '../../widgets/ChatStatus';
 
 const NO_ERRORS: FormValidationState = Object.freeze({
   username: { success: true, value: '' },
   password: { success: true, value: '' },
+  submission: { success: true, value: '' },
 });
 
-type FormValidationState = { username: ValidationResult<string>; password: ValidationResult<string> };
+type FormValidationState = {
+  username: ValidationResult;
+  password: ValidationResult;
+  submission: ValidationResult;
+};
 
 export interface LoginFormProps {
-  onSubmit: (formData: { username: string; password: string }) => void;
+  onSubmit: (formData: { username: string; password: string }) => Promise<ValidationResult>;
 }
 
 export const LoginForm = ({ onSubmit }: LoginFormProps) => {
   const [validation, setValidation] = useState<FormValidationState>(NO_ERRORS);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { state } = useSocketConnection();
-  const isInputDisabled = state !== 'online';
+  const isInputDisabled = state !== 'online' || isSubmitting;
 
   const clearErrors = () => setValidation(NO_ERRORS);
 
@@ -48,7 +55,17 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
     }));
 
     if (userNameValidation.success && passwordValidation.success) {
-      onSubmit({ username: userNameValidation.value, password: passwordValidation.value });
+      setIsSubmitting(true);
+      onSubmit({ username: userNameValidation.value, password: passwordValidation.value })
+        .then((result) => {
+          if (!result.success) {
+            setValidation((current) => ({
+              ...current,
+              submission: result,
+            }));
+          }
+        })
+        .finally(() => setIsSubmitting(false));
     }
   };
 
@@ -97,11 +114,16 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
               <label class='form-error-label'>
                 {validation.password.success ? '' : validation.password.errorMessage}
               </label>
+              <label class='form-error-label'>
+                {validation.submission.success ? '' : validation.submission.errorMessage}
+              </label>
             </div>
           </GroupBox>
         </WndBody>
-        <footer style='display: flex; justify-content: right; gap:10px'>
-          <SocketConnectionStatus />
+        <footer style='display: flex; justify-content: right; gap:0px'>
+          <SocketConnectionStatus variant='short' />
+          <ChatStatus variant='short' />
+          <span style='width: 100%' />
           <button type='submit' {...(isInputDisabled ? { disabled: isInputDisabled } : null)}>
             Ok
           </button>

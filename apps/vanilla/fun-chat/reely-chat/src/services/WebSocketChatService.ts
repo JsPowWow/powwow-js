@@ -1,12 +1,25 @@
-import WebSocketService from './WebSocketService';
-import { User, ExtendedUser } from '../../models/user.model';
-import { Message } from '../../models/message.model';
-import { RequestType } from '../../models/request-type.enum';
-import { WsCallback } from '../../models/ws-event.model';
+import WebSocketService, { WsCallback } from './WebSocketService';
+import { User, ExtendedUser } from '../models/user.model';
+import { Message } from '../models/message.model';
+
+export const enum RequestType {
+  UserLogin = 'USER_LOGIN',
+  UserExternalLogin = 'USER_EXTERNAL_LOGIN',
+  UserLogout = 'USER_LOGOUT',
+  UserExternalLogout = 'USER_EXTERNAL_LOGOUT',
+  UserActive = 'USER_ACTIVE',
+  UserInactive = 'USER_INACTIVE',
+  MessageSend = 'MSG_SEND',
+  MessageFromUser = 'MSG_FROM_USER',
+  MessageRead = 'MSG_READ',
+  MessageDeliver = 'MSG_DELIVER',
+  MessageDelete = 'MSG_DELETE',
+  MessageEdit = 'MSG_EDIT',
+}
 
 export class WebSocketChatService extends WebSocketService {
-  constructor(baseUrl: string) {
-    super(baseUrl);
+  constructor(socket: WebSocket) {
+    super(socket);
   }
 
   login(user: User, callback: WsCallback<User>): void {

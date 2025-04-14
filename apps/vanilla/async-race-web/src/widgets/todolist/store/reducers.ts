@@ -8,16 +8,16 @@ export const reducers: StateMachineTransitionActionEffect<TodoListTransitions, T
   action
 ) =>
   matchAction(action)
-    .when({ by: 'setTodos' }, ({ owner, data }) => owner.context.set({ todos: data.items }))
-    .when({ by: 'updateTodo' }, ({ owner, data: newItem }) => {
-      owner.context.set((previousState) => ({
+    .when({ by: 'setTodos' }, ({ context, data }) => context.set({ todos: data.items }))
+    .when({ by: 'updateTodo' }, ({ context, data: newItem }) => {
+      context.set((previousState) => ({
         ...previousState,
         todos: [...previousState.todos.filter(({ id: itemId }) => itemId !== newItem.id), newItem],
       }));
     })
-    .when({ by: 'deleteTodo' }, ({ owner, data: newItem }) => {
-      owner.context.set((previousState) => {
+    .when({ by: 'deleteTodo' }, ({ context, data: newItem }) => {
+      context.set((previousState) => {
         return { ...previousState, todos: previousState.todos.filter(({ id: itemId }) => itemId !== newItem.id) };
       });
     })
-    .when({ by: 'clear' }, ({ owner }) => owner.context.set({ todos: emptyTodos }));
+    .when({ by: 'clear' }, ({ context }) => context.set({ todos: emptyTodos }));

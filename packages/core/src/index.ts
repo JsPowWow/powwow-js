@@ -15,6 +15,7 @@ export { default as flowRight } from './lib/fp/flowRight';
 export { default as flowLeft } from './lib/fp/flowLeft';
 
 export { default as Either } from './lib/fp/either/Either';
+export { fromPromise, Right, Left, tryCatch } from './lib/fp/either/Either';
 
 export { default as maybeInstanceOf } from './lib/fp/maybe/maybeInstanceOf';
 export { default as maybeRecordKey } from './lib/fp/maybe/maybeRecordKey';
@@ -34,6 +35,8 @@ export { default as isValidRecordKey } from './lib/objects/isValidRecordKey';
 export { default as isRecordKey } from './lib/objects/isRecordKey';
 export { default as isObjectTypeOf } from './lib/objects/isObjectTypeOf';
 export { default as isPlainObject } from './lib/objects/isPlainObject';
+export { default as isPromiseLike } from './lib/objects/isPromiseLike';
+export { default as isPromise } from './lib/objects/isPromise';
 export { default as hasOwnProperty } from './lib/objects/hasOwnProperty';
 export { default as hasProperty } from './lib/objects/hasProperty';
 export { default as objectsKeysMap } from './lib/objects/objectsKeysMap';

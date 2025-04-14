@@ -1,27 +1,27 @@
 import Reely, { useCallback } from '@powwow-js/reely';
 import { useRerender } from '@powwow-js/reely-hook';
-import { socketConnection } from './index';
+import { SocketConnection } from '../actors';
 
 export const useSocketConnection = () => {
   const [rerender] = useRerender();
+
   Reely.useEffect(() => {
-    // NOTE: or
-    socketConnection.on('stateChanged', rerender);
+    SocketConnection.on('stateChanged', rerender);
     return () => {
-      socketConnection.off('stateChanged', rerender);
+      SocketConnection.off('stateChanged', rerender);
     };
   }, []);
 
   const connect = useCallback(() => {
-    socketConnection.send('connect');
+    SocketConnection.send('connect');
   }, []);
 
   const disconnect = useCallback(() => {
-    socketConnection.send('disconnect');
+    SocketConnection.send('disconnect');
   }, []);
 
   return {
-    state: socketConnection.state,
+    state: SocketConnection.state,
     connect,
     disconnect,
   };

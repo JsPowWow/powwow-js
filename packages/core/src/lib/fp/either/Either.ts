@@ -23,6 +23,9 @@ export default class Either<Left, Right> {
     return Either.Right(value);
   };
 
+  public static fromPromise = <L, R>(promise: Promise<R>): Promise<Either<L, R>> =>
+    promise.then(Either.Right).catch(Either.Left);
+
   public static tryCatch = <Right>(f: () => Right): Either<Error, Right> => {
     try {
       return Either.Right(f());
@@ -113,3 +116,5 @@ export default class Either<Left, Right> {
     return this.unwrap(reThrow, identity);
   };
 }
+
+export const { from, fromPromise, Left, Right, tryCatch } = Either;

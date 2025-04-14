@@ -1,5 +1,5 @@
-import { useSocketConnection } from '../services/socket/useSocketConnection';
-import { ConnectionState } from '../shared/socket/webSocketActor';
+import { useSocketConnection } from '../scene/audience/useSocketConnection';
+import { ConnectionState } from '../scene/actors/webSocket/webSocketActor';
 
 const stateMap = {
   connecting: '🟡',
@@ -8,7 +8,14 @@ const stateMap = {
   offline: '⚪️',
 } satisfies Record<ConnectionState, string>;
 
-export const SocketConnectionStatus = () => {
+interface SocketConnectionStatusProps {
+  variant?: 'short' | 'normal';
+}
+
+export const SocketConnectionStatus = ({ variant = 'normal' }: SocketConnectionStatusProps) => {
   const { state } = useSocketConnection();
-  return `${state} ${stateMap[state]}`;
+  if (variant === 'short') {
+    return <span style='margin: 0 2px 0 2px'>{stateMap[state]}</span>;
+  }
+  return <span>{`${state} ${stateMap[state]}`}</span>;
 };

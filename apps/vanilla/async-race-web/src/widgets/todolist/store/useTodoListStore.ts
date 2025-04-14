@@ -1,5 +1,5 @@
 import Reely from '@powwow-js/reely';
-import { StateMachine } from '@powwow-js/state-machine';
+import { createStateMachine } from '@powwow-js/state-machine';
 import { ObjectStore } from '@powwow-js/simple-store';
 import { useRerender } from '@powwow-js/reely-hook';
 import { todoListLogic } from './logic';
@@ -7,7 +7,7 @@ import { emptyTodos } from './reducers';
 import { ToDoItem, TodoListData } from './types';
 import { Nullable } from '@powwow-js/core';
 
-const store = new StateMachine(todoListLogic, new ObjectStore<TodoListData>({ todos: emptyTodos }));
+const store = createStateMachine(todoListLogic, new ObjectStore<TodoListData>({ todos: emptyTodos }));
 
 export const useTodoListStore = (todos: ToDoItem[] | undefined = emptyTodos) => {
   const [rerender] = useRerender();

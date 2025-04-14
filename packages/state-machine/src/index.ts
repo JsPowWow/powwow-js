@@ -1,3 +1,11 @@
 export * from './lib/types';
-export * from './lib/state-machine';
-export * from './lib/utils';
+export { createStateMachine } from './lib/state-machine';
+export {
+  matchAction,
+  logAction,
+  logWithContext,
+  log,
+  enqueue,
+  logTransitionAction,
+  runActionEffect,
+} from './lib/utils';
