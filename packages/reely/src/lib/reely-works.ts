@@ -7,6 +7,7 @@ import { createDOM, updateDOM } from './rDom';
 import { useState } from './hooks/state';
 import { $$reely } from './executionContext';
 import { findChildFiber, findParentFiber, runCleanupEffects } from './fiber';
+import { isFalsyElement } from './utils';
 
 // Initial or reset.
 export const render = (element: VirtualElement, container: Element): void => {
@@ -201,9 +202,16 @@ const performUnitOfWork = (fiberNode: FiberNode): FiberNode | null => {
         }
       }
 
-      reconcileChildren(fiberNode, [
-        isVirtualElement(children) ? children : createVirtualTextElement(String(children)),
-      ]);
+      reconcileChildren(
+        fiberNode,
+        [
+          isVirtualElement(children)
+            ? children
+            : !isFalsyElement(children)
+            ? createVirtualTextElement(String(children))
+            : null,
+        ].filter((el) => hasSome(el))
+      );
       break;
     }
     case 'number':

@@ -1,6 +1,6 @@
-import { RecordKey } from '@powwow-js/core';
+import { UnknownRecord } from '@powwow-js/core';
 
-export interface WsCallback<T = object, E = Record<RecordKey, unknown>> {
+export interface WsCallback<T = object, E = UnknownRecord> {
   onCall: (payload: T) => void;
   onError?: (error: E) => void;
 }

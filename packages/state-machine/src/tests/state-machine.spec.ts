@@ -3,6 +3,7 @@ import type { StateMachineDefinition, StateMachineTransitionActionEffect } from 
 import { expect } from 'vitest';
 import { enqueue, log, logAction, logWithContext, matchAction, runActionEffect } from '../lib/utils';
 import { ObjectStore, PrimitiveStore } from '@powwow-js/simple-store';
+import { waitFor } from '@powwow-js/core';
 
 type CrossWordsMachineState = 'stateWaitingForInput' | 'statePlaying' | 'stateSolution' | 'stateGameOver';
 
@@ -214,6 +215,8 @@ const crossWordsLogicDefinition: StateMachineDefinition<
 type SimpleFsmState = 'init' | 'processing' | 'finish';
 type SimpleFsmTransitions = {
   run: { processId: number };
+  runByFunction: { processId: number };
+  runByPromise: { processId: number };
   stop: undefined;
   done: { status: 'success' | 'error' };
   reset: undefined;
@@ -233,6 +236,13 @@ const simpleFsm: StateMachineDefinition<SimpleFsmState, SimpleFsmTransitions, Si
         run: {
           target: 'processing',
         },
+        runByFunction: () => ({
+          target: 'processing',
+        }),
+        runByPromise: () =>
+          Promise.resolve({
+            target: 'processing',
+          } as const).then(waitFor(300)),
       },
     },
     processing: {
@@ -400,6 +410,125 @@ describe('stateMachine simple', () => {
     expect(fsm.state).toBe('processing');
 
     fsm.send('done', { status: 'success' });
+    expect(fsm.state).toBe('finish');
+  });
+
+  it('should correctly handle `stateChange` event with async result', async () => {
+    const fsm = createStateMachine(simpleFsm, new PrimitiveStore(0));
+
+    await fsm.send('run', { processId: 40 }).then((result) => {
+      expect(result.success && result.action).toMatchObject({
+        type: 'stateChange',
+        from: 'init',
+        to: 'processing',
+        by: 'run',
+        data: { processId: 40 },
+      });
+    });
+    await fsm.send('run', { processId: 90 }).then((result) => {
+      expect(result.status === 'warning' && result.message).toSatisfy((message: string) =>
+        message.startsWith('No transition(s)')
+      );
+      expect(fsm.state).toBe('processing');
+    });
+
+    await fsm.send('stop').then((result) => {
+      expect(result.success && result.action).toMatchObject({
+        type: 'stateChange',
+        from: 'processing',
+        to: 'init',
+        by: 'stop',
+        data: undefined,
+      });
+    });
+
+    expect(fsm.state).toBe('init');
+
+    await fsm.send('run', { processId: 40 }).then((result) => {
+      expect(result.success && result.action).toMatchObject({
+        type: 'stateChange',
+        from: 'init',
+        to: 'processing',
+        by: 'run',
+        data: { processId: 40 },
+      });
+    });
+    expect(fsm.state).toBe('processing');
+
+    await fsm.send('done', { status: 'success' }).then((result) => {
+      expect(result.success && result.action).toMatchObject({
+        type: 'stateChange',
+        from: 'processing',
+        to: 'finish',
+        by: 'done',
+        data: { status: 'success' },
+      });
+    });
+
+    expect(fsm.state).toBe('finish');
+  });
+
+  it('should correctly handle `stateChange` event with "function" transition', async () => {
+    const fsm = createStateMachine(simpleFsm, new PrimitiveStore(0));
+
+    await fsm.send('runByFunction', { processId: 40 }).then((result) => {
+      expect(result.success && result.action).toMatchObject({
+        type: 'stateChange',
+        from: 'init',
+        to: 'processing',
+        by: 'runByFunction',
+        data: { processId: 40 },
+      });
+    });
+    await fsm.send('runByFunction', { processId: 90 }).then((result) => {
+      expect(result.status === 'warning' && result.message).toSatisfy((message: string) =>
+        message.startsWith('No transition(s)')
+      );
+      expect(fsm.state).toBe('processing');
+    });
+
+    await fsm.send('done', { status: 'success' }).then((result) => {
+      expect(result.success && result.action).toMatchObject({
+        type: 'stateChange',
+        from: 'processing',
+        to: 'finish',
+        by: 'done',
+        data: { status: 'success' },
+      });
+    });
+
+    expect(fsm.state).toBe('finish');
+  });
+
+  it('should correctly handle `stateChange` event with "promise" transition', async () => {
+    const fsm = createStateMachine(simpleFsm, new PrimitiveStore(0));
+
+    await fsm.send('runByPromise', { processId: 40 }).then((result) => {
+      expect(result.success && result.action).toMatchObject({
+        type: 'stateChange',
+        from: 'init',
+        to: 'processing',
+        by: 'runByPromise',
+        data: { processId: 40 },
+      });
+    });
+    await fsm.send('runByPromise', { processId: 90 }).then((result) => {
+      expect(result.status === 'warning' && result.message).toSatisfy((message: string) =>
+        message.startsWith('No transition(s)')
+      );
+      expect(fsm.state).toBe('processing');
+    });
+
+    await fsm.send('done', { status: 'success' }).then((result) => {
+      expect(result.success && result.action).toMatchObject({
+        type: 'stateChange',
+        from: 'processing',
+        to: 'finish',
+        by: 'done',
+        data: { status: 'success' },
+      });
+    });
+
     expect(fsm.state).toBe('finish');
   });
 

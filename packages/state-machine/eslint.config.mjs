@@ -50,6 +50,7 @@ export default [
       '@typescript-eslint/member-ordering': 'error',
       'unicorn/no-instanceof-builtins': ['error', { exclude: ['String', 'Number'] }],
       'unicorn/prefer-spread': 'off',
+      'unicorn/no-thenable': 'off',
     },
   },
   {

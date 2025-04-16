@@ -1,4 +1,4 @@
-import type { Nil, Nullable, RecordKey } from './core.types';
+import type { Nil, Nullable, UnknownRecord } from './core.types';
 
 export type ConstructorOf<T> = { prototype: T; new (...parameters: never[]): T };
 
@@ -10,7 +10,7 @@ export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
 export type WithOptional<T, K extends keyof T> = Omit<T, K> & { [P in K]?: T[P] };
 
-export type DeepPartial<T> = T extends Record<RecordKey, unknown> ? { [P in keyof T]?: DeepPartial<T[P]> } : T;
+export type DeepPartial<T> = T extends UnknownRecord ? { [P in keyof T]?: DeepPartial<T[P]> } : T;
 
 export type PartialShape<T extends object> = {
   [P in keyof T]?: Nullable<T[P]>;

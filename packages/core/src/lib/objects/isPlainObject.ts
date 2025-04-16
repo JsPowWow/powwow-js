@@ -1,8 +1,8 @@
 import hasSome from './hasSome';
-import type { RecordKey } from '../types/core.types';
+import type { UnknownRecord } from '../types/core.types';
 import isObjectTypeOf from './isObjectTypeOf';
 
-export default function isPlainObject(source: unknown): source is Record<RecordKey, unknown> {
+export default function isPlainObject(source: unknown): source is UnknownRecord {
   return hasSome(source) && isObjectTypeOf('Object', source);
 }
 

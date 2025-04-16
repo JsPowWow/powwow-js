@@ -60,18 +60,18 @@ export const RouterContextProvider = <P extends string = string>({
       newPathName = event;
     }
 
-    if (newPathName) {
-      //  && previousPathName.current !== newPathName WTF ?
-      // console.log('newPathName', newPathName);
+    if (newPathName && previousPathName.current !== newPathName) {
+      // console.log('newPathName', { prev: previousPathName.current, new: newPathName });
       setPathName(newPathName);
-      globalThis.history.pushState({}, newPathName, newPathName);
+      previousPathName.current = newPathName;
+      Router.navigate(newPathName);
     }
   }, []);
 
-  const handlePopStateChange = useCallback((_popstate: PopStateEvent) => {
+  const handleUrlChange = useCallback((event: Event) => {
     const path = currentPathName();
     console.log(
-      `%c~~ popstate: ${path}`,
+      `%c~~ urlChange: ${event.type} - "${path}"`,
       'background-color: darkblue; color: white; font-style: italic; border: 2px solid hotpink;'
     );
     navigate(path);
@@ -84,10 +84,18 @@ export const RouterContextProvider = <P extends string = string>({
   );
 
   useEffect(() => {
-    globalThis.addEventListener('popstate', handlePopStateChange);
+    globalThis.addEventListener('popstate', handleUrlChange);
 
     return () => {
-      globalThis.removeEventListener('popstate', handlePopStateChange);
+      globalThis.removeEventListener('popstate', handleUrlChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    globalThis.addEventListener('pushStateChanged', handleUrlChange);
+
+    return () => {
+      globalThis.removeEventListener('pushStateChanged', handleUrlChange);
     };
   }, []);
 
@@ -101,4 +109,18 @@ export const RouterContextProvider = <P extends string = string>({
 
 export const useRouter = () => {
   return useContext(RoutingContext);
+};
+
+(function (history) {
+  const originalPushState = history.pushState;
+
+  history.pushState = function (...parameters: Parameters<typeof originalPushState>) {
+    const result = originalPushState.apply(this, parameters);
+    globalThis.dispatchEvent(new Event('pushStateChanged'));
+    return result;
+  };
+})(globalThis.history);
+
+export const Router = {
+  navigate: (pathname: string) => globalThis.history.pushState({}, '', pathname),
 };

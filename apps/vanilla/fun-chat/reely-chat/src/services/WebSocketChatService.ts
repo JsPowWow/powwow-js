@@ -1,11 +1,9 @@
 import WebSocketService, { WsCallback } from './WebSocketService';
-import { User, ExtendedUser } from '../models/user.model';
+import { ExtendedUser, User } from '../models/user.model';
 import { Message } from '../models/message.model';
 
 export const enum RequestType {
-  UserLogin = 'USER_LOGIN',
   UserExternalLogin = 'USER_EXTERNAL_LOGIN',
-  UserLogout = 'USER_LOGOUT',
   UserExternalLogout = 'USER_EXTERNAL_LOGOUT',
   UserActive = 'USER_ACTIVE',
   UserInactive = 'USER_INACTIVE',
@@ -22,12 +20,12 @@ export class WebSocketChatService extends WebSocketService {
     super(socket);
   }
 
-  login(user: User, callback: WsCallback<User>): void {
-    this.send(RequestType.UserLogin, { user }, callback);
+  login(user: User, callback: WsCallback<{ user: User }>): void {
+    this.send('USER_LOGIN', { user }, callback);
   }
 
   logout(user: User, callback: WsCallback<User>): void {
-    this.send(RequestType.UserLogout, { user }, callback);
+    this.send('USER_LOGOUT', { user }, callback);
   }
 
   getActiveUsers(callback: WsCallback<{ users: ExtendedUser[] }>): void {

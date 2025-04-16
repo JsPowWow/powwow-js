@@ -49,7 +49,7 @@ export { default as assertIsSomeFunction } from './lib/assertions/assertIsSomeFu
 
 export { default as sleep } from './lib/async/sleep';
 export { default as waitFor } from './lib/async/waitFor';
-export { default as promiseResolver } from './lib/async/promiseResolver';
+export { default as promiseResolver, type PromiseResolver } from './lib/async/promiseResolver';
 
 export { default as toErrorWithMessage } from './lib/errors/toErrorWithMessage';
 export { default as exhaustiveGuard } from './lib/errors/exhaustiveGuard';

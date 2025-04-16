@@ -19,6 +19,7 @@
   .main {
     width: 95svw;
     min-width: 375px;
+    min-height: 460px;
   }
 }
 
@@ -40,4 +41,10 @@ body {
 .form-error-label {
   color: red;
   min-height: 14px;
+}
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }

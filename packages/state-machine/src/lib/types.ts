@@ -1,5 +1,5 @@
 import type { EventsMap, EventType, IEventEmitter } from '@powwow-js/emitter';
-import type { KeysWithType, RecordKey } from '@powwow-js/core';
+import type { KeysWithType, Nullable, PromiseResolver, RecordKey } from '@powwow-js/core';
 
 export type StateMachineState = RecordKey;
 
@@ -11,8 +11,13 @@ export interface IStateMachine<
   get state(): State;
   get context(): Context;
 
-  send<T extends KeysWithType<Transitions, undefined>>(event: T): void;
-  send<T extends EventType<Transitions>, D extends Transitions[T]>(event: T, data: D): void;
+  send<T extends KeysWithType<Transitions, undefined>>(
+    event: T
+  ): PromiseLike<StateMachineTransitionResult<Transitions, State, Context>>;
+  send<T extends EventType<Transitions>, D extends Transitions[T]>(
+    event: T,
+    data: D
+  ): PromiseLike<StateMachineTransitionResult<Transitions, State, Context>>;
 }
 
 export type StateMachineDefinition<
@@ -51,8 +56,11 @@ export type StateMachineTransitionExecutor<
   | {
       target?: StateTo;
     }
-  | Promise<unknown>
-  | undefined;
+  | Promise<
+      Nullable<{
+        target?: StateTo;
+      }>
+    >;
 
 export type StateMachineTransition<
   Transitions extends EventsMap,
@@ -67,10 +75,32 @@ export type StateMachineTransition<
     }
   | StateMachineTransitionExecutor<Transitions, StateFrom, StateTo, Transition, Context>;
 
-export type StateMachineTransitionResult<State extends StateMachineState> = { state: State } & (
-  | { type: 'success'; success: true; state: State }
-  | { type: 'warning'; success: false; state: State; message: string }
-  | { type: 'error'; success: false; state: State; message: string; error: Error }
+export type StateMachinePendingTransition<
+  Transitions extends EventsMap,
+  State extends StateMachineState,
+  Context extends NonNullable<unknown>
+> = {
+  status: 'pending';
+  success: false;
+  state: State;
+  transition: EventType<Transitions>;
+  parameters: Transitions[EventType<Transitions>] extends undefined ? [] : [Transitions[EventType<Transitions>]];
+  resolver: PromiseResolver<StateMachineTransitionResult<Transitions, State, Context>>;
+};
+
+export type StateMachineTransitionResult<
+  Transitions extends EventsMap,
+  State extends StateMachineState,
+  Context extends NonNullable<unknown>
+> = { state: State } & (
+  | {
+      status: 'success';
+      success: true;
+      state: State;
+      action: StateMachineTransitionAction<Transitions, State, Context>;
+    }
+  | { status: 'warning'; success: false; state: State; message: string }
+  | { status: 'error'; success: false; state: State; message: string; error: Error; details: string }
 );
 
 export type StateMachineTransitionActionEffect<

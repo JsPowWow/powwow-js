@@ -1,4 +1,1 @@
-const ChatPage = () => {
-  return <div>Chat</div>;
-};
-export default ChatPage;
+export { ChatPage as default } from './ChatPage';

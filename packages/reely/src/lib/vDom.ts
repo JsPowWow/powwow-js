@@ -1,5 +1,6 @@
 import type { VirtualElement, VirtualElementType } from './types';
-import { hasSome, isNil } from '@powwow-js/core';
+import { hasSome } from '@powwow-js/core';
+import { isFalsyElement } from './utils';
 
 export const isVirtualElement = (element: unknown): element is VirtualElement => typeof element === 'object';
 
@@ -11,8 +12,6 @@ export const createVirtualTextElement = (text: string): VirtualElement => {
     },
   };
 };
-
-const isFalsyElement = (child: unknown): boolean => isNil(child) || child === false;
 
 export const createVirtualElement = (
   type: VirtualElementType,

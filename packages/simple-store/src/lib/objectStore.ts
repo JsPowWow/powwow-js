@@ -1,11 +1,9 @@
-import type { RecordKey } from '@powwow-js/core';
+import type { UnknownRecord } from '@powwow-js/core';
 import type { IEventEmitter } from '@powwow-js/emitter';
 import { EventEmitter } from '@powwow-js/emitter';
 import withSelector from './withSelector';
 
-export class ObjectStore<T extends Record<RecordKey, unknown>>
-  implements Pick<IEventEmitter<{ changed: T }>, 'on' | 'off'>
-{
+export class ObjectStore<T extends UnknownRecord> implements Pick<IEventEmitter<{ changed: T }>, 'on' | 'off'> {
   private storeValue;
   private emitter = new EventEmitter<{ changed: T }>();
 

@@ -34,7 +34,7 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
 
   const clearErrors = () => setValidation(NO_ERRORS);
 
-  const handleSubmit = (event: SubmitEvent) => {
+  const handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
     assertIsInstanceOf(HTMLFormElement, event.target);
 
@@ -56,7 +56,7 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
 
     if (userNameValidation.success && passwordValidation.success) {
       setIsSubmitting(true);
-      onSubmit({ username: userNameValidation.value, password: passwordValidation.value })
+      await onSubmit({ username: userNameValidation.value, password: passwordValidation.value })
         .then((result) => {
           if (!result.success) {
             setValidation((current) => ({
@@ -135,19 +135,3 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
     </form>
   );
 };
-
-// <div class="window active is-bright" id="dialog-demo" role="dialog" aria-labelledby="dialog-title">
-//   <div class="title-bar">
-//     <div class="title-bar-text" id="dialog-title">Problem Diagnostics</div>
-//     <div class="title-bar-controls">
-//       <button aria-label="Close" onclick="history.back()"></button>
-//     </div>
-//   </div>
-//   <div class="window-body has-space">
-//     <h2 class="instruction instruction-primary">Identifying your problem...</h2>
-//     <div role="progressbar" class="marquee"></div>
-//   </div>
-//   <footer style="text-align: right">
-//     <button onclick="history.back()">Cancel</button>
-//   </footer>
-// </div>

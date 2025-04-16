@@ -4,13 +4,23 @@ import type {
   IStateMachine,
   StateMachineChangeEvents,
   StateMachineDefinition,
+  StateMachinePendingTransition,
   StateMachineState,
   StateMachineTransitionAction,
   StateMachineTransitionActionType,
   StateMachineTransitionResult,
 } from './types';
 import type { AnyFunction } from '@powwow-js/core';
-import { hasProperty, isPlainObject, isSomeFunction, isString, toErrorWithMessage } from '@powwow-js/core';
+import {
+  hasProperty,
+  isPlainObject,
+  isPromise,
+  isSomeFunction,
+  isString,
+  promiseResolver,
+  toErrorWithMessage,
+} from '@powwow-js/core';
+import Queue from './Queue';
 
 export class StateMachine<
   State extends StateMachineState,
@@ -26,12 +36,33 @@ export class StateMachine<
 
   private readonly contextData: Context;
 
-  private processingDepth = 0;
-
-  private processingQueue: {
-    transition: EventType<Transitions>;
-    parameters: Transitions[EventType<Transitions>] extends undefined ? [] : [Transitions[EventType<Transitions>]];
-  }[] = [];
+  private readonly processingQueue = new Queue<StateMachinePendingTransition<Transitions, State, Context>>().process(
+    (task): Promise<StateMachineTransitionResult<Transitions, State, Context>> => {
+      try {
+        const result = this.processTransitionTask(task);
+        if (isPromise(result)) {
+          result.then(task.resolver.resolve).catch((anyError) => {
+            task.resolver.resolve(
+              this.createFailedTransitionResult(
+                `The error occurred on "${String(this.currentState)}" pending transition processing.`,
+                toErrorWithMessage(anyError)
+              )
+            );
+          });
+        } else {
+          task.resolver.resolve(result);
+        }
+      } catch (anyError) {
+        task.resolver.resolve(
+          this.createFailedTransitionResult(
+            `The error occurred on "${String(this.currentState)}" transition processing.`,
+            toErrorWithMessage(anyError)
+          )
+        );
+      }
+      return task.resolver.promise;
+    }
+  );
 
   constructor(definition: StateMachineDefinition<State, Transitions, Context>, context: Context) {
     // TODO AR add ILogger, no console
@@ -43,7 +74,7 @@ export class StateMachine<
     this.contextData = context;
 
     this.send = this.send.bind(this);
-    this.performTransition = this.performTransition.bind(this);
+    this.processTransitionTask = this.processTransitionTask.bind(this);
     this.commitTransition = this.commitTransition.bind(this);
     this.on = this.on.bind(this);
     this.off = this.off.bind(this);
@@ -60,9 +91,19 @@ export class StateMachine<
   public send<T extends EventType<Transitions>, D extends Transitions[T]>(
     transition: T,
     ...parameters: D extends undefined ? [] : [D]
-  ): void {
-    this.processingQueue.push({ transition, parameters });
-    this.processQueue();
+  ): Promise<StateMachineTransitionResult<Transitions, State, Context>> {
+    const resolver = promiseResolver<StateMachineTransitionResult<Transitions, State, Context>>();
+
+    this.processingQueue.add({
+      status: 'pending',
+      success: false,
+      state: this.currentState,
+      transition,
+      parameters,
+      resolver,
+    });
+
+    return resolver.promise;
   }
 
   public on<P extends Parameters<typeof this.emitter.on>>(...parameters: P): void {
@@ -73,36 +114,14 @@ export class StateMachine<
     return this.emitter.off.apply(this, parameters);
   }
 
-  protected processQueue(): void {
-    if (this.processingDepth > 0) {
-      //  || this.processingQueue.length === 0
-      return;
-    }
-
-    while (this.processingQueue.length > 0) {
-      const transitionItem = this.processingQueue.shift();
-      if (transitionItem) {
-        this.processingDepth++;
-        try {
-          const { transition, parameters } = transitionItem;
-          this.performTransition(transition, ...parameters);
-        } catch (maybeError) {
-          this.createFailedTransitionResult(
-            `The error occurred on Pending Transitions processing: "${String(this.currentState)}"`,
-            toErrorWithMessage(maybeError)
-          );
-        } finally {
-          this.processingDepth--;
-        }
-      }
-    }
-  }
-
-  protected performTransition<T extends EventType<Transitions>, D extends Transitions[T]>(
-    transition: T,
-    ...parameters: D extends undefined ? [] : [D]
-  ): StateMachineTransitionResult<State> {
+  // eslint-disable-next-line max-lines-per-function
+  protected processTransitionTask(
+    transitionTask: StateMachinePendingTransition<Transitions, State, Context>
+  ):
+    | StateMachineTransitionResult<Transitions, State, Context>
+    | Promise<StateMachineTransitionResult<Transitions, State, Context>> {
     try {
+      const { transition, parameters } = transitionTask;
       const payload = { transition, data: parameters[0] };
 
       this.assertsValidTransition(payload);
@@ -128,14 +147,33 @@ export class StateMachine<
           owner: this,
         });
 
+        if (isPromise(destinationTransition)) {
+          return destinationTransition.then(
+            (result) => {
+              return this.commitTransition(previousState, result?.['target'] ?? this.currentState, transition, data);
+            },
+            (error) => {
+              return this.createFailedTransitionResult(
+                `Pending Transition error occurred from "${String(this.currentState)}" by "${String(
+                  transitionTask.transition
+                )}"`,
+                toErrorWithMessage(error)
+              );
+            }
+          );
+        }
+
         const nextState =
-          destinationTransition && 'target' in destinationTransition ? destinationTransition?.target : undefined;
+          (destinationTransition && 'target' in destinationTransition ? destinationTransition?.target : undefined) ??
+          this.currentState;
+
         return this.commitTransition(previousState, nextState, transition, data);
       }
+
       return this.commitTransition(previousState, destination.target, transition, data);
     } catch (error) {
       return this.createFailedTransitionResult(
-        `Transition error occurred from "${String(this.currentState)}" by "${String(transition)}"`,
+        `Transition error occurred from "${String(this.currentState)}" by "${String(transitionTask.transition)}"`,
         toErrorWithMessage(error)
       );
     }
@@ -143,14 +181,14 @@ export class StateMachine<
 
   protected commitTransition<T extends EventType<Transitions>, D extends Transitions[T]>(
     from: State,
-    to: State | undefined,
+    to: State,
     by: T,
     data: D
-  ): StateMachineTransitionResult<State> {
+  ): StateMachineTransitionResult<Transitions, State, Context> {
     const stateDefinition = this.definition.states[from];
     const destinationTransition = stateDefinition?.transitions?.[by];
-    const nextState = to ?? this.currentState;
-    const newStateDefinition = this.definition.states[nextState];
+
+    const newStateDefinition = this.definition.states[to];
 
     if (!newStateDefinition) {
       return this.createFailedTransitionResult(
@@ -159,21 +197,24 @@ export class StateMachine<
     }
 
     if (!destinationTransition) {
-      return this.createFailedTransitionResult(`No transition(s) found from "${String(from)}" by "${String(by)}"`);
+      return this.createFailedTransitionResult(
+        `No transition(s) found from "${String(from)}" to "${String(to)}" by "${String(by)}"`
+      );
     }
 
-    this.currentState = nextState;
+    this.currentState = to;
 
     if (isPlainObject(destinationTransition)) {
-      destinationTransition?.action?.(this.createAction('stateTransition', from, nextState, by, data));
+      destinationTransition?.action?.(this.createAction('stateTransition', from, to, by, data));
     }
 
-    stateDefinition?.actions?.onExit?.(this.createAction('stateExit', from, nextState, by, data));
-    newStateDefinition?.actions?.onEnter?.(this.createAction('stateEnter', from, nextState, by, data));
+    stateDefinition?.actions?.onExit?.(this.createAction('stateExit', from, to, by, data));
+    newStateDefinition?.actions?.onEnter?.(this.createAction('stateEnter', from, to, by, data));
 
-    this.emitter.emit('stateChanged', this.createAction('stateChange', from, nextState, by, data));
+    const successAction = this.createAction('stateChange', from, to, by, data);
+    this.emitter.emit('stateChanged', successAction);
 
-    return { type: 'success', success: true, state: this.currentState };
+    return { status: 'success', success: true, state: this.currentState, action: successAction };
   }
 
   protected createAction<
@@ -198,23 +239,27 @@ export class StateMachine<
     });
   }
 
-  protected createFailedTransitionResult = (message: string, error?: Error): StateMachineTransitionResult<State> => {
+  protected createFailedTransitionResult = (
+    message: string,
+    error?: Error
+  ): StateMachineTransitionResult<Transitions, State, Context> => {
     if (error) {
       const errorResult = {
-        type: 'error',
+        status: 'error',
         state: this.currentState,
         success: false,
-        message,
+        message: error.message,
         error,
+        details: message,
       } as const;
       if (this.definition.debug === true) {
-        console.error(errorResult);
+        console.warn(errorResult);
       }
       return errorResult;
     }
 
     const warningResult = {
-      type: 'warning',
+      status: 'warning',
       state: this.currentState,
       success: false,
       message,

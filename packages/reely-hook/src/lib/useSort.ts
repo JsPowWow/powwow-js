@@ -1,5 +1,5 @@
 import Reely from '@powwow-js/reely';
-import type { RecordKey } from '@powwow-js/core';
+import type { UnknownRecord } from '@powwow-js/core';
 import { isSomeFunction } from '@powwow-js/core';
 
 //import { compareObjectsByKey } from './utils';
@@ -37,7 +37,7 @@ export interface UseSortOutput<T> {
  *    myArrayOfObjects.sort(compareObjectsByKey('name'))
  *    result: myArrayOfObjects = [{id: 3, name:'Lucy'},{id: 1, name:'Pam'},{id: 2, name:'Sue'}]
  */
-export function compareObjectsByKey<T = Record<RecordKey, unknown>>(key: keyof T, ascending = true) {
+export function compareObjectsByKey<T = UnknownRecord>(key: keyof T, ascending = true) {
   return function innerSort(objectA: T, objectB: T): number {
     let sortValue: -1 | 0 | 1;
     if (objectA[key] < objectB[key]) {
