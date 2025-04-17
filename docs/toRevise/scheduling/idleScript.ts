@@ -1,8 +1,8 @@
-import {cIC, rIC} from "./idleCallbackPolyfill";
+import { cIC, rIC } from './idleCallbackPolyfill';
 
 interface IdleScript {
-    initScript: () => void;
-    cancelScript: () => void;
+  initScript: () => void;
+  cancelScript: () => void;
 }
 
 /**
@@ -11,40 +11,40 @@ interface IdleScript {
  * 2. Can guarantee that the task will be executed immediately when called.
  */
 const createIdleScript = (callback: () => void): IdleScript => {
-    let idleHandle: number | null = null;
-    let isInitialized = false;
+  let idleHandle: number | null = null;
+  let isInitialized = false;
 
-    const wrappedCallback = () => {
-        callback();
-        isInitialized = true;
-    };
+  const wrappedCallback = () => {
+    callback();
+    isInitialized = true;
+  };
 
-    idleHandle = rIC(wrappedCallback);
+  idleHandle = rIC(wrappedCallback);
 
-    /**
-     * If callback has not been called, it will cancel any scheduled requestIdleCallback and be called immediately.
-     */
-    const initScript = (): void => {
-        if (!isInitialized) {
-            cancelScript();
-            wrappedCallback();
-        }
-    };
+  /**
+   * If callback has not been called, it will cancel any scheduled requestIdleCallback and be called immediately.
+   */
+  const initScript = (): void => {
+    if (!isInitialized) {
+      cancelScript();
+      wrappedCallback();
+    }
+  };
 
-    /**
-     * Cancels any scheduled requestIdleCallback and resets the handle.
-     */
-    const cancelScript = (): void => {
-        if (idleHandle !== null) {
-            cIC(idleHandle);
-            idleHandle = null;
-        }
-    };
+  /**
+   * Cancels any scheduled requestIdleCallback and resets the handle.
+   */
+  const cancelScript = (): void => {
+    if (idleHandle !== null) {
+      cIC(idleHandle);
+      idleHandle = null;
+    }
+  };
 
-    return {
-        initScript,
-        cancelScript
-    };
+  return {
+    initScript,
+    cancelScript,
+  };
 };
 
-export {createIdleScript};
+export { createIdleScript };

@@ -1,22 +1,22 @@
-const supportsRequestIdleCallback = typeof requestIdleCallback === "function";
+const supportsRequestIdleCallback = typeof requestIdleCallback === 'function';
 
 /**
  * A minimal shim of the native IdleDeadline class.
  */
 class IdleDeadline {
-    initTime: DOMHighResTimeStamp;
+  initTime: DOMHighResTimeStamp;
 
-    constructor(initTime: DOMHighResTimeStamp) {
-        this.initTime = initTime;
-    }
+  constructor(initTime: DOMHighResTimeStamp) {
+    this.initTime = initTime;
+  }
 
-    get didTimeout() {
-        return false;
-    }
+  get didTimeout() {
+    return false;
+  }
 
-    timeRemaining() {
-        return Math.max(0, 50 - (performance.now() - this.initTime));
-    }
+  timeRemaining() {
+    return Math.max(0, 50 - (performance.now() - this.initTime));
+  }
 }
 
 /**
@@ -25,8 +25,8 @@ class IdleDeadline {
  * object with a `timeRemaining()` method.
  */
 const requestIdleCallbackShim = (callback: (deadline: IdleDeadline) => void): number => {
-    const deadline = new IdleDeadline(performance.now());
-    return setTimeout(() => callback(deadline), 0) as unknown as number;
+  const deadline = new IdleDeadline(performance.now());
+  return setTimeout(() => callback(deadline), 0) as unknown as number;
 };
 
 /**
@@ -34,7 +34,7 @@ const requestIdleCallbackShim = (callback: (deadline: IdleDeadline) => void): nu
  * handle identifying the idle callback to cancel.
  */
 const cancelIdleCallbackShim = (handle: number) => {
-    clearTimeout(handle);
+  clearTimeout(handle);
 };
 
 /**

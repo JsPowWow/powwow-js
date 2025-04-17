@@ -1,36 +1,36 @@
-import {act, renderHook} from "@testing-library/react";
+import { act, renderHook } from '@testing-library/react';
 
-import {useVisibility} from "../index";
+import { useVisibility } from '../index';
 
-describe("useVisibility Specs", () => {
-    it("useVisibility hook initializes with the provided initial visibility", () => {
-        const {result} = renderHook(() => useVisibility(true));
-        const [isVisible] = result.current;
+describe('useVisibility Specs', () => {
+  it('useVisibility hook initializes with the provided initial visibility', () => {
+    const { result } = renderHook(() => useVisibility(true));
+    const [isVisible] = result.current;
 
-        expect(isVisible).toBe(true);
+    expect(isVisible).toBe(true);
+  });
+
+  it('show function sets isVisible to true', () => {
+    const { result } = renderHook(() => useVisibility(false));
+    const [, show] = result.current;
+
+    act(() => {
+      show();
     });
 
-    it("show function sets isVisible to true", () => {
-        const {result} = renderHook(() => useVisibility(false));
-        const [, show] = result.current;
+    const [isVisible] = result.current;
+    expect(isVisible).toBe(true);
+  });
 
-        act(() => {
-            show();
-        });
+  it('hide function sets isVisible to false', () => {
+    const { result } = renderHook(() => useVisibility(true));
+    const [, , hide] = result.current;
 
-        const [isVisible] = result.current;
-        expect(isVisible).toBe(true);
+    act(() => {
+      hide();
     });
 
-    it("hide function sets isVisible to false", () => {
-        const {result} = renderHook(() => useVisibility(true));
-        const [, , hide] = result.current;
-
-        act(() => {
-            hide();
-        });
-
-        const [isVisible] = result.current;
-        expect(isVisible).toBe(false);
-    });
+    const [isVisible] = result.current;
+    expect(isVisible).toBe(false);
+  });
 });

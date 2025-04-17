@@ -1,2 +1,2 @@
-export * from "./useIntersectionObserver";
-export * from "./types";
+export * from './useIntersectionObserver';
+export * from './types';

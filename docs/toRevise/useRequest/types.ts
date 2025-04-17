@@ -1,3 +1,3 @@
-import {CancelToken} from "axios";
+import { CancelToken } from 'axios';
 
-export type RequestType = ({cancelToken}: {cancelToken: CancelToken}) => Promise<void>;
+export type RequestType = ({ cancelToken }: { cancelToken: CancelToken }) => Promise<void>;

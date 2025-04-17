@@ -8,8 +8,8 @@ export const setupScene = (): void => {
   SocketConnection.on(
     'stateChanged',
     runActionEffect()
-      .when({ to: 'offline' }, () => Chat.send('setOffline'))
-      .when({ to: 'failed' }, () => Chat.send('setOffline'))
+      .when({ to: 'offline' }, () => Chat.state !== 'offline' && Chat.send('setOffline'))
+      .when({ to: 'failed' }, () => Chat.state !== 'offline' && Chat.send('setOffline'))
       .when({ to: 'online' }, () => Chat.send('setReady', { socketActor: SocketConnection })).invokeAction
 
     //  ...or alternative way

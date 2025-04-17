@@ -1,1 +1,1 @@
-export * from "./usePolling";
+export * from './usePolling';

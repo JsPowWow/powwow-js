@@ -5,8 +5,6 @@ import { Message } from '../models/message.model';
 export const enum RequestType {
   UserExternalLogin = 'USER_EXTERNAL_LOGIN',
   UserExternalLogout = 'USER_EXTERNAL_LOGOUT',
-  UserActive = 'USER_ACTIVE',
-  UserInactive = 'USER_INACTIVE',
   MessageSend = 'MSG_SEND',
   MessageFromUser = 'MSG_FROM_USER',
   MessageRead = 'MSG_READ',
@@ -29,11 +27,11 @@ export class WebSocketChatService extends WebSocketService {
   }
 
   getActiveUsers(callback: WsCallback<{ users: ExtendedUser[] }>): void {
-    this.send(RequestType.UserActive, null, callback);
+    this.send('USER_ACTIVE', null, callback);
   }
 
   getInactiveUsers(callback: WsCallback<{ users: ExtendedUser[] }>): void {
-    this.send(RequestType.UserInactive, null, callback);
+    this.send('USER_INACTIVE', null, callback);
   }
 
   getUserMessages(user: User, callback: WsCallback<{ messages: Message[] }>): void {

@@ -23,7 +23,8 @@ export const ChatPage = () => {
       <WndTitleBar caption='🥳 Chat' />
       <WndBody
         className='has-space'
-        styles={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'left', gap: '5px' }}
+        styles={{ flexGrow: '1', display: 'flex', flexDirection: 'column' }}
+        // styles={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'left', gap: '5px' }}
       >
         <h2 class='instruction instruction-primary' style='margin-bottom: 6px;'>
           {`${Maybe.from(context.get().currentUser?.login).getOrDefault('<none>')} 💬`}

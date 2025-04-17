@@ -10,7 +10,7 @@ import type {
   StateMachineTransitionActionType,
   StateMachineTransitionResult,
 } from './types';
-import type { AnyFunction } from '@powwow-js/core';
+import type { AnyFunction, UnknownRecord } from '@powwow-js/core';
 import {
   hasProperty,
   isPlainObject,
@@ -150,7 +150,13 @@ export class StateMachine<
         if (isPromise(destinationTransition)) {
           return destinationTransition.then(
             (result) => {
-              return this.commitTransition(previousState, result?.['target'] ?? this.currentState, transition, data);
+              return this.commitTransition(
+                previousState,
+                result?.['target'] ?? this.currentState,
+                transition,
+                data,
+                result?.['data']
+              );
             },
             (error) => {
               return this.createFailedTransitionResult(
@@ -183,7 +189,8 @@ export class StateMachine<
     from: State,
     to: State,
     by: T,
-    data: D
+    inputData: D,
+    outputData?: UnknownRecord
   ): StateMachineTransitionResult<Transitions, State, Context> {
     const stateDefinition = this.definition.states[from];
     const destinationTransition = stateDefinition?.transitions?.[by];
@@ -205,16 +212,17 @@ export class StateMachine<
     this.currentState = to;
 
     if (isPlainObject(destinationTransition)) {
-      destinationTransition?.action?.(this.createAction('stateTransition', from, to, by, data));
+      destinationTransition?.action?.(this.createAction('stateTransition', from, to, by, inputData));
+    }
+    if (from !== to) {
+      stateDefinition?.actions?.onExit?.(this.createAction('stateExit', from, to, by, inputData));
+      newStateDefinition?.actions?.onEnter?.(this.createAction('stateEnter', from, to, by, inputData));
     }
 
-    stateDefinition?.actions?.onExit?.(this.createAction('stateExit', from, to, by, data));
-    newStateDefinition?.actions?.onEnter?.(this.createAction('stateEnter', from, to, by, data));
-
-    const successAction = this.createAction('stateChange', from, to, by, data);
+    const successAction = this.createAction('stateChange', from, to, by, inputData);
     this.emitter.emit('stateChanged', successAction);
 
-    return { status: 'success', success: true, state: this.currentState, action: successAction };
+    return { status: 'success', success: true, state: this.currentState, action: successAction, data: outputData };
   }
 
   protected createAction<

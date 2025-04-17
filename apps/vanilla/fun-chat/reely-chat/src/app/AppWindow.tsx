@@ -20,7 +20,7 @@ export const AppWindow = ({ children }: { children?: unknown[] }) => {
   useReconnectOnError(7000);
 
   return (
-    <WndView styles={{ width: '100%', height: '95vh', display: 'flex', flexDirection: 'column' }}>
+    <WndView styles={{ width: '100%' }}>
       <WndTitleBar caption='🥸 Reely Chat Demo' />
       <WndMenuBar
         items={[
@@ -90,7 +90,10 @@ export const AppWindow = ({ children }: { children?: unknown[] }) => {
           },
         ]}
       />
-      <WndBody className='has-space desktop' styles={{ height: '100%' }}>
+      <WndBody
+        className='has-space desktop'
+        styles={{ minHeight: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}
+      >
         {children}
       </WndBody>
       <WndStatusBar
