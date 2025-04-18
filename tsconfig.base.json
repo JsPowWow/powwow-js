@@ -20,6 +20,7 @@
       "@powwow-js/fp": ["packages/fp/src/index.ts"],
       "@powwow-js/fun-dom": ["packages/fun-dom/src/index.ts"],
       "@powwow-js/nullable": ["packages/nullable/src/index.ts"],
+      "@powwow-js/queue": ["packages/queue/src/index.ts"],
       "@powwow-js/reely": ["packages/reely/src/index.ts"],
       "@powwow-js/reely-hook": ["packages/reely-hook/src/index.ts"],
       "@powwow-js/reely/jsx-runtime": ["packages/reely/src/lib/jsx-runtime.ts"],

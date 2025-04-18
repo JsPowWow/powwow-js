@@ -1,7 +1,7 @@
-import { ExtendedUser } from '../../models/user.model';
+import { RemoteUser } from '../../models/user';
 
 interface UserRendererProps {
-  user: ExtendedUser;
+  user: RemoteUser;
 }
 
 export const UserRenderer = ({ user }: UserRendererProps) => {

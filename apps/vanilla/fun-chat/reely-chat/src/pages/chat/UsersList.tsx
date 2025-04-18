@@ -9,14 +9,16 @@ import { cn } from '@powwow-js/fun-dom';
 export const UsersList = () => {
   const store = useChatStore();
 
-  const { online, offline } = useMemo(() => {
+  const { hasUsers, online, offline } = useMemo(() => {
+    const online = store.select(useChatStore.getOnlineUsers);
+    const offline = store.select(useChatStore.getOfflineUsers);
+    const hasUsers = online.length > 0 || offline.length > 0;
     return {
-      online: store.select(useChatStore.getOnlineUsers),
-      offline: store.select(useChatStore.getOfflineUsers),
+      online,
+      offline,
+      hasUsers,
     };
-  }, [store.get().users]);
-
-  const hasUsers = online.length > 0 || offline.length > 0;
+  }, [store.get()]);
 
   return (
     <GroupBox className={styles.usersListContainer} caption='Users'>

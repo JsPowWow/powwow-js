@@ -17,10 +17,15 @@ import {
   clearChatUsers,
 } from './actionEffects';
 import { WebSocketChatService } from '../../../services/WebSocketChatService';
-import { ExtendedUser, User } from '../../../models/user.model';
-import { login } from './scenarious/login';
-import { logout } from './scenarious/logout';
-import { getOfflineUsers, getOnlineUsers } from './scenarious/getUsers';
+import { RemoteUser, User } from '../../../models/user';
+import { login } from './scenarious/loginScenario';
+import { logout } from './scenarious/logoutScenario';
+import {
+  subscribeExternalLoginUsers,
+  getOfflineUsers,
+  getOnlineUsers,
+  subscribeExternalLogoutUsers,
+} from './scenarious/usersPopulateScenario';
 
 export type ChatState = 'offline' | 'ready' | 'authorized';
 
@@ -30,12 +35,14 @@ export type ChatStateTransitions = {
   login: { username: string; password: string };
   getOnlineUsers: undefined;
   getOfflineUsers: undefined;
+  subscribeExternalLoginUsers: undefined;
+  subscribeExternalLogoutUsers: undefined;
   logout: undefined;
 };
 
-export type UsersStore = { users: ExtendedUser[] };
+export type UsersStore = { users: Map<string, RemoteUser> };
 
-type ChatContextData = {
+export type ChatContextData = {
   socketActor: Nullable<WebSocketActor>;
   apiService: Nullable<WebSocketChatService>;
   logger?: ILogger;
@@ -76,8 +83,10 @@ const chatLogic: StateMachineDefinition<ChatState, ChatStateTransitions, ChatCon
         // }),
       },
       transitions: {
-        getOnlineUsers: getOnlineUsers,
-        getOfflineUsers: getOfflineUsers,
+        getOnlineUsers,
+        getOfflineUsers,
+        subscribeExternalLoginUsers,
+        subscribeExternalLogoutUsers,
         setOffline: { target: 'offline' },
         logout,
       },
@@ -96,7 +105,7 @@ const createChat = (options?: { logger: ILogger }): ChatActor => {
       logger: options?.logger,
       currentUser: null,
       store: new ObjectStore<UsersStore>({
-        users: [],
+        users: new Map<string, RemoteUser>(),
       }),
     })
   );

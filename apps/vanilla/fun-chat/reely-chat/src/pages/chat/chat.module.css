@@ -6,7 +6,6 @@
   width: 20%;
 }
 
-
 .users-list {
   overflow-y: auto;
   height: calc(-240px + 100vh);

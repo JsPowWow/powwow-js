@@ -20,7 +20,7 @@ import {
   promiseResolver,
   toErrorWithMessage,
 } from '@powwow-js/core';
-import Queue from './Queue';
+import { ConcurrentQueue } from '@powwow-js/queue';
 
 export class StateMachine<
   State extends StateMachineState,
@@ -36,33 +36,33 @@ export class StateMachine<
 
   private readonly contextData: Context;
 
-  private readonly processingQueue = new Queue<StateMachinePendingTransition<Transitions, State, Context>>().process(
-    (task): Promise<StateMachineTransitionResult<Transitions, State, Context>> => {
-      try {
-        const result = this.processTransitionTask(task);
-        if (isPromise(result)) {
-          result.then(task.resolver.resolve).catch((anyError) => {
-            task.resolver.resolve(
-              this.createFailedTransitionResult(
-                `The error occurred on "${String(this.currentState)}" pending transition processing.`,
-                toErrorWithMessage(anyError)
-              )
-            );
-          });
-        } else {
-          task.resolver.resolve(result);
-        }
-      } catch (anyError) {
-        task.resolver.resolve(
-          this.createFailedTransitionResult(
-            `The error occurred on "${String(this.currentState)}" transition processing.`,
-            toErrorWithMessage(anyError)
-          )
-        );
+  private readonly processingQueue = new ConcurrentQueue<
+    StateMachinePendingTransition<Transitions, State, Context>
+  >().process((task): Promise<StateMachineTransitionResult<Transitions, State, Context>> => {
+    try {
+      const result = this.processTransitionTask(task);
+      if (isPromise(result)) {
+        result.then(task.resolver.resolve).catch((anyError) => {
+          task.resolver.resolve(
+            this.createFailedTransitionResult(
+              `The error occurred on "${String(this.currentState)}" pending transition processing.`,
+              toErrorWithMessage(anyError)
+            )
+          );
+        });
+      } else {
+        task.resolver.resolve(result);
       }
-      return task.resolver.promise;
+    } catch (anyError) {
+      task.resolver.resolve(
+        this.createFailedTransitionResult(
+          `The error occurred on "${String(this.currentState)}" transition processing.`,
+          toErrorWithMessage(anyError)
+        )
+      );
     }
-  );
+    return task.resolver.promise;
+  });
 
   constructor(definition: StateMachineDefinition<State, Transitions, Context>, context: Context) {
     // TODO AR add ILogger, no console

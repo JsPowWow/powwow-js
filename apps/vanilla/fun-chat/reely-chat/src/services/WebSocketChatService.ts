@@ -1,5 +1,5 @@
 import WebSocketService, { WsCallback } from './WebSocketService';
-import { ExtendedUser, User } from '../models/user.model';
+import { RemoteUser, User } from '../models/user';
 import { Message } from '../models/message.model';
 
 export const enum RequestType {
@@ -28,13 +28,23 @@ export class WebSocketChatService extends WebSocketService {
     return this;
   }
 
-  getActiveUsers(callback: WsCallback<{ users: ExtendedUser[] }>): typeof this {
+  getActiveUsers(callback: WsCallback<{ users: RemoteUser[] }>): typeof this {
     this.send('USER_ACTIVE', null, callback);
     return this;
   }
 
-  getInactiveUsers(callback: WsCallback<{ users: ExtendedUser[] }>): typeof this {
+  getInactiveUsers(callback: WsCallback<{ users: RemoteUser[] }>): typeof this {
     this.send('USER_INACTIVE', null, callback);
+    return this;
+  }
+
+  notifyLogin(callback: WsCallback<{ user: RemoteUser }>): typeof this {
+    this.send('USER_EXTERNAL_LOGIN', undefined, callback, true);
+    return this;
+  }
+
+  notifyLogout(callback: WsCallback<{ user: RemoteUser }>): typeof this {
+    this.send('USER_EXTERNAL_LOGOUT', undefined, callback, true);
     return this;
   }
 
@@ -60,16 +70,6 @@ export class WebSocketChatService extends WebSocketService {
 
   sendEdit(message: Partial<Message>, callback: WsCallback<{ message: Message }>): typeof this {
     this.send(RequestType.MessageEdit, { message }, callback);
-    return this;
-  }
-
-  notifyLogin(callback: WsCallback<{ user: User }>): typeof this {
-    this.send(RequestType.UserExternalLogin, undefined, callback, true);
-    return this;
-  }
-
-  notifyLogout(callback: WsCallback<{ user: User }>): typeof this {
-    this.send(RequestType.UserExternalLogout, undefined, callback, true);
     return this;
   }
 

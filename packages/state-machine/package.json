@@ -6,7 +6,8 @@
   },
   "dependencies": {
     "@powwow-js/core": "^0.5.0",
-    "@powwow-js/emitter": "^0.5.0"
+    "@powwow-js/emitter": "^0.5.0",
+    "@powwow-js/queue": "^0.0.1"
   },
   "main": "./index.js",
   "module": "./index.mjs",

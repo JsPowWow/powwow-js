@@ -1,8 +1,8 @@
 import type { Nullable } from '@powwow-js/core';
 import { assertIsNonNullable } from '@powwow-js/core';
 
-// TODO AR revise, move to other lib
-class Queue<Task, Result = unknown> {
+// TODO AR revise
+class ConcurrentQueue<Task, Result = unknown> {
   private readonly concurrency: number = Number.MAX_SAFE_INTEGER;
   private count = 0;
   private waiting: Task[] = [];
@@ -23,8 +23,8 @@ class Queue<Task, Result = unknown> {
     this.onDrain = null;
   }
 
-  public static channels<T>(concurrency: number): Queue<T> {
-    return new Queue(concurrency);
+  public static channels<T>(concurrency: number): ConcurrentQueue<T> {
+    return new ConcurrentQueue(concurrency);
   }
 
   public add(task: Task): void {
@@ -86,9 +86,9 @@ class Queue<Task, Result = unknown> {
   }
 }
 
-export default Queue;
+export default ConcurrentQueue;
 
-// Usage
+// TODO AR write tests
 
 // const job = ({ name, interval }) =>
 //   new Promise((resolve, reject) => {
