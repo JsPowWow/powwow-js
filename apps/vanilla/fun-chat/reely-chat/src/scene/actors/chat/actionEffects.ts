@@ -1,10 +1,10 @@
 import { matchAction } from '@powwow-js/state-machine';
-import { ChatActionEffect, ChatContext } from './ChatActor';
+import { ChatActionEffect } from './ChatActor';
 import { Either, hasProperty, identity, Maybe, noop, UnknownRecord } from '@powwow-js/core';
 import { WebSocketChatService } from '../../../services/WebSocketChatService';
 import { getItemByKey } from '../../../shared/persistence';
 import { APP_STORAGE_KEY } from '../settings/constants';
-import { isValidRemoteUsers, User } from '../../../models/user';
+import { User } from '../../../models/user';
 
 export const saveSocket: ChatActionEffect = (action) =>
   matchAction(action).when({ by: 'setReady' }, ({ context, data: { socketActor } }) => {
@@ -50,28 +50,13 @@ export const tryRestoreUserLogin: ChatActionEffect = (action) =>
       .getOrDefault({});
 
     if (isUserCredentials(persistedData)) {
+      context.get().logger?.log('🔄 trying to restore user connection')('...');
       owner.send('login', { username: persistedData.login, password: persistedData.password }).then(() => {
-        context.get().logger?.log('🔄 try restore user login')(`✔️ "${persistedData.login}" restored`);
+        context.get().logger?.log('🔄 trying to restore user connection')(`✅ "${persistedData.login}" restored`);
       });
     }
   });
 
 function isUserCredentials(source: unknown): source is Required<User> {
   return hasProperty('login', source) && hasProperty('password', source);
-}
-
-export function updateByResponseUsers(context: ChatContext, responseUsers: unknown) {
-  if (isValidRemoteUsers(responseUsers)) {
-    const normalizedUsers = responseUsers.filter((user) => user.login !== context.get().currentUser?.login);
-    context.get().store.set(({ users }) => {
-      normalizedUsers.forEach((user) => {
-        users.set(user.login, user);
-      });
-      return {
-        users,
-      };
-    });
-  } else {
-    context.get().logger?.warn('🆘 updateByResponseUsers:not a "responseUsers":', responseUsers);
-  }
 }

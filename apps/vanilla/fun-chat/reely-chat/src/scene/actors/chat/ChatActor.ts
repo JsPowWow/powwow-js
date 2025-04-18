@@ -26,6 +26,7 @@ import {
   subscribeExternalLoginUsers,
   subscribeExternalLogoutUsers,
 } from './scenarious/usersPopulateScenario';
+import { getUserMessages } from './scenarious/usersMessagesScenario';
 
 export type ChatState = 'offline' | 'ready' | 'authorized';
 
@@ -37,6 +38,7 @@ export type ChatStateTransitions = {
   getOfflineUsers: undefined;
   subscribeExternalLoginUsers: undefined;
   subscribeExternalLogoutUsers: undefined;
+  getUserMessages: RemoteUser;
   logout: undefined;
 };
 
@@ -87,6 +89,7 @@ const chatLogic: StateMachineDefinition<ChatState, ChatStateTransitions, ChatCon
         getOfflineUsers,
         subscribeExternalLoginUsers,
         subscribeExternalLogoutUsers,
+        getUserMessages,
         setOffline: { target: 'offline' },
         logout,
       },

@@ -12,8 +12,8 @@ class ConcurrentQueue<Task, Result = unknown> {
   private onFailure: Nullable<(error: unknown, result: Nullable<Result>) => void>;
   private onDrain: Nullable<() => void> = null;
 
-  constructor(concurrency = Number.MAX_SAFE_INTEGER) {
-    this.concurrency = concurrency;
+  constructor(options?: { concurrency: number }) {
+    this.concurrency = Math.max(2, options?.concurrency ?? Number.MAX_SAFE_INTEGER); //;
     this.count = 0;
     this.waiting = [];
     this.onProcess = null;
@@ -21,10 +21,6 @@ class ConcurrentQueue<Task, Result = unknown> {
     this.onSuccess = null;
     this.onFailure = null;
     this.onDrain = null;
-  }
-
-  public static channels<T>(concurrency: number): ConcurrentQueue<T> {
-    return new ConcurrentQueue(concurrency);
   }
 
   public add(task: Task): void {

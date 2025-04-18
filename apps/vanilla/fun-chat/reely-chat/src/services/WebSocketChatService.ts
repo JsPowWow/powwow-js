@@ -3,10 +3,7 @@ import { RemoteUser, User } from '../models/user';
 import { Message } from '../models/message.model';
 
 export const enum RequestType {
-  UserExternalLogin = 'USER_EXTERNAL_LOGIN',
-  UserExternalLogout = 'USER_EXTERNAL_LOGOUT',
   MessageSend = 'MSG_SEND',
-  MessageFromUser = 'MSG_FROM_USER',
   MessageRead = 'MSG_READ',
   MessageDeliver = 'MSG_DELIVER',
   MessageDelete = 'MSG_DELETE',
@@ -48,8 +45,8 @@ export class WebSocketChatService extends WebSocketService {
     return this;
   }
 
-  getUserMessages(user: User, callback: WsCallback<{ messages: Message[] }>): typeof this {
-    this.send(RequestType.MessageFromUser, { user }, callback);
+  getUserMessages(user: RemoteUser, callback: WsCallback<{ messages: Message[] }>): typeof this {
+    this.send('MSG_FROM_USER', { user }, callback);
     return this;
   }
 

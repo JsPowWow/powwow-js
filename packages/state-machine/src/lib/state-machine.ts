@@ -36,9 +36,9 @@ export class StateMachine<
 
   private readonly contextData: Context;
 
-  private readonly processingQueue = new ConcurrentQueue<
-    StateMachinePendingTransition<Transitions, State, Context>
-  >().process((task): Promise<StateMachineTransitionResult<Transitions, State, Context>> => {
+  private readonly processingQueue = new ConcurrentQueue<StateMachinePendingTransition<Transitions, State, Context>>({
+    concurrency: 15, // TODO AR from definition
+  }).process((task): Promise<StateMachineTransitionResult<Transitions, State, Context>> => {
     try {
       const result = this.processTransitionTask(task);
       if (isPromise(result)) {

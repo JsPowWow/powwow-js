@@ -123,4 +123,12 @@ export const useRouter = () => {
 
 export const Router = {
   navigate: (pathname: string) => globalThis.history.pushState({}, '', pathname),
+  back: () => {
+    if (globalThis.history.length > 0) {
+      globalThis.history.back();
+    }
+  },
+  getLength(): number {
+    return globalThis.history.length;
+  },
 };

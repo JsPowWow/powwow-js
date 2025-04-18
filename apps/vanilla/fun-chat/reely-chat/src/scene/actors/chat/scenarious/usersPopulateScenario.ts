@@ -1,7 +1,7 @@
-import { StateMachineTransition } from '@powwow-js/state-machine';
+import { IStateMachine, StateMachineTransition } from '@powwow-js/state-machine';
 import { ChatContext, ChatState, ChatStateTransitions } from '../ChatActor';
 import { Maybe, toErrorWithMessage } from '@powwow-js/core';
-import { updateByResponseUsers } from '../actionEffects';
+import { isValidRemoteUsers, RemoteUser } from '../../../../models/user';
 
 export const getOnlineUsers: StateMachineTransition<
   ChatStateTransitions,
@@ -9,15 +9,21 @@ export const getOnlineUsers: StateMachineTransition<
   ChatState,
   'getOnlineUsers',
   ChatContext
-> = async ({ context }) => {
+> = async ({ owner, context }) => {
   return new Promise((resolve, reject) => {
     Maybe.some(context.get().apiService)
       .map((service) =>
         service.getActiveUsers({
           onCall: (payload) => {
-            context.get().logger?.info('◀️ got online users', payload);
-            updateByResponseUsers(context, payload.users);
-            context.get().logger?.info('✅ online users updated');
+            context.get().logger?.info('⬅️ got online users', payload);
+            const updated = updateByResponseUsers(owner, context, payload.users);
+            context.get().logger?.info('✅ online users updated: ', updated.length);
+
+            context.get().logger?.info(`➡️ requesting online user's messages...`);
+            updated.forEach((user) => {
+              owner.send('getUserMessages', user);
+            });
+
             resolve({ target: 'authorized' });
           },
           onError: (payload) => {
@@ -35,15 +41,21 @@ export const getOfflineUsers: StateMachineTransition<
   ChatState,
   'getOfflineUsers',
   ChatContext
-> = async ({ context }) => {
+> = async ({ owner, context }) => {
   return new Promise((resolve, reject) => {
     Maybe.some(context.get().apiService)
       .map((service) =>
         service.getInactiveUsers({
           onCall: (payload) => {
-            context.get().logger?.info('◀️ got offline users', payload);
-            updateByResponseUsers(context, payload.users);
-            context.get().logger?.info('✅ offline users updated');
+            context.get().logger?.info('⬅️ got offline users', payload);
+            const updated = updateByResponseUsers(owner, context, payload.users);
+            context.get().logger?.info('✅ offline users updated', updated.length);
+
+            context.get().logger?.info(`➡️ requesting offline user's messages...`);
+            updated.forEach((user) => {
+              owner.send('getUserMessages', user);
+            });
+
             resolve({ target: 'authorized' });
           },
           onError: (payload) => {
@@ -61,7 +73,7 @@ export const subscribeExternalLoginUsers: StateMachineTransition<
   ChatState,
   'subscribeExternalLoginUsers',
   ChatContext
-> = async ({ context }) => {
+> = async ({ owner, context }) => {
   return new Promise((resolve, reject) => {
     Maybe.some(context.get().apiService)
       .map((service) => {
@@ -69,7 +81,12 @@ export const subscribeExternalLoginUsers: StateMachineTransition<
         return service.notifyLogin({
           onCall: (payload) => {
             context.get().logger?.info('⬅️ external user did login 🟢', payload);
-            updateByResponseUsers(context, [payload.user]);
+            const updated = updateByResponseUsers(owner, context, [payload.user]);
+            context.get().logger?.info(`✅ "${payload.user.login}" updated`, updated);
+
+            context.get().logger?.info(`➡️ requesting "${payload.user.login}" messages...`);
+            owner.send('getUserMessages', payload.user);
+
             resolve({ target: 'authorized' });
           },
           onError: (payload) => {
@@ -87,7 +104,7 @@ export const subscribeExternalLogoutUsers: StateMachineTransition<
   ChatState,
   'subscribeExternalLogoutUsers',
   ChatContext
-> = async ({ context }) => {
+> = async ({ owner, context }) => {
   return new Promise((resolve, reject) => {
     Maybe.some(context.get().apiService)
       .map((service) => {
@@ -95,7 +112,7 @@ export const subscribeExternalLogoutUsers: StateMachineTransition<
         return service.notifyLogout({
           onCall: (payload) => {
             context.get().logger?.info('⬅️ external user did logout ⚪', payload);
-            updateByResponseUsers(context, [payload.user]);
+            updateByResponseUsers(owner, context, [payload.user]);
             resolve({ target: 'authorized' });
           },
           onError: (payload) => {
@@ -106,3 +123,28 @@ export const subscribeExternalLogoutUsers: StateMachineTransition<
       .getOrThrow(new Error('📛 Something went wrong on "subscribeExternalLogoutUsers"'));
   });
 };
+
+function updateByResponseUsers(
+  _owner: IStateMachine<ChatState, ChatStateTransitions, ChatContext>,
+  context: ChatContext,
+  responseUsers: unknown
+): RemoteUser[] {
+  const updatedUsers: RemoteUser[] = [];
+  if (isValidRemoteUsers(responseUsers)) {
+    const normalizedUsers = responseUsers.filter((user) => user.login !== context.get().currentUser?.login);
+
+    context.get().store.set(({ users }) => {
+      normalizedUsers.forEach((user) => {
+        users.set(user.login, user);
+        updatedUsers.push(user);
+      });
+
+      return {
+        users,
+      };
+    });
+  } else {
+    context.get().logger?.warn('🆘 updateByResponseUsers:not a "responseUsers":', responseUsers);
+  }
+  return updatedUsers;
+}

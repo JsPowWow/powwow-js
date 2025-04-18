@@ -27,6 +27,7 @@ export type StateMachineDefinition<
 > = {
   initialState: NoInfer<State>;
   debug?: boolean;
+  concurrency?: number;
   states: {
     [S in State]: {
       actions?: {
