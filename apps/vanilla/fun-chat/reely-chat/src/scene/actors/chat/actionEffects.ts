@@ -16,35 +16,15 @@ export const clearChatUsers: ChatActionEffect = ({ context }) =>
     users.clear();
   });
 
-export const setChatUsers: ChatActionEffect = (action) =>
-  matchAction(action).when({ to: 'authorized' }, ({ owner, context }) => {
-    owner.send('subscribeExternalLoginUsers').then((result) => {
-      if (result.status === 'success') {
-        context.get().logger?.info('updateByExternalLoginUser:', { data: result.data?.user });
-        updateByResponseUsers(context, [result.data?.user]);
-      }
-    });
+export const getChatUsers: ChatActionEffect = (action) =>
+  matchAction(action).when({ to: 'authorized' }, ({ owner }) => {
+    owner.send('subscribeExternalLoginUsers');
 
-    owner.send('subscribeExternalLogoutUsers').then((result) => {
-      if (result.status === 'success') {
-        context.get().logger?.info('subscribeExternalLogoutUser:', { data: result.data?.user });
-        updateByResponseUsers(context, [result.data?.user]);
-      }
-    });
+    owner.send('subscribeExternalLogoutUsers');
 
-    owner.send('getOnlineUsers').then((result) => {
-      if (result.status === 'success') {
-        context.get().logger?.info('updateOnlineUsers:', { data: result.data?.users });
-        updateByResponseUsers(context, result.data?.users);
-      }
-    });
+    owner.send('getOnlineUsers');
 
-    owner.send('getOfflineUsers').then((result) => {
-      if (result.status === 'success') {
-        context.get().logger?.info('updateOfflineUsers:', { data: result.data?.users });
-        updateByResponseUsers(context, result.data?.users);
-      }
-    });
+    owner.send('getOfflineUsers');
   });
 
 export const initializeChatApiService: ChatActionEffect = (action) =>
@@ -71,7 +51,7 @@ export const tryRestoreUserLogin: ChatActionEffect = (action) =>
 
     if (isUserCredentials(persistedData)) {
       owner.send('login', { username: persistedData.login, password: persistedData.password }).then(() => {
-        context.get().logger?.log('tryRestoreUserLogin')(`"${persistedData.login}" connection restored`);
+        context.get().logger?.log('🔄 try restore user login')(`✔️ "${persistedData.login}" restored`);
       });
     }
   });
@@ -80,7 +60,7 @@ function isUserCredentials(source: unknown): source is Required<User> {
   return hasProperty('login', source) && hasProperty('password', source);
 }
 
-function updateByResponseUsers(context: ChatContext, responseUsers: unknown) {
+export function updateByResponseUsers(context: ChatContext, responseUsers: unknown) {
   if (isValidRemoteUsers(responseUsers)) {
     const normalizedUsers = responseUsers.filter((user) => user.login !== context.get().currentUser?.login);
     context.get().store.set(({ users }) => {
@@ -92,6 +72,6 @@ function updateByResponseUsers(context: ChatContext, responseUsers: unknown) {
       };
     });
   } else {
-    context.get().logger?.warn('updateByResponseUsers:not a "responseUsers":', responseUsers);
+    context.get().logger?.warn('🆘 updateByResponseUsers:not a "responseUsers":', responseUsers);
   }
 }

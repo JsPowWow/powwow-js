@@ -10,20 +10,20 @@ import {
 import { Nullable } from '@powwow-js/core';
 import { WebSocketActor } from '../webSocket/webSocketActor';
 import {
-  setChatUsers,
+  clearChatUsers,
+  getChatUsers,
   initializeChatApiService,
   saveSocket,
   tryRestoreUserLogin,
-  clearChatUsers,
 } from './actionEffects';
 import { WebSocketChatService } from '../../../services/WebSocketChatService';
 import { RemoteUser, User } from '../../../models/user';
 import { login } from './scenarious/loginScenario';
 import { logout } from './scenarious/logoutScenario';
 import {
-  subscribeExternalLoginUsers,
   getOfflineUsers,
   getOnlineUsers,
+  subscribeExternalLoginUsers,
   subscribeExternalLogoutUsers,
 } from './scenarious/usersPopulateScenario';
 
@@ -75,7 +75,7 @@ const chatLogic: StateMachineDefinition<ChatState, ChatStateTransitions, ChatCon
           // () => {
           //   Router.navigate('/chat');
           // }
-          setChatUsers
+          getChatUsers
         ),
         // TODO stay in chat, indicate reconnection ?
         // onExit: enqueue(() => {

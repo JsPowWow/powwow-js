@@ -1,5 +1,5 @@
 import type { EventsMap, EventType, IEventEmitter } from '@powwow-js/emitter';
-import type { KeysWithType, Nullable, PromiseResolver, RecordKey, UnknownRecord } from '@powwow-js/core';
+import type { KeysWithType, Nullable, PromiseResolver, RecordKey } from '@powwow-js/core';
 
 export type StateMachineState = RecordKey;
 
@@ -45,8 +45,7 @@ export type StateMachineTransitionExecutor<
   StateFrom extends StateMachineState,
   StateTo extends StateMachineState,
   Transition extends EventType<Transitions>,
-  Context extends NonNullable<unknown>,
-  Data extends UnknownRecord
+  Context extends NonNullable<unknown>
 > = (payload: {
   from: StateFrom;
   by: Transition;
@@ -60,7 +59,7 @@ export type StateMachineTransitionExecutor<
   | Promise<
       Nullable<{
         target?: StateTo;
-        data?: Data;
+        // data?: Data;
       }>
     >;
 
@@ -69,14 +68,13 @@ export type StateMachineTransition<
   StateFrom extends StateMachineState,
   StateTo extends StateMachineState,
   Transition extends EventType<Transitions>,
-  Context extends NonNullable<unknown>,
-  Data extends UnknownRecord = UnknownRecord
+  Context extends NonNullable<unknown>
 > =
   | {
       target: StateTo;
       action?: StateMachineTransitionActionEffect<Transitions, StateFrom, Context, StateTo, Transition>;
     }
-  | StateMachineTransitionExecutor<Transitions, StateFrom, StateTo, Transition, Context, Data>;
+  | StateMachineTransitionExecutor<Transitions, StateFrom, StateTo, Transition, Context>;
 
 export type StateMachinePendingTransition<
   Transitions extends EventsMap,
@@ -94,15 +92,13 @@ export type StateMachinePendingTransition<
 export type StateMachineTransitionResult<
   Transitions extends EventsMap,
   State extends StateMachineState,
-  Context extends NonNullable<unknown>,
-  Data extends UnknownRecord = UnknownRecord
+  Context extends NonNullable<unknown>
 > = { state: State } & (
   | {
       status: 'success';
       success: true;
       state: State;
       action: StateMachineTransitionAction<Transitions, State, Context>;
-      data?: Data;
     }
   | { status: 'warning'; success: false; state: State; message: string }
   | { status: 'error'; success: false; state: State; message: string; error: Error; details: string }

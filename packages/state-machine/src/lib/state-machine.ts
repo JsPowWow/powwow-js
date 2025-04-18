@@ -10,7 +10,7 @@ import type {
   StateMachineTransitionActionType,
   StateMachineTransitionResult,
 } from './types';
-import type { AnyFunction, UnknownRecord } from '@powwow-js/core';
+import type { AnyFunction } from '@powwow-js/core';
 import {
   hasProperty,
   isPlainObject,
@@ -150,13 +150,7 @@ export class StateMachine<
         if (isPromise(destinationTransition)) {
           return destinationTransition.then(
             (result) => {
-              return this.commitTransition(
-                previousState,
-                result?.['target'] ?? this.currentState,
-                transition,
-                data,
-                result?.['data']
-              );
+              return this.commitTransition(previousState, result?.['target'] ?? this.currentState, transition, data);
             },
             (error) => {
               return this.createFailedTransitionResult(
@@ -189,8 +183,7 @@ export class StateMachine<
     from: State,
     to: State,
     by: T,
-    inputData: D,
-    outputData?: UnknownRecord
+    inputData: D
   ): StateMachineTransitionResult<Transitions, State, Context> {
     const stateDefinition = this.definition.states[from];
     const destinationTransition = stateDefinition?.transitions?.[by];
@@ -222,7 +215,7 @@ export class StateMachine<
     const successAction = this.createAction('stateChange', from, to, by, inputData);
     this.emitter.emit('stateChanged', successAction);
 
-    return { status: 'success', success: true, state: this.currentState, action: successAction, data: outputData };
+    return { status: 'success', success: true, state: this.currentState, action: successAction };
   }
 
   protected createAction<

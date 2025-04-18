@@ -19,7 +19,8 @@ export const useChatStore: UseChatStore = () => {
     return () => {
       Chat.context.get().store.off('changed', rerender);
     };
-  }, []);
+  }, [rerender]);
+
   return Chat.context.get().store;
 };
 

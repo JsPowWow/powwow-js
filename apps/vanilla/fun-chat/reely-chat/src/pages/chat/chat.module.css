@@ -8,5 +8,5 @@
 
 .users-list {
   overflow-y: auto;
-  height: calc(-240px + 100vh);
+  height: calc(-265px + 100vh);
 }
