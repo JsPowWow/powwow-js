@@ -1,6 +1,6 @@
 import { StateMachineTransition } from '@powwow-js/state-machine';
 import { ChatContext, ChatState, ChatStateTransitions } from '../ChatActor';
-import { assertIsNonNullable, toErrorWithMessage } from '@powwow-js/core';
+import { Maybe, toErrorWithMessage } from '@powwow-js/core';
 import { setItemByKey } from '../../../../shared/persistence';
 import { Router } from '../../../../shared/routing/useRouter';
 import { APP_STORAGE_KEY } from '../../settings/constants';
@@ -13,27 +13,32 @@ export const logout: StateMachineTransition<
   ChatContext
 > = async ({ context }) => {
   return new Promise((resolve, reject) => {
-    const service = context.get().apiService;
-    assertIsNonNullable(service);
-    const currentUser = context.get().currentUser;
-    assertIsNonNullable(currentUser);
+    Maybe.some(context.get().apiService)
+      .map((service) => ({ service }))
+      .map(({ service }) => ({
+        service,
+        currentUser: Maybe.some(context.get().currentUser).getOrThrow(),
+      }))
+      .map(({ service, currentUser }) => {
+        service.logout(currentUser, {
+          onCall: (_payload) => {
+            // clear current user
+            context.set({ currentUser: null });
 
-    service.logout(currentUser, {
-      onCall: (_payload) => {
-        // clear current user
-        context.set({ currentUser: null });
+            // save user session info
+            setItemByKey(sessionStorage, APP_STORAGE_KEY, JSON.stringify({}));
 
-        // save user session info
-        setItemByKey(sessionStorage, APP_STORAGE_KEY, JSON.stringify({}));
+            // redirect to login page
+            Router.navigate('/login');
 
-        // redirect to login page
-        Router.navigate('/login');
-
-        resolve({ target: 'ready' });
-      },
-      onError: (payload) => {
-        reject(toErrorWithMessage(payload?.error));
-      },
-    });
+            resolve({ target: 'ready' });
+          },
+          onError: (payload) => {
+            reject(toErrorWithMessage(payload?.error));
+          },
+        });
+        return service;
+      })
+      .getOrThrow(new Error('Something went wrong on "logout" processing scenario'));
   });
 };

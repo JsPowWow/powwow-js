@@ -1,0 +1,13 @@
+.users-list-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 4px;
+  width: 20%;
+}
+
+
+.users-list {
+  overflow-y: auto;
+  height: calc(-240px + 100vh);
+}

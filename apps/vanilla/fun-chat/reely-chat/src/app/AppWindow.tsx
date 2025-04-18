@@ -92,7 +92,7 @@ export const AppWindow = ({ children }: { children?: unknown[] }) => {
       />
       <WndBody
         className='has-space desktop'
-        styles={{ minHeight: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}
+        styles={{ minHeight: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}
       >
         {children}
       </WndBody>

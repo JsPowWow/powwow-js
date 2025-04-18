@@ -9,13 +9,17 @@ import {
 } from '@powwow-js/state-machine';
 import { Nullable } from '@powwow-js/core';
 import { WebSocketActor } from '../webSocket/webSocketActor';
-import { getChatUsers, saveSocket } from './actionEffects';
+import {
+  setChatUsers,
+  initializeChatApiService,
+  saveSocket,
+  tryRestoreUserLogin,
+  clearChatUsers,
+} from './actionEffects';
 import { WebSocketChatService } from '../../../services/WebSocketChatService';
 import { ExtendedUser, User } from '../../../models/user.model';
 import { login } from './scenarious/login';
 import { logout } from './scenarious/logout';
-import { tryRestoreUserLogin } from './scenarious/reconnect';
-import { initializeChatApiService } from './scenarious/initialize';
 import { getOfflineUsers, getOnlineUsers } from './scenarious/getUsers';
 
 export type ChatState = 'offline' | 'ready' | 'authorized';
@@ -29,14 +33,14 @@ export type ChatStateTransitions = {
   logout: undefined;
 };
 
-type UsersStore = { online: ExtendedUser[]; offline: ExtendedUser[] };
+export type UsersStore = { users: ExtendedUser[] };
 
 type ChatContextData = {
   socketActor: Nullable<WebSocketActor>;
   apiService: Nullable<WebSocketChatService>;
   logger?: ILogger;
   currentUser: Nullable<User>;
-  users: ObjectStore<UsersStore>;
+  store: ObjectStore<UsersStore>;
 };
 
 export type ChatContext = ObjectStore<ChatContextData>;
@@ -60,10 +64,11 @@ const chatLogic: StateMachineDefinition<ChatState, ChatStateTransitions, ChatCon
     authorized: {
       actions: {
         onEnter: enqueue(
+          clearChatUsers,
           // () => {
           //   Router.navigate('/chat');
           // }
-          getChatUsers
+          setChatUsers
         ),
         // TODO stay in chat, indicate reconnection ?
         // onExit: enqueue(() => {
@@ -90,9 +95,8 @@ const createChat = (options?: { logger: ILogger }): ChatActor => {
       apiService: null,
       logger: options?.logger,
       currentUser: null,
-      users: new ObjectStore<UsersStore>({
-        online: [],
-        offline: [],
+      store: new ObjectStore<UsersStore>({
+        users: [],
       }),
     })
   );

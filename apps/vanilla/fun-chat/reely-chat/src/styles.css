@@ -51,6 +51,5 @@ body {
     cursor: pointer;
     background: var(--link-color-hovered);
     color: white;
-
   }
 }

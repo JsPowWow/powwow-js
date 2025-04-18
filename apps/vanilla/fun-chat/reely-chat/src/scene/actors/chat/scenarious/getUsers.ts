@@ -1,6 +1,6 @@
 import { StateMachineTransition } from '@powwow-js/state-machine';
 import { ChatContext, ChatState, ChatStateTransitions } from '../ChatActor';
-import { assertIsNonNullable, toErrorWithMessage } from '@powwow-js/core';
+import { Maybe, toErrorWithMessage } from '@powwow-js/core';
 import { ExtendedUser } from '../../../../models/user.model';
 
 export const getOnlineUsers: StateMachineTransition<
@@ -12,18 +12,19 @@ export const getOnlineUsers: StateMachineTransition<
   { users: ExtendedUser[] }
 > = async ({ context }) => {
   return new Promise((resolve, reject) => {
-    const service = context.get().apiService;
-    assertIsNonNullable(service);
-
-    service.getActiveUsers({
-      onCall: (payload) => {
-        context.get().logger?.info('getOnlineUsers', payload);
-        resolve({ target: 'authorized', data: payload });
-      },
-      onError: (payload) => {
-        reject(toErrorWithMessage(payload?.error));
-      },
-    });
+    Maybe.some(context.get().apiService)
+      .map((service) =>
+        service.getActiveUsers({
+          onCall: (payload) => {
+            context.get().logger?.info('getOnlineUsers', payload);
+            resolve({ target: 'authorized', data: payload });
+          },
+          onError: (payload) => {
+            reject(toErrorWithMessage(payload?.error));
+          },
+        })
+      )
+      .getOrThrow(new Error('Something went wrong on "getOnlineUsers"'));
   });
 };
 
@@ -36,17 +37,18 @@ export const getOfflineUsers: StateMachineTransition<
   { users: ExtendedUser[] }
 > = async ({ context }) => {
   return new Promise((resolve, reject) => {
-    const service = context.get().apiService;
-    assertIsNonNullable(service);
-
-    service.getInactiveUsers({
-      onCall: (payload) => {
-        context.get().logger?.info('getOfflineUsers', payload);
-        resolve({ target: 'authorized', data: payload });
-      },
-      onError: (payload) => {
-        reject(toErrorWithMessage(payload?.error));
-      },
-    });
+    Maybe.some(context.get().apiService)
+      .map((service) =>
+        service.getInactiveUsers({
+          onCall: (payload) => {
+            context.get().logger?.info('getOfflineUsers', payload);
+            resolve({ target: 'authorized', data: payload });
+          },
+          onError: (payload) => {
+            reject(toErrorWithMessage(payload?.error));
+          },
+        })
+      )
+      .getOrThrow(new Error('Something went wrong on "getOfflineUsers"'));
   });
 };

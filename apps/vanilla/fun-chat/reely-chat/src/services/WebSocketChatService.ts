@@ -18,67 +18,83 @@ export class WebSocketChatService extends WebSocketService {
     super(socket);
   }
 
-  login(user: User, callback: WsCallback<{ user: User }>): void {
+  login(user: User, callback: WsCallback<{ user: User }>): typeof this {
     this.send('USER_LOGIN', { user }, callback);
+    return this;
   }
 
-  logout(user: User, callback: WsCallback<User>): void {
+  logout(user: User, callback: WsCallback<User>): typeof this {
     this.send('USER_LOGOUT', { user }, callback);
+    return this;
   }
 
-  getActiveUsers(callback: WsCallback<{ users: ExtendedUser[] }>): void {
+  getActiveUsers(callback: WsCallback<{ users: ExtendedUser[] }>): typeof this {
     this.send('USER_ACTIVE', null, callback);
+    return this;
   }
 
-  getInactiveUsers(callback: WsCallback<{ users: ExtendedUser[] }>): void {
+  getInactiveUsers(callback: WsCallback<{ users: ExtendedUser[] }>): typeof this {
     this.send('USER_INACTIVE', null, callback);
+    return this;
   }
 
-  getUserMessages(user: User, callback: WsCallback<{ messages: Message[] }>): void {
+  getUserMessages(user: User, callback: WsCallback<{ messages: Message[] }>): typeof this {
     this.send(RequestType.MessageFromUser, { user }, callback);
+    return this;
   }
 
-  sendMessage(message: Partial<Message>, callback: WsCallback<{ message: Message }>): void {
+  sendMessage(message: Partial<Message>, callback: WsCallback<{ message: Message }>): typeof this {
     this.send(RequestType.MessageSend, { message }, callback);
+    return this;
   }
 
-  sendRead(messages: Partial<Message>[]): void {
+  sendRead(messages: Partial<Message>[]): typeof this {
     messages.forEach((message) => this.send(RequestType.MessageRead, { message }));
+    return this;
   }
 
-  sendDelete(message: Partial<Message>, callback: WsCallback<{ message: Message }>): void {
+  sendDelete(message: Partial<Message>, callback: WsCallback<{ message: Message }>): typeof this {
     this.send(RequestType.MessageDelete, { message }, callback);
+    return this;
   }
 
-  sendEdit(message: Partial<Message>, callback: WsCallback<{ message: Message }>): void {
+  sendEdit(message: Partial<Message>, callback: WsCallback<{ message: Message }>): typeof this {
     this.send(RequestType.MessageEdit, { message }, callback);
+    return this;
   }
 
-  notifyLogin(callback: WsCallback<{ user: User }>): void {
+  notifyLogin(callback: WsCallback<{ user: User }>): typeof this {
     this.send(RequestType.UserExternalLogin, undefined, callback, true);
+    return this;
   }
 
-  notifyLogout(callback: WsCallback<{ user: User }>): void {
+  notifyLogout(callback: WsCallback<{ user: User }>): typeof this {
     this.send(RequestType.UserExternalLogout, undefined, callback, true);
+    return this;
   }
 
-  notifyDelivered(callback: WsCallback<{ message: Message }>): void {
+  notifyDelivered(callback: WsCallback<{ message: Message }>): typeof this {
     this.send(RequestType.MessageDeliver, undefined, callback, true);
+    return this;
   }
 
-  notifySend(callback: WsCallback<{ message: Message }>): void {
+  notifySend(callback: WsCallback<{ message: Message }>): typeof this {
     this.send(RequestType.MessageSend, undefined, callback, true);
+    return this;
   }
 
-  notifyRead(callback: WsCallback<{ message: Message }>): void {
+  notifyRead(callback: WsCallback<{ message: Message }>): typeof this {
     this.send(RequestType.MessageRead, undefined, callback, true);
+    return this;
   }
 
-  notifyDeleted(callback: WsCallback<{ message: Message }>): void {
+  notifyDeleted(callback: WsCallback<{ message: Message }>): typeof this {
     this.send(RequestType.MessageDelete, undefined, callback, true);
+    return this;
   }
 
-  notifyEdited(callback: WsCallback<{ message: Message }>): void {
+  notifyEdited(callback: WsCallback<{ message: Message }>): typeof this {
     this.send(RequestType.MessageEdit, undefined, callback, true);
+    return this;
   }
 }

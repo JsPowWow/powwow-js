@@ -27,6 +27,11 @@ export default defineConfig(() => ({
       transformMixedEsModules: true,
     },
   },
+  css: {
+    modules: {
+      localsConvention: 'camelCase',
+    },
+  } as const,
   test: {
     watch: false,
     globals: true,

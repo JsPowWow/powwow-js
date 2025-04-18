@@ -46,6 +46,13 @@ export default class Maybe<T> {
     return hasSome(this.value) ? { maybe: 'some', value: this.value } : { maybe: 'none' };
   }
 
+  public getOrThrow(error?: Error): T {
+    if (hasSome(this.value)) {
+      return this.value;
+    }
+    throw error ?? new Error('The wrapped value is "nothing".');
+  }
+
   public getOrElse<V>(value: V): V | NonNullable<T> {
     return hasSome(this.value) ? this.value : value;
   }
