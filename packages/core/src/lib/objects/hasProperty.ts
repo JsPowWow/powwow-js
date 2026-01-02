@@ -1,8 +1,7 @@
 import hasSome from './hasSome';
 import isValidRecordKey from './isValidRecordKey';
-import type { RecordKey } from '../types/core.types';
 
-export default function hasProperty<Property extends RecordKey, SourceObject>(
+export default function hasProperty<Property extends PropertyKey, SourceObject>(
   property: unknown,
   source: SourceObject
 ): source is SourceObject & Record<Property, unknown> {

@@ -1,6 +1,4 @@
-import type { RecordKey } from '../types/core.types';
-
-export default function hasOwnProperty<Property extends RecordKey, SourceObject>(
+export default function hasOwnProperty<Property extends PropertyKey, SourceObject>(
   property: Property,
   source: SourceObject
 ): source is SourceObject & Record<Property, unknown> {

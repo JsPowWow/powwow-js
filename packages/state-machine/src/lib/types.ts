@@ -1,7 +1,7 @@
 import type { EventsMap, EventType, IEventEmitter } from '@powwow-js/emitter';
-import type { KeysWithType, Nullable, PromiseResolver, RecordKey } from '@powwow-js/core';
+import type { KeysWithType, Nullable, PromiseResolver } from '@powwow-js/core';
 
-export type StateMachineState = RecordKey;
+export type StateMachineState = PropertyKey;
 
 export interface IStateMachine<
   State extends StateMachineState,
