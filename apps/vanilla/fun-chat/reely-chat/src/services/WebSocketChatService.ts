@@ -1,9 +1,8 @@
 import WebSocketService, { WsCallback } from './WebSocketService';
 import { RemoteUser, User } from '../models/user';
-import { Message } from '../models/message.model';
+import { UserMessage } from '../models/message.model';
 
 export const enum RequestType {
-  MessageSend = 'MSG_SEND',
   MessageRead = 'MSG_READ',
   MessageDeliver = 'MSG_DELIVER',
   MessageDelete = 'MSG_DELETE',
@@ -45,52 +44,52 @@ export class WebSocketChatService extends WebSocketService {
     return this;
   }
 
-  getUserMessages(user: RemoteUser, callback: WsCallback<{ messages: Message[] }>): typeof this {
+  getUserMessages(user: RemoteUser, callback: WsCallback<{ messages: UserMessage[] }>): typeof this {
     this.send('MSG_FROM_USER', { user }, callback);
     return this;
   }
 
-  sendMessage(message: Partial<Message>, callback: WsCallback<{ message: Message }>): typeof this {
-    this.send(RequestType.MessageSend, { message }, callback);
+  sendMessage(message: Partial<UserMessage>, callback: WsCallback<{ message: UserMessage }>): typeof this {
+    this.send('MSG_SEND', { message }, callback);
     return this;
   }
 
-  sendRead(messages: Partial<Message>[]): typeof this {
+  sendRead(messages: Partial<UserMessage>[]): typeof this {
     messages.forEach((message) => this.send(RequestType.MessageRead, { message }));
     return this;
   }
 
-  sendDelete(message: Partial<Message>, callback: WsCallback<{ message: Message }>): typeof this {
+  sendDelete(message: Partial<UserMessage>, callback: WsCallback<{ message: UserMessage }>): typeof this {
     this.send(RequestType.MessageDelete, { message }, callback);
     return this;
   }
 
-  sendEdit(message: Partial<Message>, callback: WsCallback<{ message: Message }>): typeof this {
+  sendEdit(message: Partial<UserMessage>, callback: WsCallback<{ message: UserMessage }>): typeof this {
     this.send(RequestType.MessageEdit, { message }, callback);
     return this;
   }
 
-  notifyDelivered(callback: WsCallback<{ message: Message }>): typeof this {
+  notifyDelivered(callback: WsCallback<{ message: UserMessage }>): typeof this {
     this.send(RequestType.MessageDeliver, undefined, callback, true);
     return this;
   }
 
-  notifySend(callback: WsCallback<{ message: Message }>): typeof this {
-    this.send(RequestType.MessageSend, undefined, callback, true);
+  notifySend(callback: WsCallback<{ message: UserMessage }>): typeof this {
+    this.send('MSG_SEND', undefined, callback, true);
     return this;
   }
 
-  notifyRead(callback: WsCallback<{ message: Message }>): typeof this {
+  notifyRead(callback: WsCallback<{ message: UserMessage }>): typeof this {
     this.send(RequestType.MessageRead, undefined, callback, true);
     return this;
   }
 
-  notifyDeleted(callback: WsCallback<{ message: Message }>): typeof this {
+  notifyDeleted(callback: WsCallback<{ message: UserMessage }>): typeof this {
     this.send(RequestType.MessageDelete, undefined, callback, true);
     return this;
   }
 
-  notifyEdited(callback: WsCallback<{ message: Message }>): typeof this {
+  notifyEdited(callback: WsCallback<{ message: UserMessage }>): typeof this {
     this.send(RequestType.MessageEdit, undefined, callback, true);
     return this;
   }

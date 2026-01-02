@@ -1,10 +1,11 @@
 import { matchAction } from '@powwow-js/state-machine';
-import { ChatActionEffect } from './ChatActor';
+import { ChatActionEffect, ChatContext } from './ChatActor';
 import { Either, hasProperty, identity, Maybe, noop, UnknownRecord } from '@powwow-js/core';
 import { WebSocketChatService } from '../../../services/WebSocketChatService';
 import { getItemByKey } from '../../../shared/persistence';
 import { APP_STORAGE_KEY } from '../settings/constants';
-import { User } from '../../../models/user';
+import { ChatUser, User } from '../../../models/user';
+import { Router } from '../../../shared/routing/useRouter';
 
 export const saveSocket: ChatActionEffect = (action) =>
   matchAction(action).when({ by: 'setReady' }, ({ context, data: { socketActor } }) => {
@@ -16,7 +17,7 @@ export const clearChatUsers: ChatActionEffect = ({ context }) =>
     users.clear();
   });
 
-export const getChatUsers: ChatActionEffect = (action) =>
+export const initializeChatUsers: ChatActionEffect = (action) =>
   matchAction(action).when({ to: 'authorized' }, ({ owner }) => {
     owner.send('subscribeExternalLoginUsers');
 
@@ -25,6 +26,8 @@ export const getChatUsers: ChatActionEffect = (action) =>
     owner.send('getOnlineUsers');
 
     owner.send('getOfflineUsers');
+
+    owner.send('subscribeExternalUserMessages');
   });
 
 export const initializeChatApiService: ChatActionEffect = (action) =>
@@ -40,6 +43,7 @@ export const initializeChatApiService: ChatActionEffect = (action) =>
         return apiService;
       })
       .map((apiService) => apiService.start());
+    // .getOrThrow(); // TODO throw
   });
 
 export const tryRestoreUserLogin: ChatActionEffect = (action) =>
@@ -51,11 +55,24 @@ export const tryRestoreUserLogin: ChatActionEffect = (action) =>
 
     if (isUserCredentials(persistedData)) {
       context.get().logger?.log('🔄 trying to restore user connection')('...');
-      owner.send('login', { username: persistedData.login, password: persistedData.password }).then(() => {
-        context.get().logger?.log('🔄 trying to restore user connection')(`✅ "${persistedData.login}" restored`);
+      owner.send('login', { username: persistedData.login, password: persistedData.password }).then((result) => {
+        console.log('ssss', result.status, persistedData);
+        if (result.status === 'success') {
+          context.get().logger?.log('🔄 trying to restore user connection')(`✅ "${persistedData.login}" restored`);
+        }
+        if (result.status === 'error') {
+          context.get().logger?.log('🔄 trying to restore user connection')(
+            `❌ "${persistedData.login}" ${result.error.message}`
+          );
+          Router.navigate('/login');
+        }
       });
     }
   });
+
+export const updateChatUser = (context: ChatContext, chatUser: ChatUser) => {
+  context.get().store.get().users.set(chatUser.login, chatUser);
+};
 
 function isUserCredentials(source: unknown): source is Required<User> {
   return hasProperty('login', source) && hasProperty('password', source);

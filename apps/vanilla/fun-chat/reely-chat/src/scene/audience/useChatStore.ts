@@ -3,12 +3,12 @@ import { useRerender } from '@powwow-js/reely-hook';
 import { Chat } from '../actors';
 import { ObjectStore } from '@powwow-js/simple-store';
 import { UsersStore } from '../actors/chat/ChatActor';
-import { RemoteUser } from '../../models/user';
+import { ChatUser } from '../../models/user';
 
 type UseChatStore = {
   (): ObjectStore<UsersStore>;
-  getOnlineUsers: (store: UsersStore) => RemoteUser[];
-  getOfflineUsers: (store: UsersStore) => RemoteUser[];
+  getOnlineUsers: (store: UsersStore) => ChatUser[];
+  getOfflineUsers: (store: UsersStore) => ChatUser[];
 };
 
 export const useChatStore: UseChatStore = () => {

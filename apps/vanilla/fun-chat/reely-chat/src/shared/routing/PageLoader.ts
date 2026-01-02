@@ -3,8 +3,6 @@ import { findMatchingRoute } from '@powwow-js/routing-utils';
 import { useRouter } from './useRouter';
 import { useFetchData } from '@powwow-js/reely-hook';
 
-const pagesCache = new Map<string, unknown>();
-
 export const usePageLoader = () => {
   const { pathName, pathNames, fallback, navigate, getRouteData } = useRouter();
   const {
@@ -12,19 +10,9 @@ export const usePageLoader = () => {
     error,
     data: Page,
   } = useFetchData(pathName, async (pathName = '') => {
-    if (pagesCache.has(pathName)) {
-      return pagesCache.get(pathName);
-    }
-
     const route = getRouteData(pathName);
-    if (pagesCache.has(route.pathname)) {
-      return pagesCache.get(route.pathname);
-    }
-    console.log(`\u001B[41;93;4m~~ loading page: ${pathName}\u001B[m`);
-    const page = await route.handler();
-    pagesCache.set(pathName, page);
-
-    return page;
+    // console.log(`\u001B[41;93;4m~~ loading page: ${pathName}\u001B[m`);
+    return await route.handler();
   });
 
   // console.log({ pathName, isLoading, error, Page });

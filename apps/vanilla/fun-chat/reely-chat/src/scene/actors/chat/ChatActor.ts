@@ -11,13 +11,13 @@ import { Nullable } from '@powwow-js/core';
 import { WebSocketActor } from '../webSocket/webSocketActor';
 import {
   clearChatUsers,
-  getChatUsers,
+  initializeChatUsers,
   initializeChatApiService,
   saveSocket,
   tryRestoreUserLogin,
 } from './actionEffects';
 import { WebSocketChatService } from '../../../services/WebSocketChatService';
-import { RemoteUser, User } from '../../../models/user';
+import { ChatUser, RemoteUser, User } from '../../../models/user';
 import { login } from './scenarious/loginScenario';
 import { logout } from './scenarious/logoutScenario';
 import {
@@ -26,7 +26,7 @@ import {
   subscribeExternalLoginUsers,
   subscribeExternalLogoutUsers,
 } from './scenarious/usersPopulateScenario';
-import { getUserMessages } from './scenarious/usersMessagesScenario';
+import { getUserMessages, subscribeExternalUserMessages } from './scenarious/usersMessagesScenario';
 
 export type ChatState = 'offline' | 'ready' | 'authorized';
 
@@ -39,10 +39,11 @@ export type ChatStateTransitions = {
   subscribeExternalLoginUsers: undefined;
   subscribeExternalLogoutUsers: undefined;
   getUserMessages: RemoteUser;
+  subscribeExternalUserMessages: undefined;
   logout: undefined;
 };
 
-export type UsersStore = { users: Map<string, RemoteUser> };
+export type UsersStore = { users: Map<string, ChatUser> };
 
 export type ChatContextData = {
   socketActor: Nullable<WebSocketActor>;
@@ -77,7 +78,7 @@ const chatLogic: StateMachineDefinition<ChatState, ChatStateTransitions, ChatCon
           // () => {
           //   Router.navigate('/chat');
           // }
-          getChatUsers
+          initializeChatUsers
         ),
         // TODO stay in chat, indicate reconnection ?
         // onExit: enqueue(() => {
@@ -90,6 +91,7 @@ const chatLogic: StateMachineDefinition<ChatState, ChatStateTransitions, ChatCon
         subscribeExternalLoginUsers,
         subscribeExternalLogoutUsers,
         getUserMessages,
+        subscribeExternalUserMessages,
         setOffline: { target: 'offline' },
         logout,
       },
@@ -108,7 +110,7 @@ const createChat = (options?: { logger: ILogger }): ChatActor => {
       logger: options?.logger,
       currentUser: null,
       store: new ObjectStore<UsersStore>({
-        users: new Map<string, RemoteUser>(),
+        users: new Map<string, ChatUser>(),
       }),
     })
   );

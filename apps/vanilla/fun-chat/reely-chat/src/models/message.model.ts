@@ -1,13 +1,13 @@
-export interface Message {
+export interface UserMessage {
   id: string;
   to: string;
   from: string;
   text: string;
   datetime: string;
-  status: MessageStatus;
+  status: UserMessageStatus;
 }
 
-export interface MessageStatus {
+export interface UserMessageStatus {
   isDelivered: boolean;
   isReaded: boolean;
   isEdited: boolean;

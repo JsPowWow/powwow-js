@@ -1,7 +1,8 @@
 import { IStateMachine, StateMachineTransition } from '@powwow-js/state-machine';
 import { ChatContext, ChatState, ChatStateTransitions } from '../ChatActor';
 import { Maybe, toErrorWithMessage } from '@powwow-js/core';
-import { isValidRemoteUsers, RemoteUser } from '../../../../models/user';
+import { ChatUser, isValidRemoteUsers, RemoteUser } from '../../../../models/user';
+import { updateChatUser } from '../actionEffects';
 
 export const getOnlineUsers: StateMachineTransition<
   ChatStateTransitions,
@@ -127,16 +128,24 @@ export const subscribeExternalLogoutUsers: StateMachineTransition<
 function updateByResponseUsers(
   _owner: IStateMachine<ChatState, ChatStateTransitions, ChatContext>,
   context: ChatContext,
-  responseUsers: unknown
-): RemoteUser[] {
-  const updatedUsers: RemoteUser[] = [];
+  responseUsers: RemoteUser[]
+): ChatUser[] {
+  const updatedUsers: ChatUser[] = [];
   if (isValidRemoteUsers(responseUsers)) {
-    const normalizedUsers = responseUsers.filter((user) => user.login !== context.get().currentUser?.login);
+    const normalizedUsers: ChatUser[] = responseUsers
+      .filter((user) => user.login !== context.get().currentUser?.login)
+      .map((remote): ChatUser => {
+        return {
+          login: remote.login,
+          isLogined: remote.isLogined,
+          messages: [],
+        };
+      });
 
     context.get().store.set(({ users }) => {
-      normalizedUsers.forEach((user) => {
-        users.set(user.login, user);
-        updatedUsers.push(user);
+      normalizedUsers.forEach((chatUser) => {
+        updateChatUser(context, chatUser);
+        updatedUsers.push(chatUser);
       });
 
       return {

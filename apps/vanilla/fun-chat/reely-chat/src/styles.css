@@ -37,19 +37,3 @@ body {
   color: red;
   min-height: 14px;
 }
-
-.chat-window {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  /*height: 100%;*/
-}
-
-.user-renderer {
-  padding: 2px 4px;
-  &:hover {
-    cursor: pointer;
-    background: var(--link-color-hovered);
-    color: white;
-  }
-}

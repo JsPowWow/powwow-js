@@ -8,7 +8,7 @@ export type ValidationResult<T = string> =
   | { success: false; errorMessage: string };
 
 const USERNAME_MIN_LENGTH = 4;
-const USERNAME_MAX_LENGTH = 12;
+const USERNAME_MAX_LENGTH = 1000; //12; TODO BACK TO 12
 
 export const validateUserNameFormData = (username: Nullable<FormDataEntryValue>): ValidationResult => {
   if (!username) {

@@ -3,15 +3,17 @@ import { useSocketConnection } from './useSocketConnection';
 import { socketConnectionLogger } from '../actors';
 
 export const useReconnectOnError = (repeatInterval: number) => {
-  const { state, connect } = useSocketConnection();
+  const connection = useSocketConnection();
   // const { pathName } = useRouter();
 
-  const shouldAttemptReconnect = state === 'failed' || state === 'offline'; //pathName === '/chat' &&
+  const shouldAttemptReconnect = connection.state === 'failed' || connection.state === 'offline'; //pathName === '/chat' &&
 
   const interval = shouldAttemptReconnect ? repeatInterval : null;
 
   useInterval(() => {
-    socketConnectionLogger.log('useReconnectOnError')('Attempt to reconnect..');
-    connect();
+    if (connection.state === 'failed' || connection.state === 'offline') {
+      socketConnectionLogger.log('🔄 useReconnectOnError')('attempt to reconnect..');
+      connection.connect();
+    }
   }, interval);
 };

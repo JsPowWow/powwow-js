@@ -1,12 +1,110 @@
 .users-list-container {
   display: flex;
   flex-direction: column;
+  /*flex-grow: 1;*/
+  gap: 2px;
+  width: 20vw;
+  min-width: 120px;
+}
+
+.messages-container {
   flex-grow: 1;
-  gap: 4px;
-  width: 20%;
+
+  .messages-list {
+    padding: 20px 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: calc(100vh - 368px);
+    overflow-y: scroll;
+  }
+
+  .messages-form-container {
+    display: flex;
+  }
 }
 
 .users-list {
   overflow-y: auto;
-  height: calc(-265px + 100vh);
+  height: calc(-245px + 100vh);
+  flex-grow: 1;
+}
+
+.user-renderer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 2px 4px;
+  position: relative;
+
+  &:hover {
+    cursor: pointer;
+    background: var(--link-color-hovered);
+    color: white;
+  }
+}
+
+.current-user-display-name {
+  margin-bottom: 6px;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.user-display-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-messages-count {
+  background-color: #2843a6;
+  color: white;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 10px;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: 2px solid #339b15;
+}
+
+.chat-window {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  /*height: 100%;*/
+}
+
+.chat-area-container {
+  display: flex;
+
+  .chat-messages-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.messages-form-box {
+  display: flex;
+  height: 100px;
+}
+
+.messages-form-wrapper {
+  flex-grow: 1;
+  display: flex;
+  padding: 0;
+  height: 84px;
+}
+
+@media screen and (width < 460px) {
 }

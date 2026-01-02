@@ -27,23 +27,15 @@ const socketConnectionLogic: StateMachineDefinition<ConnectionState, ConnectionS
   debug: true,
   states: {
     offline: {
-      actions: {
-        onEnter: enqueue(closeCurrentSocket),
-      },
+      actions: { onEnter: enqueue(closeCurrentSocket) },
       transitions: {
-        connect: {
-          target: 'connecting',
-        },
+        connect: { target: 'connecting' },
       },
     },
     connecting: {
-      actions: {
-        onEnter: enqueue(saveUrl, closeCurrentSocket, connect),
-      },
+      actions: { onEnter: enqueue(saveUrl, closeCurrentSocket, connect) },
       transitions: {
-        connectionSuccess: {
-          target: 'online',
-        },
+        connectionSuccess: { target: 'online' },
         connectionError: {
           target: 'failed',
         },

@@ -56,6 +56,7 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
 
     if (userNameValidation.success && passwordValidation.success) {
       setIsSubmitting(true);
+
       await onSubmit({ username: userNameValidation.value, password: passwordValidation.value })
         .then((result) => {
           if (!result.success) {
