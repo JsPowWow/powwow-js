@@ -2,21 +2,6 @@
 import { AnyFunction, Nil, Nullable } from "@/types/utility";
 
 /**
-* @description Simple guard to check if provided value is valid and has more than zero length
-* @param value
-* @returns {boolean}
-  */
-  export const isNonEmpty = <T extends Nullable<string | Array<unknown>>>(value: T): value is NonNullable<T> => {
-  if (!hasSome(value)) {
-  return false;
-  }
-  if (Array.isArray(value) || typeof value === "string") {
-  return value.length > 0;
-  }
-  return false;
-  };
-
-/**
 * @description Simple guard to check if provided value is nullish or has zero length
 * @param value
 * @returns {boolean}
